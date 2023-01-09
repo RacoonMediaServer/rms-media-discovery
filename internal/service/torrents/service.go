@@ -22,11 +22,3 @@ type service struct {
 func New() Service {
 	return &service{}
 }
-
-func (s *service) Search(query string, hint SearchTypeHint, limit uint) ([]model.Torrent, error) {
-	return nil, nil
-}
-
-func (s *service) Download(link string) ([]byte, error) {
-	return nil, nil
-}
