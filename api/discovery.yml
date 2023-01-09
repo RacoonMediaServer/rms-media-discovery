@@ -1,0 +1,410 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: Media Discovery API
+  description: API for Racoon Media Server Project
+
+consumes:
+  - application/json
+produces:
+  - application/json
+
+securityDefinitions:
+  key:
+    type: apiKey
+    in: header
+    name: x-token
+
+tags:
+  - name: movies
+    description: Фильмы/сериалы
+  - name: torrents
+    description: Торренты
+  - name: admin
+    description: Администрирование
+
+paths:
+  /movies/search:
+    get:
+      tags:
+        - movies
+      summary: Поиск фильмов и сериалов
+      description: Поиск фильмов и сериалов по названию на различных платформах
+      operationId: searchMovies
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Искомый запрос
+          type: string
+          minLength: 2
+          maxLength: 128
+        - name: limit
+          in: query
+          required: false
+          description: Ограничение на кол-во результатов
+          type: integer
+          minimum: 1
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - results
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/definitions/SearchMoviesResult"
+            
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /torrents/search:
+    get:
+      tags:
+        - torrents
+      summary: Поиск контекнта на торрент-трекерах
+      description: Поиск фильмов и сериалов по названию на различных платформах
+      operationId: searchTorrents
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Искомый запрос
+          type: string
+          minLength: 2
+          maxLength: 128
+        - name: type
+          in: query
+          required: false
+          description: Подсказка, какого типа инфу искать
+          type: string
+          enum:
+            - movies
+            - music
+            - books
+            - others
+        - name: limit
+          in: query
+          required: false
+          description: Ограничение на кол-во результатов
+          type: integer
+          minimum: 1
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - results
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/definitions/SearchTorrentsResult"
+            
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /torrents/download:
+    get:
+      tags:
+        - torrents
+      summary: Загрузка торрент-файла
+      description: Позволяет скачать торрент-файл, с помощью которого можно скачать контент
+      operationId: downloadTorrent
+      produces:
+        - application/octet-stream
+      parameters:
+        - name: link
+          in: query
+          required: true
+          description: Хеш ссылки на результат поиска
+          type: string
+      responses:
+        '200':
+          description: OK
+
+        '404':
+          description: Неверный хеш ссылки
+            
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /admin/users:
+    get:
+      tags:
+        - admin
+      summary: Получить список пользователей и информацию по ним
+      operationId: getUsers
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - results
+            properties:
+              results:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: 
+                      type: string
+                    info:
+                      type: string
+                    lastRequestTime:
+                      type: integer
+                    reqPerDay:
+                      type: number
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+    post:
+      tags:
+        - admin
+      summary: Создать новый ключ пользователя
+      operationId: createUser
+      parameters:
+        - name: user
+          in: body
+          schema:
+            type: object
+            required:
+              - info
+            properties:
+              info:
+                type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - id
+            properties:
+              id:
+                type: string
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /admin/users/{id}:
+    delete:
+      tags:
+        - admin
+      summary: Удалить ключ пользователя
+      operationId: deleteUser
+      parameters:
+        - name: id
+          in: path
+          description: Ключ пользователя
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Ключ не найден
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /admin/accounts:
+    get:
+      tags:
+        - admin
+      summary: Получить список список акканутов и токенов к внешним системам
+      operationId: getAccounts
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - results
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/definitions/Account"
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+    post:
+      tags:
+        - admin
+      summary: Создать новый аккаунт
+      operationId: createAccount
+      parameters:
+        - name: account
+          in: body
+          schema:
+            $ref: "#/definitions/Account"
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required: 
+              - id
+            properties:
+              id:
+                type: string
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+  /admin/accounts/{id}:
+    delete:
+      tags:
+        - admin
+      summary: Удалить аккаунт
+      operationId: deleteAccount
+      parameters:
+        - name: id
+          in: path
+          description: ID аккаунта
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Аккаунт не найден
+        '500':
+          description: Ошибка на стороне сервера
+          schema:
+            type: object
+      security:
+        - key: [ ]
+
+definitions:
+  SearchMoviesResult:
+    type: object
+    required: 
+      - id
+      - title
+    properties:
+      id:
+        type: string
+      title:
+        type: string
+      description:
+        type: string
+      year:
+        type: integer
+      poster:
+        type: string
+      preview:
+        type: string
+      rating:
+        type: number
+      genres:
+        type: array
+        items:
+          type: string
+      type:
+        type: string
+        enum:
+          - tv-series
+          - film
+      seasons:
+        type: integer
+
+  SearchTorrentsResult:
+    type: object
+    required:
+      - link
+    properties:
+      link:
+        type: string
+      title:
+        type: string
+      size:
+        type: integer
+      seeders:
+        type: integer
+      video:
+        type: array
+        items:
+          type: object
+          properties:
+            codec:
+              type: string
+            width:
+              type: integer
+            height:
+              type: integer
+            format:
+              type: string
+      audio:
+        type: array
+        items:
+          type: object
+          properties:
+            codec:
+              type: string
+            bitrate:
+              type: number
+            language:
+              type: string
+
+  Account:
+    type: object
+    required:
+      - service
+      - type
+    properties:
+      type: 
+        type: string
+        enum:
+          - account
+          - token
+      service:
+        type: string
+      login:
+        type: string
+        minLength: 1
+      password:
+        type: string
+      token:
+        type: string
+      limit:
+        type: integer
+        default: 0
+  principal:
+      type: string  
