@@ -5,12 +5,18 @@ import (
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/admin"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"github.com/apex/log"
 	"github.com/go-openapi/loads"
 )
 
 type Server struct {
-	srv *restapi.Server
+	srv      *restapi.Server
+	Movies   movies.Service
+	Torrents torrents.Service
+	Admin    admin.Service
 }
 
 func (s *Server) ListenAndServer(host string, port int) error {
@@ -22,9 +28,7 @@ func (s *Server) ListenAndServer(host string, port int) error {
 
 		// создаем хендлеры API по умолчанию
 		api := operations.NewServerAPI(swaggerSpec)
-		// if s.Calendar != nil {
-		// 	s.configureAPI(api)
-		// }
+		s.configureAPI(api)
 
 		// устанавливаем свой логгер
 		logCtx := log.WithField("from", "rest")

@@ -599,7 +599,15 @@ func init() {
       }
     },
     "principal": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "admin": {
+          "type": "boolean"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
     }
   },
   "securityDefinitions": {
@@ -1215,7 +1223,15 @@ func init() {
       }
     },
     "principal": {
-      "type": "string"
+      "type": "object",
+      "properties": {
+        "admin": {
+          "type": "boolean"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
     }
   },
   "securityDefinitions": {

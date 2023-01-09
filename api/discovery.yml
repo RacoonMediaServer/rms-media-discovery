@@ -407,4 +407,9 @@ definitions:
         type: integer
         default: 0
   principal:
-      type: string  
+      type: object
+      properties:
+        token: 
+          type: string
+        admin:
+          type: boolean  
