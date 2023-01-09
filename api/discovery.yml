@@ -20,8 +20,10 @@ tags:
     description: Фильмы/сериалы
   - name: torrents
     description: Торренты
-  - name: admin
-    description: Администрирование
+  - name: users
+    description: Администрирование пользователей
+  - name: accounts
+    description: Администрирование аккаунтов
 
 paths:
   /movies/search:
@@ -149,7 +151,7 @@ paths:
   /admin/users:
     get:
       tags:
-        - admin
+        - users
       summary: Получить список пользователей и информацию по ним
       operationId: getUsers
       responses:
@@ -182,7 +184,7 @@ paths:
 
     post:
       tags:
-        - admin
+        - users
       summary: Создать новый ключ пользователя
       operationId: createUser
       parameters:
@@ -215,7 +217,7 @@ paths:
   /admin/users/{id}:
     delete:
       tags:
-        - admin
+        - users
       summary: Удалить ключ пользователя
       operationId: deleteUser
       parameters:
@@ -239,7 +241,7 @@ paths:
   /admin/accounts:
     get:
       tags:
-        - admin
+        - accounts
       summary: Получить список список акканутов и токенов к внешним системам
       operationId: getAccounts
       responses:
@@ -263,7 +265,7 @@ paths:
 
     post:
       tags:
-        - admin
+        - accounts
       summary: Создать новый аккаунт
       operationId: createAccount
       parameters:
@@ -291,7 +293,7 @@ paths:
   /admin/accounts/{id}:
     delete:
       tags:
-        - admin
+        - accounts
       summary: Удалить аккаунт
       operationId: deleteAccount
       parameters:

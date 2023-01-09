@@ -10,9 +10,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/admin"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/torrents"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/users"
 )
 
 // Default client HTTP client.
@@ -57,9 +58,10 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Client {
 
 	cli := new(Client)
 	cli.Transport = transport
-	cli.Admin = admin.New(transport, formats)
+	cli.Accounts = accounts.New(transport, formats)
 	cli.Movies = movies.New(transport, formats)
 	cli.Torrents = torrents.New(transport, formats)
+	cli.Users = users.New(transport, formats)
 	return cli
 }
 
@@ -104,11 +106,13 @@ func (cfg *TransportConfig) WithSchemes(schemes []string) *TransportConfig {
 
 // Client is a client for client
 type Client struct {
-	Admin admin.ClientService
+	Accounts accounts.ClientService
 
 	Movies movies.ClientService
 
 	Torrents torrents.ClientService
+
+	Users users.ClientService
 
 	Transport runtime.ClientTransport
 }
@@ -116,7 +120,8 @@ type Client struct {
 // SetTransport changes the transport on the client and all its subresources
 func (c *Client) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
-	c.Admin.SetTransport(transport)
+	c.Accounts.SetTransport(transport)
 	c.Movies.SetTransport(transport)
 	c.Torrents.SetTransport(transport)
+	c.Users.SetTransport(transport)
 }

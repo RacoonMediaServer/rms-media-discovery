@@ -5,9 +5,10 @@ import (
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/admin"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/apex/log"
 	"github.com/go-openapi/loads"
 )
@@ -16,7 +17,8 @@ type Server struct {
 	srv      *restapi.Server
 	Movies   movies.Service
 	Torrents torrents.Service
-	Admin    admin.Service
+	Users    users.Service
+	Accounts accounts.Service
 }
 
 func (s *Server) ListenAndServer(host string, port int) error {

@@ -39,7 +39,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Получить список список акканутов и токенов к внешним системам",
         "operationId": "getAccounts",
@@ -76,7 +76,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Создать новый аккаунт",
         "operationId": "createAccount",
@@ -121,7 +121,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Удалить аккаунт",
         "operationId": "deleteAccount",
@@ -158,7 +158,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Получить список пользователей и информацию по ним",
         "operationId": "getUsers",
@@ -209,7 +209,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Создать новый ключ пользователя",
         "operationId": "createUser",
@@ -262,7 +262,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Удалить ключ пользователя",
         "operationId": "deleteUser",
@@ -627,8 +627,12 @@ func init() {
       "name": "torrents"
     },
     {
-      "description": "Администрирование",
-      "name": "admin"
+      "description": "Администрирование пользователей",
+      "name": "users"
+    },
+    {
+      "description": "Администрирование аккаунтов",
+      "name": "accounts"
     }
   ]
 }`))
@@ -654,7 +658,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Получить список список акканутов и токенов к внешним системам",
         "operationId": "getAccounts",
@@ -691,7 +695,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Создать новый аккаунт",
         "operationId": "createAccount",
@@ -736,7 +740,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "accounts"
         ],
         "summary": "Удалить аккаунт",
         "operationId": "deleteAccount",
@@ -773,7 +777,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Получить список пользователей и информацию по ним",
         "operationId": "getUsers",
@@ -810,7 +814,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Создать новый ключ пользователя",
         "operationId": "createUser",
@@ -863,7 +867,7 @@ func init() {
           }
         ],
         "tags": [
-          "admin"
+          "users"
         ],
         "summary": "Удалить ключ пользователя",
         "operationId": "deleteUser",
@@ -1251,8 +1255,12 @@ func init() {
       "name": "torrents"
     },
     {
-      "description": "Администрирование",
-      "name": "admin"
+      "description": "Администрирование пользователей",
+      "name": "users"
+    },
+    {
+      "description": "Администрирование аккаунтов",
+      "name": "accounts"
     }
   ]
 }`))

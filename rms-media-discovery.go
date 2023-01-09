@@ -5,9 +5,10 @@ import (
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/admin"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/apex/log"
 )
 
@@ -26,7 +27,8 @@ func main() {
 	}
 
 	srv := server.Server{}
-	srv.Admin = admin.New()
+	srv.Users = users.New()
+	srv.Accounts = accounts.New()
 	srv.Movies = movies.New()
 	srv.Torrents = torrents.New()
 

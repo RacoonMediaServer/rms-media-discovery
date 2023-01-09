@@ -12,9 +12,10 @@ import (
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/admin"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
 )
 
 //go:generate swagger generate server --target ../../server --name Server --spec ../../../api/discovery.yml --principal models.Principal --exclude-main
@@ -55,24 +56,24 @@ func configureAPI(api *operations.ServerAPI) http.Handler {
 	// Example:
 	// api.APIAuthorizer = security.Authorized()
 
-	if api.AdminCreateAccountHandler == nil {
-		api.AdminCreateAccountHandler = admin.CreateAccountHandlerFunc(func(params admin.CreateAccountParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.CreateAccount has not yet been implemented")
+	if api.AccountsCreateAccountHandler == nil {
+		api.AccountsCreateAccountHandler = accounts.CreateAccountHandlerFunc(func(params accounts.CreateAccountParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation accounts.CreateAccount has not yet been implemented")
 		})
 	}
-	if api.AdminCreateUserHandler == nil {
-		api.AdminCreateUserHandler = admin.CreateUserHandlerFunc(func(params admin.CreateUserParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.CreateUser has not yet been implemented")
+	if api.UsersCreateUserHandler == nil {
+		api.UsersCreateUserHandler = users.CreateUserHandlerFunc(func(params users.CreateUserParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation users.CreateUser has not yet been implemented")
 		})
 	}
-	if api.AdminDeleteAccountHandler == nil {
-		api.AdminDeleteAccountHandler = admin.DeleteAccountHandlerFunc(func(params admin.DeleteAccountParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.DeleteAccount has not yet been implemented")
+	if api.AccountsDeleteAccountHandler == nil {
+		api.AccountsDeleteAccountHandler = accounts.DeleteAccountHandlerFunc(func(params accounts.DeleteAccountParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation accounts.DeleteAccount has not yet been implemented")
 		})
 	}
-	if api.AdminDeleteUserHandler == nil {
-		api.AdminDeleteUserHandler = admin.DeleteUserHandlerFunc(func(params admin.DeleteUserParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.DeleteUser has not yet been implemented")
+	if api.UsersDeleteUserHandler == nil {
+		api.UsersDeleteUserHandler = users.DeleteUserHandlerFunc(func(params users.DeleteUserParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation users.DeleteUser has not yet been implemented")
 		})
 	}
 	if api.TorrentsDownloadTorrentHandler == nil {
@@ -80,14 +81,14 @@ func configureAPI(api *operations.ServerAPI) http.Handler {
 			return middleware.NotImplemented("operation torrents.DownloadTorrent has not yet been implemented")
 		})
 	}
-	if api.AdminGetAccountsHandler == nil {
-		api.AdminGetAccountsHandler = admin.GetAccountsHandlerFunc(func(params admin.GetAccountsParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.GetAccounts has not yet been implemented")
+	if api.AccountsGetAccountsHandler == nil {
+		api.AccountsGetAccountsHandler = accounts.GetAccountsHandlerFunc(func(params accounts.GetAccountsParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation accounts.GetAccounts has not yet been implemented")
 		})
 	}
-	if api.AdminGetUsersHandler == nil {
-		api.AdminGetUsersHandler = admin.GetUsersHandlerFunc(func(params admin.GetUsersParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation admin.GetUsers has not yet been implemented")
+	if api.UsersGetUsersHandler == nil {
+		api.UsersGetUsersHandler = users.GetUsersHandlerFunc(func(params users.GetUsersParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation users.GetUsers has not yet been implemented")
 		})
 	}
 	if api.MoviesSearchMoviesHandler == nil {
