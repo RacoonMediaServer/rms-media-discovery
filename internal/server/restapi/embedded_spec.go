@@ -182,6 +182,9 @@ func init() {
                       "info": {
                         "type": "string"
                       },
+                      "isAdmin": {
+                        "type": "boolean"
+                      },
                       "lastRequestTime": {
                         "type": "integer"
                       },
@@ -225,6 +228,10 @@ func init() {
               "properties": {
                 "info": {
                   "type": "string"
+                },
+                "isAdmin": {
+                  "type": "boolean",
+                  "default": false
                 }
               }
             }
@@ -830,6 +837,10 @@ func init() {
               "properties": {
                 "info": {
                   "type": "string"
+                },
+                "isAdmin": {
+                  "type": "boolean",
+                  "default": false
                 }
               }
             }
@@ -1108,6 +1119,9 @@ func init() {
         },
         "info": {
           "type": "string"
+        },
+        "isAdmin": {
+          "type": "boolean"
         },
         "lastRequestTime": {
           "type": "integer"

@@ -232,6 +232,9 @@ type CreateUserOKBody struct {
 	// id
 	// Required: true
 	ID *string `json:"id"`
+
+	// is admin
+	IsAdmin *bool `json:"isAdmin,omitempty"`
 }
 
 // Validate validates this create user o k body

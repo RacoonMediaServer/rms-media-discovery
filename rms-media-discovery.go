@@ -19,18 +19,27 @@ func main() {
 	host := flag.String("host", "127.0.0.1", "Server IP address")
 	port := flag.Int("port", 8080, "Server port")
 	dbString := flag.String("db", "mongodb://localhost:27017", "MongoDB connection string")
+	verbose := flag.Bool("verbose", false, "Verbose mode")
 	flag.Parse()
 
-	_, err := db.Connect(*dbString)
+	if *verbose {
+		log.SetLevel(log.DebugLevel)
+	}
+
+	db, err := db.Connect(*dbString)
 	if err != nil {
 		log.Fatalf("Connect to database failed: %+w", err)
 	}
 
 	srv := server.Server{}
-	srv.Users = users.New()
+	srv.Users = users.New(db)
 	srv.Accounts = accounts.New()
 	srv.Movies = movies.New()
 	srv.Torrents = torrents.New()
+
+	if err := srv.Users.Initialize(); err != nil {
+		log.Fatalf("Initialize users service failed: %+s", err)
+	}
 
 	if err := srv.ListenAndServer(*host, *port); err != nil {
 		log.Fatalf("Cannot start web server: %+s", err)

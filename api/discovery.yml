@@ -171,6 +171,8 @@ paths:
                       type: string
                     info:
                       type: string
+                    isAdmin:
+                      type: boolean
                     lastRequestTime:
                       type: integer
                     reqPerDay:
@@ -197,6 +199,9 @@ paths:
             properties:
               info:
                 type: string
+              isAdmin:
+                type: boolean
+                default: false
       responses:
         '200':
           description: OK

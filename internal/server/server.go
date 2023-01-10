@@ -15,6 +15,7 @@ import (
 
 type Server struct {
 	srv      *restapi.Server
+	log      *log.Entry
 	Movies   movies.Service
 	Torrents torrents.Service
 	Users    users.Service
@@ -22,6 +23,8 @@ type Server struct {
 }
 
 func (s *Server) ListenAndServer(host string, port int) error {
+	s.log = log.WithField("from", "rest")
+
 	if s.srv == nil {
 		swaggerSpec, err := loads.Embedded(restapi.SwaggerJSON, restapi.FlatSwaggerJSON)
 		if err != nil {
@@ -33,9 +36,8 @@ func (s *Server) ListenAndServer(host string, port int) error {
 		s.configureAPI(api)
 
 		// устанавливаем свой логгер
-		logCtx := log.WithField("from", "rest")
-		api.Logger = func(s string, i ...interface{}) {
-			logCtx.Infof(s, i...)
+		api.Logger = func(content string, i ...interface{}) {
+			s.log.Infof(content, i...)
 		}
 
 		// создаем и настраиваем сервер

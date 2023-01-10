@@ -83,6 +83,9 @@ type CreateUserBody struct {
 	// info
 	// Required: true
 	Info *string `json:"info"`
+
+	// is admin
+	IsAdmin *bool `json:"isAdmin,omitempty"`
 }
 
 // Validate validates this create user body

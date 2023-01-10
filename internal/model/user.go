@@ -1,9 +1,7 @@
 package model
 
-import "time"
-
 type User struct {
-	Id          string
-	Info        string
-	LastRequest time.Time
+	Id      string `bson:"_id,omitempty"`
+	Info    string
+	IsAdmin bool
 }

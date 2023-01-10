@@ -190,6 +190,9 @@ type GetUsersOKBodyResultsItems0 struct {
 	// info
 	Info string `json:"info,omitempty"`
 
+	// is admin
+	IsAdmin bool `json:"isAdmin,omitempty"`
+
 	// last request time
 	LastRequestTime int64 `json:"lastRequestTime,omitempty"`
 

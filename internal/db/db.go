@@ -10,6 +10,7 @@ import (
 )
 
 type Database interface {
+	UserDatabase
 }
 
 type database struct {
