@@ -28,3 +28,20 @@ func (a Account) IsValid() bool {
 func (a *Account) GenerateId(serviceId string) {
 	a.Id = fmt.Sprintf("%s.%s", serviceId, uuid.NewV4().String())
 }
+
+type Credentials struct {
+	AccountId string
+	Login     string
+	Password  string
+}
+
+type ApiKey struct {
+	AccountId string
+	Key       string
+}
+
+type AccessProvider interface {
+	GetCredentials(serviceId string) (Credentials, error)
+	GetApiKey(serviceId string) (ApiKey, error)
+	MarkUnaccesible(accountId string)
+}

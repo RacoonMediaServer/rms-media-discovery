@@ -13,6 +13,8 @@ import (
 var ErrNotFound = errors.New("account not found")
 
 type Service interface {
+	model.AccessProvider
+
 	Initialize() error
 
 	GetAccounts() ([]model.Account, error)

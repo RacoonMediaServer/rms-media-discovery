@@ -72,7 +72,7 @@ paths:
     get:
       tags:
         - torrents
-      summary: Поиск контекнта на торрент-трекерах
+      summary: Поиск контента на торрент-трекерах
       description: Поиск фильмов и сериалов по названию на различных платформах
       operationId: searchTorrents
       parameters:

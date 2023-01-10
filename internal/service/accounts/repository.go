@@ -28,3 +28,16 @@ func (r *repository) Delete(id string) error {
 	delete(r.accounts, id)
 	return nil
 }
+
+func (r *repository) Get() (model.Account, bool) {
+	// TODO: round robin
+	if len(r.accounts) == 0 {
+		return model.Account{}, false
+	}
+
+	for _, acc := range r.accounts {
+		return acc.Account, true
+	}
+
+	return model.Account{}, false
+}
