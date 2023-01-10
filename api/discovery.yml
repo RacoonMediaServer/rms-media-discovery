@@ -394,13 +394,9 @@ definitions:
     type: object
     required:
       - service
-      - type
     properties:
-      type: 
+      id:
         type: string
-        enum:
-          - account
-          - token
       service:
         type: string
       login:

@@ -472,10 +472,12 @@ func init() {
     "Account": {
       "type": "object",
       "required": [
-        "service",
-        "type"
+        "service"
       ],
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "limit": {
           "type": "integer",
           "default": 0
@@ -492,13 +494,6 @@ func init() {
         },
         "token": {
           "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "account",
-            "token"
-          ]
         }
       }
     },
@@ -1081,10 +1076,12 @@ func init() {
     "Account": {
       "type": "object",
       "required": [
-        "service",
-        "type"
+        "service"
       ],
       "properties": {
+        "id": {
+          "type": "string"
+        },
         "limit": {
           "type": "integer",
           "default": 0
@@ -1101,13 +1098,6 @@ func init() {
         },
         "token": {
           "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enum": [
-            "account",
-            "token"
-          ]
         }
       }
     },

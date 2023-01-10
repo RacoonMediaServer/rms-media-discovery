@@ -7,7 +7,6 @@ package models
 
 import (
 	"context"
-	"encoding/json"
 
 	"github.com/go-openapi/errors"
 	"github.com/go-openapi/strfmt"
@@ -19,6 +18,9 @@ import (
 //
 // swagger:model Account
 type Account struct {
+
+	// id
+	ID string `json:"id,omitempty"`
 
 	// limit
 	Limit int64 `json:"limit,omitempty"`
@@ -36,11 +38,6 @@ type Account struct {
 
 	// token
 	Token string `json:"token,omitempty"`
-
-	// type
-	// Required: true
-	// Enum: [account token]
-	Type *string `json:"type"`
 }
 
 // Validate validates this account
@@ -52,10 +49,6 @@ func (m *Account) Validate(formats strfmt.Registry) error {
 	}
 
 	if err := m.validateService(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateType(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -80,49 +73,6 @@ func (m *Account) validateLogin(formats strfmt.Registry) error {
 func (m *Account) validateService(formats strfmt.Registry) error {
 
 	if err := validate.Required("service", "body", m.Service); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-var accountTypeTypePropEnum []interface{}
-
-func init() {
-	var res []string
-	if err := json.Unmarshal([]byte(`["account","token"]`), &res); err != nil {
-		panic(err)
-	}
-	for _, v := range res {
-		accountTypeTypePropEnum = append(accountTypeTypePropEnum, v)
-	}
-}
-
-const (
-
-	// AccountTypeAccount captures enum value "account"
-	AccountTypeAccount string = "account"
-
-	// AccountTypeToken captures enum value "token"
-	AccountTypeToken string = "token"
-)
-
-// prop value enum
-func (m *Account) validateTypeEnum(path, location string, value string) error {
-	if err := validate.EnumCase(path, location, value, accountTypeTypePropEnum, true); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (m *Account) validateType(formats strfmt.Registry) error {
-
-	if err := validate.Required("type", "body", m.Type); err != nil {
-		return err
-	}
-
-	// value enum
-	if err := m.validateTypeEnum("type", "body", *m.Type); err != nil {
 		return err
 	}
 

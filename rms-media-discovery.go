@@ -33,12 +33,16 @@ func main() {
 
 	srv := server.Server{}
 	srv.Users = users.New(db)
-	srv.Accounts = accounts.New()
+	srv.Accounts = accounts.New(db)
 	srv.Movies = movies.New()
 	srv.Torrents = torrents.New()
 
 	if err := srv.Users.Initialize(); err != nil {
 		log.Fatalf("Initialize users service failed: %+s", err)
+	}
+
+	if err := srv.Accounts.Initialize(); err != nil {
+		log.Fatalf("Initialize accounts service failed: %+s", err)
 	}
 
 	if err := srv.ListenAndServer(*host, *port); err != nil {

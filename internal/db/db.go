@@ -11,6 +11,7 @@ import (
 
 type Database interface {
 	UserDatabase
+	AccountDatabase
 }
 
 type database struct {
