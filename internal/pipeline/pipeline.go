@@ -18,6 +18,10 @@ var ctx struct {
 	mu        sync.Mutex
 }
 
+func init() {
+	ctx.pipelines = make(map[string]*pipeline)
+}
+
 func newPipeline(settings Settings) *pipeline {
 	p := &pipeline{
 		settings: settings,
@@ -25,7 +29,7 @@ func newPipeline(settings Settings) *pipeline {
 	}
 
 	if settings.MaxAttempts == 0 {
-		settings.MaxAttempts = maxAttempts
+		p.settings.MaxAttempts = maxAttempts
 	}
 
 	p.wg.Add(1)

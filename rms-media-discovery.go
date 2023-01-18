@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server"
@@ -48,4 +49,6 @@ func main() {
 	if err := srv.ListenAndServer(*host, *port); err != nil {
 		log.Fatalf("Cannot start web server: %+s", err)
 	}
+
+	pipeline.Stop()
 }

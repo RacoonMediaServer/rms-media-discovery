@@ -36,4 +36,5 @@ func Stop() {
 	for _, p := range ctx.pipelines {
 		p.stop()
 	}
+	ctx.pipelines = map[string]*pipeline{}
 }
