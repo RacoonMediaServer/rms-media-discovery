@@ -11,7 +11,26 @@ func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {
 		return model.Credentials{}, ErrNotFound
 	}
 
-	return repo.GetCredentials()
+	acc, ok := repo.Get()
+	if !ok {
+		return model.Credentials{}, ErrNotFound
+	}
+
+	login, ok := acc.Credentials["login"]
+	if !ok {
+		return model.Credentials{}, ErrNotFound
+	}
+
+	password, ok := acc.Credentials["password"]
+	if !ok {
+		return model.Credentials{}, ErrNotFound
+	}
+
+	return model.Credentials{
+		AccountId: acc.Id,
+		Login:     login,
+		Password:  password,
+	}, nil
 }
 
 func (s *service) GetApiKey(serviceId string) (model.ApiKey, error) {
@@ -27,6 +46,16 @@ func (s *service) GetApiKey(serviceId string) (model.ApiKey, error) {
 	if !ok {
 		return model.ApiKey{}, ErrNotFound
 	}
+
+	token, ok := acc.Credentials["token"]
+	if !ok {
+		return model.ApiKey{}, ErrNotFound
+	}
+
+	return model.ApiKey{
+		AccountId: acc.Id,
+		Key:       token,
+	}, nil
 }
 
 func (s *service) MarkUnaccesible(accountId string) {

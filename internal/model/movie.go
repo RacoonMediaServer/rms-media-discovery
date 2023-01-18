@@ -4,7 +4,7 @@ type MovieType string
 
 const (
 	MovieType_TvSeries MovieType = "tv-series"
-	MovieType_Movie    MovieType = "movie"
+	MovieType_Movie    MovieType = "film"
 )
 
 type Movie struct {

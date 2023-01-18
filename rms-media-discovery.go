@@ -35,7 +35,7 @@ func main() {
 	srv := server.Server{}
 	srv.Users = users.New(db)
 	srv.Accounts = accounts.New(db)
-	srv.Movies = movies.New()
+	srv.Movies = movies.New(srv.Accounts)
 	srv.Torrents = torrents.New()
 
 	if err := srv.Users.Initialize(); err != nil {
