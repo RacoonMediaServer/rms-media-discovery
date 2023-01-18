@@ -1,0 +1,21 @@
+{
+  "searchType": "Title",
+  "expression": "StarGate",
+  "results": [
+    {
+      "id": "tt0111282",
+      "resultType": "Title",
+      "image": "https://m.media-amazon.com/images/M/MV5BYWEyYTQzNzQtZTg5OS00NDhkLTg1NjYtMzA5Y2MyYjYzNWQ5L2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyNTAyODkwOQ@@._V1_Ratio0.6757_AL_.jpg",
+      "title": "Stargate",
+      "description": "1994 Kurt Russell, James Spader"
+    },
+    {
+      "id": "tt0118480",
+      "resultType": "Title",
+      "image": "https://m.media-amazon.com/images/M/MV5BMTc3MjEwMTc5N15BMl5BanBnXkFtZTcwNzQ2NjQ4NA@@._V1_Ratio0.6757_AL_.jpg",
+      "title": "Stargate SG-1",
+      "description": "1997–2007 TV Series Richard Dean Anderson, Michael Shanks"
+    }
+  ],
+  "errorMessage": ""
+}

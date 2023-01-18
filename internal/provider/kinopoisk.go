@@ -22,3 +22,7 @@ func NewKinopoiskProvider(access model.AccessProvider) MovieInfoProvider {
 func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string) ([]model.Movie, error) {
 	return nil, nil
 }
+
+func (p *kinopoiskProvider) ID() string {
+	return "kinopoisk"
+}

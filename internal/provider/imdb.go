@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 
@@ -16,6 +17,7 @@ type imdbProvider struct {
 	log    *log.Entry
 	access model.AccessProvider
 	p      pipeline.Pipeline
+	cli    http.Client
 }
 
 const imdbEndpoint = "https://imdb-api.com/ru/API"
@@ -89,6 +91,15 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string) ([]model.
 			m.Year = uint(year)
 		}
 
+		for _, genre := range info.GenreList {
+			m.Genres = append(m.Genres, genre.Value)
+		}
+
+		m.Type = model.MovieType_Movie
+		if info.Type == "TVSeries" {
+			m.Type = model.MovieType_TvSeries
+		}
+
 		movies = append(movies, m)
 	}
 
@@ -101,9 +112,9 @@ func (p *imdbProvider) search(ctx context.Context, query string) (*imdbListRespo
 		if err != nil {
 			return pipeline.Result{Done: true, Err: err}
 		}
-		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchAll", token.Key, url.PathEscape(query))
+		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchTitle", token.Key, url.PathEscape(query))
 		resp := imdbListResponse{}
-		err = doRequest(ctx, u, &resp)
+		err = doRequest(p.cli, ctx, u, &resp)
 
 		if err == nil && resp.ErrorMessage != "" {
 			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
@@ -136,7 +147,7 @@ func (p *imdbProvider) get(ctx context.Context, id string) (*imdbResponse, error
 		}
 		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
 		resp := imdbResponse{}
-		err = doRequest(ctx, u, &resp)
+		err = doRequest(p.cli, ctx, u, &resp)
 
 		if err == nil && resp.ErrorMessage != "" {
 			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
@@ -159,4 +170,12 @@ func (p *imdbProvider) get(ctx context.Context, id string) (*imdbResponse, error
 
 	result := resp.(*imdbResponse)
 	return result, nil
+}
+
+func (p *imdbProvider) OverrideTransport(transport http.RoundTripper) {
+	p.cli.Transport = transport
+}
+
+func (p *imdbProvider) ID() string {
+	return "imdb"
 }

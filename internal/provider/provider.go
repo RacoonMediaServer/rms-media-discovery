@@ -8,6 +8,7 @@ import (
 
 // MovieInfoProvider интерфейс сущностей, которые позволяют получать информацию о фильмах и сериалах
 type MovieInfoProvider interface {
+	ID() string
 	SearchMovies(ctx context.Context, query string) ([]model.Movie, error)
 }
 

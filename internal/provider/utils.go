@@ -4,18 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 )
 
-func doRequest(ctx context.Context, url string, response interface{}) error {
+func doRequest(cli http.Client, ctx context.Context, url string, response interface{}) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("create request failed: %w", err)
 	}
 	req = req.WithContext(ctx)
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := cli.Do(req)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}
@@ -25,7 +25,7 @@ func doRequest(ctx context.Context, url string, response interface{}) error {
 		return fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
-	buf, err := ioutil.ReadAll(resp.Body)
+	buf, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("network I/O error: %w", err)
 	}

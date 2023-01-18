@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-const maxAttempts = 20
+const MaxAttempts = 20
 
 type pipeline struct {
 	settings Settings
@@ -29,7 +29,7 @@ func newPipeline(settings Settings) *pipeline {
 	}
 
 	if settings.MaxAttempts == 0 {
-		p.settings.MaxAttempts = maxAttempts
+		p.settings.MaxAttempts = MaxAttempts
 	}
 
 	p.wg.Add(1)
