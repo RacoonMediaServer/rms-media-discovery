@@ -62,4 +62,14 @@ func (s *service) MarkUnaccesible(accountId string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	m := model.Account{Id: accountId}
+	if !m.IsValid() {
+		return
+	}
+
+	repo, ok := s.repos[m.Service()]
+	if !ok {
+		return
+	}
+	repo.MarkUnaccessible(accountId)
 }
