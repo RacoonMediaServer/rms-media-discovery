@@ -31,6 +31,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Connect to database failed: %+w", err)
 	}
+	log.Info("Connected to MongoDB")
 
 	srv := server.Server{}
 	srv.Users = users.New(db)

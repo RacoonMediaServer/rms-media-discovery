@@ -21,6 +21,7 @@ type imdbProvider struct {
 }
 
 const imdbEndpoint = "https://imdb-api.com/ru/API"
+const resultsLimit = 10
 
 type imdbListResponse struct {
 	Results []struct {
@@ -60,16 +61,20 @@ func NewImdbProvider(access model.AccessProvider) MovieInfoProvider {
 
 func (p *imdbProvider) SearchMovies(ctx context.Context, query string) ([]model.Movie, error) {
 
-	list, err := p.search(ctx, query)
+	l := p.log.WithField("query", query)
+	l.Info("Searching...")
+	list, err := p.search(l, ctx, query)
 	if err != nil {
 		return nil, err
 	}
+	l.Infof("Got %d results", len(list.Results))
 
 	movies := make([]model.Movie, 0)
 	for _, item := range list.Results {
-		info, err := p.get(ctx, item.Id)
+		info, err := p.get(l, ctx, item.Id)
 		if err != nil {
-			return nil, fmt.Errorf("retrieve info about '%s' failed: %+w", item.Title, err)
+			l.Errorf("Retrieve info about '%s' failed: %s", item.Title, err)
+			continue
 		}
 		m := model.Movie{
 			ID:          item.Id,
@@ -101,20 +106,23 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string) ([]model.
 		}
 
 		movies = append(movies, m)
+		if len(movies) >= resultsLimit {
+			break
+		}
 	}
 
 	return movies, nil
 }
 
-func (p *imdbProvider) search(ctx context.Context, query string) (*imdbListResponse, error) {
+func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (*imdbListResponse, error) {
 	resp, err := p.p.Do(ctx, func() pipeline.Result {
 		token, err := p.access.GetApiKey("imdb")
 		if err != nil {
 			return pipeline.Result{Done: true, Err: err}
 		}
-		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchTitle", token.Key, url.PathEscape(query))
+		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchMovie", token.Key, url.PathEscape(query))
 		resp := imdbListResponse{}
-		err = doRequest(p.cli, ctx, u, &resp)
+		err = doRequest(l, p.cli, ctx, u, &resp)
 
 		if err == nil && resp.ErrorMessage != "" {
 			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
@@ -124,6 +132,7 @@ func (p *imdbProvider) search(ctx context.Context, query string) (*imdbListRespo
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return pipeline.Result{Done: true, Err: err}
 			}
+			l.Errorf("Search attempt failed: %s", err)
 			p.access.MarkUnaccesible(token.AccountId)
 			return pipeline.Result{Err: err}
 		}
@@ -139,7 +148,7 @@ func (p *imdbProvider) search(ctx context.Context, query string) (*imdbListRespo
 	return result, nil
 }
 
-func (p *imdbProvider) get(ctx context.Context, id string) (*imdbResponse, error) {
+func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbResponse, error) {
 	resp, err := p.p.Do(ctx, func() pipeline.Result {
 		token, err := p.access.GetApiKey("imdb")
 		if err != nil {
@@ -147,7 +156,7 @@ func (p *imdbProvider) get(ctx context.Context, id string) (*imdbResponse, error
 		}
 		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
 		resp := imdbResponse{}
-		err = doRequest(p.cli, ctx, u, &resp)
+		err = doRequest(l, p.cli, ctx, u, &resp)
 
 		if err == nil && resp.ErrorMessage != "" {
 			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
@@ -157,6 +166,7 @@ func (p *imdbProvider) get(ctx context.Context, id string) (*imdbResponse, error
 			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
 				return pipeline.Result{Done: true, Err: err}
 			}
+			l.Errorf("Get info attempt failed: %s", err)
 			p.access.MarkUnaccesible(token.AccountId)
 			return pipeline.Result{Err: err}
 		}

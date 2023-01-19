@@ -23,7 +23,11 @@ func convertSearchMoviesResult(mov *model.Movie) *models.SearchMoviesResult {
 }
 
 func (s *Server) searchMovies(params movies.SearchMoviesParams, key *models.Principal) middleware.Responder {
-	result, err := s.Movies.Search(params.HTTPRequest.Context(), params.Q, uint(*params.Limit))
+	var limit uint
+	if params.Limit != nil {
+		limit = uint(*params.Limit)
+	}
+	result, err := s.Movies.Search(params.HTTPRequest.Context(), params.Q, limit)
 	if err != nil {
 		s.log.Errorf("search movies failed: %s", err)
 		return movies.NewSearchMoviesInternalServerError()
