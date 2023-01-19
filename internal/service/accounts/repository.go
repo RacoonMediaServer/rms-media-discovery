@@ -36,9 +36,13 @@ func (r *repository) Delete(id string) error {
 		return ErrNotFound
 	}
 
-	delete(r.mapIdToIndex, id)
 	r.accounts = append(r.accounts[:idx], r.accounts[idx+1:]...)
 	r.rrIndex = 0
+
+	r.mapIdToIndex = make(map[string]int)
+	for i := range r.accounts {
+		r.mapIdToIndex[r.accounts[i].Id] = i
+	}
 
 	return nil
 }

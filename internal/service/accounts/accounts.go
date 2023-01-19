@@ -11,6 +11,8 @@ func (s *service) GetAccounts() (result []model.Account, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	result = []model.Account{}
+
 	for _, repo := range s.repos {
 		for _, acc := range repo.accounts {
 			result = append(result, acc.Account)
