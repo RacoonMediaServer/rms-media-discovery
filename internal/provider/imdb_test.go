@@ -22,7 +22,7 @@ func TestImdbProvider_SearchMovies(t *testing.T) {
 	tester.testSearchMovieUnexpectedStatusCode()
 
 	exchanges := []exchange{
-		makeOkExchange(t, "https://imdb-api.com/ru/API/SearchTitle/key/StarGate", http.MethodGet, "content/SearchMovie_1.json"),
+		makeOkExchange(t, "https://imdb-api.com/ru/API/SearchMovie/key/StarGate", http.MethodGet, "content/SearchMovie_1.json"),
 		makeOkExchange(t, "https://imdb-api.com/ru/API/Title/key/tt0111282", http.MethodGet, "content/SearchMovie_2.json"),
 		makeOkExchange(t, "https://imdb-api.com/ru/API/Title/key/tt0118480", http.MethodGet, "content/SearchMovie_3.json"),
 	}

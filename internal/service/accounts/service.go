@@ -59,7 +59,7 @@ func (s *service) Initialize() error {
 func (s *service) getOrCreateRepo(serviceId string) *repository {
 	repo, ok := s.repos[serviceId]
 	if !ok {
-		repo = newRepository()
+		repo = newRepository(s.log.WithField("service", serviceId))
 		s.repos[serviceId] = repo
 	}
 

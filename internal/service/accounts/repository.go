@@ -2,6 +2,7 @@ package accounts
 
 import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"github.com/apex/log"
 	"time"
 )
 
@@ -11,17 +12,20 @@ type account struct {
 	model.Account
 	marked     bool
 	markedTime time.Time
+	reqPerDay  uint64
 }
 
 type repository struct {
 	mapIdToIndex map[string]int
 	accounts     []account
 	rrIndex      int
+	log          *log.Entry
 }
 
-func newRepository() *repository {
+func newRepository(log *log.Entry) *repository {
 	return &repository{
 		mapIdToIndex: map[string]int{},
+		log:          log,
 	}
 }
 
@@ -57,7 +61,14 @@ func (r *repository) Get() (model.Account, bool) {
 		return model.Account{}, false
 	}
 
-	return r.accounts[idx].Account, true
+	acc := &r.accounts[idx]
+	acc.reqPerDay++
+	if acc.Limit != 0 && acc.reqPerDay >= uint64(acc.Limit) {
+		acc.Mark()
+		r.log.Infof("Account '%s' is marked unaccessible, because limit reached (%d / %d)", acc.Id, acc.reqPerDay, acc.Limit)
+	}
+
+	return acc.Account, true
 }
 
 func (r *repository) nextIndex() int {
@@ -67,7 +78,8 @@ func (r *repository) nextIndex() int {
 		acc := &r.accounts[r.rrIndex]
 		if acc.marked {
 			if time.Since(acc.markedTime) >= retryInterval {
-				acc.marked = false
+				acc.UnMark()
+				r.log.Infof("Account '%s' is recovered", acc.Id)
 				found = r.rrIndex
 			}
 		} else {
@@ -90,6 +102,17 @@ func (r *repository) MarkUnaccessible(id string) {
 	if !ok {
 		return
 	}
-	r.accounts[idx].marked = true
-	r.accounts[idx].markedTime = time.Now()
+	acc := &r.accounts[idx]
+	acc.Mark()
+	r.log.Infof("Account '%s' is marked unaccessible", acc.Id)
+}
+
+func (a *account) Mark() {
+	a.marked = true
+	a.markedTime = time.Now()
+}
+
+func (a *account) UnMark() {
+	a.marked = false
+	a.reqPerDay = 0
 }

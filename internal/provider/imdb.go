@@ -167,7 +167,6 @@ func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbR
 				return pipeline.Result{Done: true, Err: err}
 			}
 			l.Errorf("Get info attempt failed: %s", err)
-			p.access.MarkUnaccesible(token.AccountId)
 			return pipeline.Result{Err: err}
 		}
 
