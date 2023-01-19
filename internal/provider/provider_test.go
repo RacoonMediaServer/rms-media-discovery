@@ -59,7 +59,7 @@ func (t *movieInfoProviderTester) testSearchMovieCanceled() {
 		Key:       "key",
 	}, nil)
 
-	movies, err := t.p.SearchMovies(context.Background(), "Something")
+	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)
 	assert.Error(t.t, err)
 }
@@ -75,7 +75,7 @@ func (t *movieInfoProviderTester) testSearchMovieCannotGetApiKey() {
 		return nil, io.EOF
 	}))
 
-	movies, err := t.p.SearchMovies(context.Background(), "Something")
+	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)
 	assert.Error(t.t, err)
 }
@@ -94,7 +94,7 @@ func (t *movieInfoProviderTester) testSearchMovieMaxAttemptsReached() {
 		t.m.EXPECT().MarkUnaccesible(gomock.Eq(accountId))
 	}
 
-	movies, err := t.p.SearchMovies(context.Background(), "Something")
+	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)
 	assert.Error(t.t, err)
 }
@@ -121,7 +121,7 @@ func (t *movieInfoProviderTester) testSearchMovieUnexpectedStatusCode() {
 		t.m.EXPECT().MarkUnaccesible(gomock.Eq(accountId))
 	}
 
-	movies, err := t.p.SearchMovies(context.Background(), "Something")
+	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)
 	assert.Error(t.t, err)
 }
@@ -145,7 +145,7 @@ func (t *movieInfoProviderTester) testSearchMovie(query string, result []model.M
 		}
 	}
 
-	movies, err := t.p.SearchMovies(context.Background(), query)
+	movies, err := t.p.SearchMovies(context.Background(), query, 0)
 	assert.Equal(t.t, resultErr, err)
 	assert.Equal(t.t, result, movies)
 }

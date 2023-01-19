@@ -6,7 +6,7 @@ import (
 )
 
 func (s *service) Search(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
-	result, err := s.mainProvider.SearchMovies(ctx, query)
+	result, err := s.mainProvider.SearchMovies(ctx, query, limit)
 	if err != nil {
 		return nil, err
 	}

@@ -59,7 +59,7 @@ func NewImdbProvider(access model.AccessProvider) MovieInfoProvider {
 	}
 }
 
-func (p *imdbProvider) SearchMovies(ctx context.Context, query string) ([]model.Movie, error) {
+func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
 
 	l := p.log.WithField("query", query)
 	l.Info("Searching...")
@@ -107,6 +107,9 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string) ([]model.
 
 		movies = append(movies, m)
 		if len(movies) >= resultsLimit {
+			break
+		}
+		if limit != 0 && len(movies) >= int(limit) {
 			break
 		}
 	}
