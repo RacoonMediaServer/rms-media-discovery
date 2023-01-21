@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
@@ -23,24 +24,28 @@ type imdbProvider struct {
 const imdbEndpoint = "https://imdb-api.com/ru/API"
 const resultsLimit = 10
 
+type imdbBaseResponse struct {
+	ErrorMessage string
+}
+
 type imdbListResponse struct {
+	imdbBaseResponse
 	Results []struct {
 		Id         string
 		ResultType string
 		Title      string
 	}
-	ErrorMessage string
 }
 
 type imdbResponse struct {
-	Title        string
-	Image        string
-	Type         string
-	Year         string
-	ErrorMessage string
-	Plot         string
-	PlotLocal    string
-	GenreList    []struct {
+	imdbBaseResponse
+	Title     string
+	Image     string
+	Type      string
+	Year      string
+	Plot      string
+	PlotLocal string
+	GenreList []struct {
 		Key   string
 		Value string
 	}
@@ -118,70 +123,82 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 }
 
 func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (*imdbListResponse, error) {
-	resp, err := p.p.Do(ctx, func() pipeline.Result {
-		token, err := p.access.GetApiKey("imdb")
-		if err != nil {
-			return pipeline.Result{Done: true, Err: err}
-		}
-		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchMovie", token.Key, url.PathEscape(query))
-		resp := imdbListResponse{}
-		err = doRequest(l, p.cli, ctx, u, &resp)
-
-		if err == nil && resp.ErrorMessage != "" {
-			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
-		}
-
-		if err != nil {
-			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-				return pipeline.Result{Done: true, Err: err}
+	for {
+		resp, err := p.p.Do(ctx, func() (interface{}, error) {
+			token, err := p.access.GetApiKey("imdb")
+			if err != nil {
+				return nil, err
 			}
-			l.Errorf("Search attempt failed: %s", err)
-			p.access.MarkUnaccesible(token.AccountId)
-			return pipeline.Result{Err: err}
+			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchMovie", token.Key, url.PathEscape(query))
+			resp := imdbListResponse{}
+			err = doRequest(l, p.cli, ctx, u, &resp)
+
+			if err == nil && resp.ErrorMessage != "" {
+				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {
+					p.access.MarkUnaccesible(token.AccountId)
+					return nil, errBadAccount
+				}
+				err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
+			}
+
+			if err != nil {
+				l.Errorf("Search failed: %s", err)
+				return nil, err
+			}
+
+			return &resp, nil
+		})
+
+		if err != nil {
+			if errors.Is(err, errBadAccount) {
+				continue
+			}
+
+			return nil, err
 		}
 
-		return pipeline.Result{Done: true, Result: &resp}
-	})
-
-	if err != nil {
-		return nil, err
+		result := resp.(*imdbListResponse)
+		return result, nil
 	}
-
-	result := resp.(*imdbListResponse)
-	return result, nil
 }
 
 func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbResponse, error) {
-	resp, err := p.p.Do(ctx, func() pipeline.Result {
-		token, err := p.access.GetApiKey("imdb")
-		if err != nil {
-			return pipeline.Result{Done: true, Err: err}
-		}
-		u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
-		resp := imdbResponse{}
-		err = doRequest(l, p.cli, ctx, u, &resp)
-
-		if err == nil && resp.ErrorMessage != "" {
-			err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
-		}
-
-		if err != nil {
-			if errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
-				return pipeline.Result{Done: true, Err: err}
+	for {
+		resp, err := p.p.Do(ctx, func() (interface{}, error) {
+			token, err := p.access.GetApiKey("imdb")
+			if err != nil {
+				return nil, err
 			}
-			l.Errorf("Get info attempt failed: %s", err)
-			return pipeline.Result{Err: err}
+			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
+			resp := imdbResponse{}
+			err = doRequest(l, p.cli, ctx, u, &resp)
+
+			if err == nil && resp.ErrorMessage != "" {
+				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {
+					p.access.MarkUnaccesible(token.AccountId)
+					return nil, errBadAccount
+				}
+				err = fmt.Errorf("imdb response error: %s", resp.ErrorMessage)
+			}
+
+			if err != nil {
+				l.Errorf("Get info failed: %s", err)
+				return nil, err
+			}
+
+			return &resp, err
+		})
+
+		if err != nil {
+			if errors.Is(err, errBadAccount) {
+				continue
+			}
+			return nil, err
 		}
 
-		return pipeline.Result{Done: true, Result: &resp}
-	})
-
-	if err != nil {
-		return nil, err
+		result := resp.(*imdbResponse)
+		return result, nil
 	}
-
-	result := resp.(*imdbResponse)
-	return result, nil
 }
 
 func (p *imdbProvider) OverrideTransport(transport http.RoundTripper) {

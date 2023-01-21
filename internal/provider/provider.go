@@ -2,9 +2,12 @@ package provider
 
 import (
 	"context"
+	"errors"
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 )
+
+var errBadAccount = errors.New("account is unaccessible")
 
 // MovieInfoProvider интерфейс сущностей, которые позволяют получать информацию о фильмах и сериалах
 type MovieInfoProvider interface {

@@ -3,13 +3,10 @@ package provider
 import (
 	"context"
 	"errors"
-	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/mocks"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"io"
 	"net/http"
 	"os"
 	"testing"
@@ -65,35 +62,7 @@ func (t *movieInfoProviderTester) testSearchMovieCanceled() {
 }
 
 func (t *movieInfoProviderTester) testSearchMovieCannotGetApiKey() {
-	t.m.EXPECT().GetApiKey(gomock.Eq(t.p.ID())).Return(model.ApiKey{
-		AccountId: "account",
-		Key:       "key",
-	}, nil)
-	t.m.EXPECT().MarkUnaccesible(gomock.Eq("account"))
 	t.m.EXPECT().GetApiKey(gomock.Eq(t.p.ID())).Return(model.ApiKey{}, errors.New("cannot get api key"))
-	t.tp.OverrideTransport(overriddenTransportFunc(func(req *http.Request) (*http.Response, error) {
-		return nil, io.EOF
-	}))
-
-	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
-	assert.Nil(t.t, movies)
-	assert.Error(t.t, err)
-}
-
-func (t *movieInfoProviderTester) testSearchMovieMaxAttemptsReached() {
-	t.tp.OverrideTransport(overriddenTransportFunc(func(req *http.Request) (*http.Response, error) {
-		return nil, io.EOF
-	}))
-
-	for i := 0; i < pipeline.MaxAttempts; i++ {
-		accountId := fmt.Sprintf("account.%d", i)
-		t.m.EXPECT().GetApiKey(gomock.Eq(t.p.ID())).Return(model.ApiKey{
-			AccountId: accountId,
-			Key:       "key",
-		}, nil)
-		t.m.EXPECT().MarkUnaccesible(gomock.Eq(accountId))
-	}
-
 	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)
 	assert.Error(t.t, err)
@@ -112,14 +81,11 @@ func (t *movieInfoProviderTester) testSearchMovieUnexpectedStatusCode() {
 		return &resp, nil
 	}))
 
-	for i := 0; i < pipeline.MaxAttempts; i++ {
-		accountId := fmt.Sprintf("account.%d", i)
-		t.m.EXPECT().GetApiKey(gomock.Eq(t.p.ID())).Return(model.ApiKey{
-			AccountId: accountId,
-			Key:       "key",
-		}, nil)
-		t.m.EXPECT().MarkUnaccesible(gomock.Eq(accountId))
-	}
+	accountId := "account"
+	t.m.EXPECT().GetApiKey(gomock.Eq(t.p.ID())).Return(model.ApiKey{
+		AccountId: accountId,
+		Key:       "key",
+	}, nil)
 
 	movies, err := t.p.SearchMovies(context.Background(), "Something", 0)
 	assert.Nil(t.t, movies)

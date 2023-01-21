@@ -13,6 +13,11 @@ type pipeline struct {
 	wg       sync.WaitGroup
 }
 
+type callResult struct {
+	data interface{}
+	err  error
+}
+
 var ctx struct {
 	pipelines map[string]*pipeline
 	mu        sync.Mutex
@@ -28,10 +33,6 @@ func newPipeline(settings Settings) *pipeline {
 		ch:       make(chan *task),
 	}
 
-	if settings.MaxAttempts == 0 {
-		p.settings.MaxAttempts = MaxAttempts
-	}
-
 	p.wg.Add(1)
 	go func() {
 		defer p.wg.Done()
@@ -43,13 +44,13 @@ func newPipeline(settings Settings) *pipeline {
 
 type task struct {
 	h  Handler
-	ch chan Result
+	ch chan callResult
 }
 
 func (p *pipeline) Do(ctx context.Context, h Handler) (interface{}, error) {
 	t := &task{
 		h:  h,
-		ch: make(chan Result, 2),
+		ch: make(chan callResult, 2),
 	}
 
 	select {
@@ -62,7 +63,7 @@ func (p *pipeline) Do(ctx context.Context, h Handler) (interface{}, error) {
 	case <-ctx.Done():
 		return nil, ctx.Err()
 	case r := <-t.ch:
-		return r.Result, r.Err
+		return r.data, r.err
 	}
 }
 
@@ -73,14 +74,8 @@ func (p *pipeline) process() {
 			return
 		}
 
-		r := Result{}
-		for a := 0; a < int(p.settings.MaxAttempts); a++ {
-			r = t.h()
-			if r.Done {
-				break
-			}
-		}
-		t.ch <- r
+		data, err := t.h()
+		t.ch <- callResult{data: data, err: err}
 		close(t.ch)
 	}
 }

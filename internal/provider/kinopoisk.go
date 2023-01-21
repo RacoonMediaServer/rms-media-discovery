@@ -12,6 +12,43 @@ type kinopoiskProvider struct {
 	access model.AccessProvider
 }
 
+const kinopoiskEndpoint = "https://api.kinopoisk.dev/movie"
+
+type kpListResponse struct {
+	Docs []struct {
+		Id         uint64
+		Name       string
+		Type       string
+		Year       uint
+		ExternalID struct {
+			Imdb string
+		}
+	}
+}
+
+type kpResponse struct {
+	Id          uint64
+	Name        string
+	Type        string
+	Year        uint
+	Description string
+
+	Poster struct {
+		Url        string
+		PreviewUrl string
+	}
+	Rating struct {
+		Imdb float32
+	}
+	Genres []struct {
+		Name string
+	}
+	SeasonsInfo []struct {
+		Number        uint
+		EpisodesCount uint
+	}
+}
+
 func NewKinopoiskProvider(access model.AccessProvider) MovieInfoProvider {
 	return &kinopoiskProvider{
 		log:    log.WithField("from", "kinopoisk"),

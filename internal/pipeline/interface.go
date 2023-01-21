@@ -2,21 +2,14 @@ package pipeline
 
 import "context"
 
-type Result struct {
-	Done   bool
-	Err    error
-	Result interface{}
-}
-
-type Handler func() Result
+type Handler func() (interface{}, error)
 
 type Pipeline interface {
 	Do(ctx context.Context, h Handler) (interface{}, error)
 }
 
 type Settings struct {
-	Id          string
-	MaxAttempts uint
+	Id string
 }
 
 func Open(settings Settings) Pipeline {

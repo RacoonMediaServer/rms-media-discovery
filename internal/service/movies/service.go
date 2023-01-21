@@ -16,6 +16,9 @@ type service struct {
 
 func New(access model.AccessProvider) Service {
 	return &service{
-		mainProvider: provider.NewImdbProvider(access),
+		mainProvider: provider.NewFallbackProvider([]provider.MovieInfoProvider{
+			provider.NewImdbProvider(access),
+			provider.NewKinopoiskProvider(access),
+		}),
 	}
 }

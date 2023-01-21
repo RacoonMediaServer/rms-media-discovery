@@ -18,7 +18,6 @@ func TestImdbProvider_SearchMovies(t *testing.T) {
 	tester := newMovieInfoProviderTester(t, m, p)
 	tester.testSearchMovieCanceled()
 	tester.testSearchMovieCannotGetApiKey()
-	tester.testSearchMovieMaxAttemptsReached()
 	tester.testSearchMovieUnexpectedStatusCode()
 
 	exchanges := []exchange{
