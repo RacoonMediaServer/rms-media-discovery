@@ -22,3 +22,14 @@ type TorrentsProvider interface {
 	SearchTorrents(ctx context.Context, query string) ([]model.Torrent, error)
 	Download(ctx context.Context, link string) ([]byte, error)
 }
+
+type Captcha struct {
+	Url           string
+	CaseSensitive bool
+	MinLength     int
+	MaxLength     int
+}
+
+type CaptchaSolver interface {
+	Solve(ctx context.Context, captcha Captcha) (string, error)
+}

@@ -40,3 +40,31 @@ func doRequest(l *log.Entry, cli http.Client, ctx context.Context, url string, r
 
 	return nil
 }
+
+func download(l *log.Entry, cli http.Client, ctx context.Context, url string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, fmt.Errorf("create request failed: %w", err)
+	}
+	req = req.WithContext(ctx)
+
+	l.Debugf("Downloading '%s'...", url)
+	resp, err := cli.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	l.Debugf("'%s' response: %s", url, resp.Status)
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+	}
+
+	buf, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("network I/O error: %w", err)
+	}
+
+	return buf, nil
+}
