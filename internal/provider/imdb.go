@@ -22,7 +22,6 @@ type imdbProvider struct {
 }
 
 const imdbEndpoint = "https://imdb-api.com/ru/API"
-const resultsLimit = 10
 
 type imdbBaseResponse struct {
 	ErrorMessage string

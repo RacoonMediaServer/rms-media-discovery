@@ -9,6 +9,8 @@ import (
 
 var errBadAccount = errors.New("account is unaccessible")
 
+const resultsLimit = 10
+
 // MovieInfoProvider интерфейс сущностей, которые позволяют получать информацию о фильмах и сериалах
 type MovieInfoProvider interface {
 	ID() string
