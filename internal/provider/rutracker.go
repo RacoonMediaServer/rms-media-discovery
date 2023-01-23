@@ -34,6 +34,7 @@ var (
 	captchaSidExpr  = regexp.MustCompile(`<input[^>]*name="cap_sid"[^>]*value="([^"]+)"[^>]*>`)
 	captchaCodeExpr = regexp.MustCompile(`<input[^>]*name="(cap_code_[^"]+)"[^>]*value="[^"]*"[^>]*>`)
 	captchaUrlExpr  = regexp.MustCompile(`<img[^>]*src="([^"]+\/captcha\/[^"]+)"[^>]*>`)
+	extractSizeExpr = regexp.MustCompile(`^(\d+(.\d+)?) (MB|GB)`)
 )
 
 func NewRuTrackerProvider(access model.AccessProvider, solver CaptchaSolver) TorrentsProvider {
@@ -115,7 +116,6 @@ func newRuTrackerSession(cred model.Credentials, solver CaptchaSolver) *ruTracke
 
 func (s *ruTrackerSession) authorize(ctx context.Context) error {
 	s.c.SetDebugger(&debug.LogDebugger{})
-
 	var captcha struct {
 		required bool
 		url      string
@@ -193,17 +193,45 @@ func (s *ruTrackerSession) authorize(ctx context.Context) error {
 func (s *ruTrackerSession) search(ctx context.Context, query string) ([]model.Torrent, error) {
 	torrents := make([]model.Torrent, 0)
 
+	wg := sync.WaitGroup{}
 	s.c.OnHTML("#tor-tbl > tbody > tr", func(e *colly.HTMLElement) {
 		torrents = append(torrents, extractTorrent(e))
+		href, ok := e.DOM.Find(`a.tLink`).Attr("href")
+		if ok {
+			//t := &torrents[len(torrents)-1]
+			c := s.c.Clone()
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				_ = c.Visit("https://rutracker.org/forum/" + href)
+				c.Wait()
+			}()
+		}
 	})
+	wg.Wait()
 
 	if err := s.c.Visit("https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)); err != nil {
 		return nil, err
 	}
-
 	s.c.Wait()
 
 	return torrents, nil
+}
+
+func parseTorrentSize(text string) float32 {
+	matches := extractSizeExpr.FindStringSubmatch(text)
+	if matches != nil {
+		result, err := strconv.ParseFloat(matches[1], 32)
+		if err != nil {
+			return 0
+		}
+		if matches[3] == "GB" {
+			result *= 1024.
+		}
+		return float32(result)
+	}
+
+	return 0
 }
 
 func extractTorrent(e *colly.HTMLElement) model.Torrent {
@@ -213,7 +241,7 @@ func extractTorrent(e *colly.HTMLElement) model.Torrent {
 	dl := e.DOM.Find(`a.tr-dl`)
 	link, _ := dl.Attr("href")
 	torrent.Link = link
-	torrent.Size = dl.Text()
+	torrent.SizeMB = parseTorrentSize(dl.Text())
 
 	seeds := e.DOM.Find(`b.seedmed`).Text()
 	seedersCount, _ := strconv.ParseUint(seeds, 10, 32)

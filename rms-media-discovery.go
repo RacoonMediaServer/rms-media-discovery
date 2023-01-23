@@ -37,7 +37,7 @@ func main() {
 	srv.Users = users.New(db)
 	srv.Accounts = accounts.New(db)
 	srv.Movies = movies.New(srv.Accounts)
-	srv.Torrents = torrents.New()
+	srv.Torrents = torrents.New(srv.Accounts)
 
 	if err := srv.Users.Initialize(); err != nil {
 		log.Fatalf("Initialize users service failed: %+s", err)

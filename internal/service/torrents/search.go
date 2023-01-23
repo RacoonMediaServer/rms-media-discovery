@@ -13,5 +13,6 @@ func (s *service) Search(ctx context.Context, query string, hint SearchTypeHint,
 	if uint(len(found)) > limit {
 		found = found[:limit]
 	}
+	// TODO: менеджмент ссылок
 	return found, nil
 }

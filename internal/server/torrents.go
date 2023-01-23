@@ -8,6 +8,7 @@ import (
 )
 
 func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("query", params.Q)
 	var limit uint
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
@@ -26,9 +27,10 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 	}
 	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), params.Q, hint, limit)
 	if err != nil {
-		s.log.WithField("query", params.Q).Errorf("Search failed: %w", err)
+		l.Errorf("Search failed: %w", err)
 		return torrents.NewSearchTorrentsInternalServerError()
 	}
+	l.Debugf("Got %d results", len(mov))
 
 	payload := torrents.SearchTorrentsOKBody{Results: []*models.SearchTorrentsResult{}}
 	for i := range mov {

@@ -36,7 +36,7 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string) ([]model.T
 	var lastErr error
 	for _ = range a.providers {
 		r := <-ch
-		if r.err != nil {
+		if r.err == nil {
 			total = append(total, r.torrents...)
 			anySuccess = true
 		} else {
