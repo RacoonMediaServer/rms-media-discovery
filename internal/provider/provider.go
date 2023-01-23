@@ -2,12 +2,8 @@ package provider
 
 import (
 	"context"
-	"errors"
-
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 )
-
-var errBadAccount = errors.New("account is unaccessible")
 
 const resultsLimit = 10
 
@@ -23,6 +19,7 @@ type TorrentsProvider interface {
 	Download(ctx context.Context, link string) ([]byte, error)
 }
 
+// Captcha настройки капчи для распознования
 type Captcha struct {
 	Url           string
 	CaseSensitive bool
@@ -30,6 +27,7 @@ type Captcha struct {
 	MaxLength     int
 }
 
+// CaptchaSolver интерфейс рапознавателя капчи
 type CaptchaSolver interface {
 	Solve(ctx context.Context, captcha Captcha) (string, error)
 }

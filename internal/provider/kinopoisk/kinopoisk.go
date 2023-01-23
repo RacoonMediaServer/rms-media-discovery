@@ -1,4 +1,4 @@
-package provider
+package kinopoisk
 
 import (
 	"context"
@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/apex/log"
 	"net/http"
 	"net/url"
@@ -18,9 +20,16 @@ type kinopoiskProvider struct {
 	cli    http.Client
 }
 
-const kinopoiskEndpoint = "https://api.kinopoisk.dev/movie"
+const (
+	kinopoiskEndpoint = "https://api.kinopoisk.dev/movie"
+	resultsLimit      = 10
+)
 
-type kpListResponse struct {
+var (
+	errBadAccount = errors.New("account is unaccessible")
+)
+
+type searchResponse struct {
 	Docs []struct {
 		Id         uint64
 		Name       string
@@ -32,7 +41,7 @@ type kpListResponse struct {
 	}
 }
 
-type kpResponse struct {
+type getResponse struct {
 	Id          uint64
 	Name        string
 	Type        string
@@ -55,7 +64,7 @@ type kpResponse struct {
 	}
 }
 
-func NewKinopoiskProvider(access model.AccessProvider) MovieInfoProvider {
+func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	return &kinopoiskProvider{
 		log:    log.WithField("from", "kinopoisk"),
 		access: access,
@@ -105,10 +114,7 @@ func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limi
 		}
 
 		movies = append(movies, m)
-		if len(movies) >= resultsLimit {
-			break
-		}
-		if limit != 0 && len(movies) >= int(limit) {
+		if len(movies) >= int(limit) {
 			break
 		}
 	}
@@ -120,7 +126,7 @@ func (p *kinopoiskProvider) ID() string {
 	return "kinopoisk"
 }
 
-func (p *kinopoiskProvider) search(l *log.Entry, ctx context.Context, query string, limit uint) (*kpListResponse, error) {
+func (p *kinopoiskProvider) search(l *log.Entry, ctx context.Context, query string, limit uint) (*searchResponse, error) {
 	for {
 		resp, err := p.p.Do(ctx, func() (interface{}, error) {
 			token, err := p.access.GetApiKey("kinopoisk")
@@ -128,8 +134,8 @@ func (p *kinopoiskProvider) search(l *log.Entry, ctx context.Context, query stri
 				return nil, err
 			}
 			u := fmt.Sprintf("%s/?token=%s&field=names.name&search=%s&limit=%d&sortField=rating.imdb&sortType=-1&isStrict=false", kinopoiskEndpoint, token.Key, url.QueryEscape(query), limit)
-			resp := kpListResponse{}
-			err = doRequest(l, p.cli, ctx, u, &resp)
+			resp := searchResponse{}
+			err = utils.Get(l, p.cli, ctx, u, &resp)
 
 			if err != nil {
 				return nil, err
@@ -146,12 +152,12 @@ func (p *kinopoiskProvider) search(l *log.Entry, ctx context.Context, query stri
 			return nil, err
 		}
 
-		result := resp.(*kpListResponse)
+		result := resp.(*searchResponse)
 		return result, nil
 	}
 }
 
-func (p *kinopoiskProvider) get(l *log.Entry, ctx context.Context, id string) (*kpResponse, error) {
+func (p *kinopoiskProvider) get(l *log.Entry, ctx context.Context, id string) (*getResponse, error) {
 	for {
 		resp, err := p.p.Do(ctx, func() (interface{}, error) {
 			token, err := p.access.GetApiKey("kinopoisk")
@@ -159,8 +165,8 @@ func (p *kinopoiskProvider) get(l *log.Entry, ctx context.Context, id string) (*
 				return nil, err
 			}
 			u := fmt.Sprintf("%s/?token=%s&field=externalId.imdb&search=%s", kinopoiskEndpoint, token.Key, id)
-			resp := kpResponse{}
-			err = doRequest(l, p.cli, ctx, u, &resp)
+			resp := getResponse{}
+			err = utils.Get(l, p.cli, ctx, u, &resp)
 
 			if err != nil {
 				return nil, err
@@ -176,7 +182,7 @@ func (p *kinopoiskProvider) get(l *log.Entry, ctx context.Context, id string) (*
 			return nil, err
 		}
 
-		result := resp.(*kpResponse)
+		result := resp.(*getResponse)
 		return result, nil
 	}
 }

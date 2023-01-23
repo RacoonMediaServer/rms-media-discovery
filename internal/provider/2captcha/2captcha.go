@@ -1,10 +1,12 @@
-package provider
+package _captcha
 
 import (
 	"context"
 	"encoding/base64"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	api2captcha "github.com/2captcha/2captcha-go"
 	"github.com/apex/log"
 	"net/http"
@@ -15,8 +17,8 @@ type captchaSolver struct {
 	access model.AccessProvider
 }
 
-func (c captchaSolver) Solve(ctx context.Context, captcha Captcha) (string, error) {
-	content, err := download(c.log, http.Client{}, ctx, captcha.Url)
+func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
+	content, err := utils.Download(c.log, http.Client{}, ctx, captcha.Url)
 	if err != nil {
 		return "", fmt.Errorf("download captcha failed: %w", err)
 	}
@@ -39,6 +41,6 @@ func (c captchaSolver) Solve(ctx context.Context, captcha Captcha) (string, erro
 	return code, nil
 }
 
-func NewCaptchaSolver(access model.AccessProvider) CaptchaSolver {
+func NewSolver(access model.AccessProvider) provider.CaptchaSolver {
 	return &captchaSolver{access: access, log: log.WithField("from", "2captcha")}
 }

@@ -1,9 +1,11 @@
-package provider
+package imdb
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -21,14 +23,21 @@ type imdbProvider struct {
 	cli    http.Client
 }
 
-const imdbEndpoint = "https://imdb-api.com/ru/API"
+const (
+	imdbEndpoint = "https://imdb-api.com/ru/API"
+	resultsLimit = 10
+)
 
-type imdbBaseResponse struct {
+var (
+	errBadAccount = errors.New("account is unaccessible")
+)
+
+type baseResponse struct {
 	ErrorMessage string
 }
 
-type imdbListResponse struct {
-	imdbBaseResponse
+type searchResponse struct {
+	baseResponse
 	Results []struct {
 		Id         string
 		ResultType string
@@ -36,8 +45,8 @@ type imdbListResponse struct {
 	}
 }
 
-type imdbResponse struct {
-	imdbBaseResponse
+type getResponse struct {
+	baseResponse
 	Title     string
 	Image     string
 	Type      string
@@ -55,7 +64,7 @@ type imdbResponse struct {
 	}
 }
 
-func NewImdbProvider(access model.AccessProvider) MovieInfoProvider {
+func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	return &imdbProvider{
 		log:    log.WithField("from", "imdb"),
 		access: access,
@@ -121,7 +130,7 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 	return movies, nil
 }
 
-func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (*imdbListResponse, error) {
+func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (*searchResponse, error) {
 	for {
 		resp, err := p.p.Do(ctx, func() (interface{}, error) {
 			token, err := p.access.GetApiKey("imdb")
@@ -129,8 +138,8 @@ func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (
 				return nil, err
 			}
 			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchMovie", token.Key, url.PathEscape(query))
-			resp := imdbListResponse{}
-			err = doRequest(l, p.cli, ctx, u, &resp)
+			resp := searchResponse{}
+			err = utils.Get(l, p.cli, ctx, u, &resp)
 
 			if err == nil && resp.ErrorMessage != "" {
 				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {
@@ -156,12 +165,12 @@ func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (
 			return nil, err
 		}
 
-		result := resp.(*imdbListResponse)
+		result := resp.(*searchResponse)
 		return result, nil
 	}
 }
 
-func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbResponse, error) {
+func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*getResponse, error) {
 	for {
 		resp, err := p.p.Do(ctx, func() (interface{}, error) {
 			token, err := p.access.GetApiKey("imdb")
@@ -169,8 +178,8 @@ func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbR
 				return nil, err
 			}
 			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
-			resp := imdbResponse{}
-			err = doRequest(l, p.cli, ctx, u, &resp)
+			resp := getResponse{}
+			err = utils.Get(l, p.cli, ctx, u, &resp)
 
 			if err == nil && resp.ErrorMessage != "" {
 				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {
@@ -195,7 +204,7 @@ func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*imdbR
 			return nil, err
 		}
 
-		result := resp.(*imdbResponse)
+		result := resp.(*getResponse)
 		return result, nil
 	}
 }

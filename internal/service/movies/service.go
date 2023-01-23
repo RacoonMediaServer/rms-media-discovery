@@ -4,6 +4,8 @@ import (
 	"context"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/imdb"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/kinopoisk"
 )
 
 type Service interface {
@@ -17,8 +19,8 @@ type service struct {
 func New(access model.AccessProvider) Service {
 	return &service{
 		mainProvider: provider.NewFallbackProvider([]provider.MovieInfoProvider{
-			provider.NewImdbProvider(access),
-			provider.NewKinopoiskProvider(access),
+			imdb.NewProvider(access),
+			kinopoisk.NewKinopoiskProvider(access),
 		}),
 	}
 }

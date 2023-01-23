@@ -1,4 +1,4 @@
-package provider
+package utils
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func doRequest(l *log.Entry, cli http.Client, ctx context.Context, url string, response interface{}) error {
+func Get(l *log.Entry, cli http.Client, ctx context.Context, url string, response interface{}) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("create request failed: %w", err)
@@ -41,7 +41,7 @@ func doRequest(l *log.Entry, cli http.Client, ctx context.Context, url string, r
 	return nil
 }
 
-func download(l *log.Entry, cli http.Client, ctx context.Context, url string) ([]byte, error) {
+func Download(l *log.Entry, cli http.Client, ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request failed: %w", err)
