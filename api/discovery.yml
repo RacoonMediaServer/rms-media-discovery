@@ -365,30 +365,44 @@ definitions:
         type: integer
       seeders:
         type: integer
-      video:
-        type: array
-        items:
-          type: object
-          properties:
-            codec:
-              type: string
-            width:
-              type: integer
-            height:
-              type: integer
-            format:
-              type: string
-      audio:
-        type: array
-        items:
-          type: object
-          properties:
-            codec:
-              type: string
-            bitrate:
-              type: number
-            language:
-              type: string
+      media:
+        type: object
+        properties:
+          format:
+            type: string
+          video:
+            type: array
+            items:
+              type: object
+              properties:
+                codec:
+                  type: string
+                width:
+                  type: integer
+                height:
+                  type: integer
+                aspectRatio:
+                  type: string
+          audio:
+            type: array
+            items:
+              type: object
+              properties:
+                codec:
+                  type: string
+                language:
+                  type: string
+                voice:
+                  type: string
+          subtitles:
+            type: array
+            items:
+              type: object
+              properties:
+                codec:
+                  type: string
+                language:
+                  type: string
 
   Account:
     type: object

@@ -1,11 +1,50 @@
 package server
 
 import (
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
 	torrents2 "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"github.com/go-openapi/runtime/middleware"
 )
+
+func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
+	result := &models.SearchTorrentsResult{
+		Link:    &t.Link,
+		Seeders: int64(t.Seeders),
+		Size:    int64(t.SizeMB),
+		Title:   t.Title,
+	}
+	if t.Media != nil {
+		result.Media = new(models.SearchTorrentsResultMedia)
+		for _, v := range t.Media.Video {
+			target := &models.SearchTorrentsResultMediaVideoItems0{
+				AspectRatio: v.AspectRatio,
+				Codec:       v.Codec,
+				Height:      int64(v.Height),
+				Width:       int64(v.Width),
+			}
+			result.Media.Video = append(result.Media.Video, target)
+		}
+		for _, a := range t.Media.Audio {
+			target := &models.SearchTorrentsResultMediaAudioItems0{
+				Codec:    a.Codec,
+				Language: a.Language,
+				Voice:    a.Voice,
+			}
+			result.Media.Audio = append(result.Media.Audio, target)
+		}
+		for _, s := range t.Media.Subtitle {
+			target := &models.SearchTorrentsResultMediaSubtitlesItems0{
+				Codec:    s.Codec,
+				Language: s.Language,
+			}
+			result.Media.Subtitles = append(result.Media.Subtitles, target)
+		}
+	}
+
+	return result
+}
 
 func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("query", params.Q)
@@ -27,21 +66,14 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 	}
 	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), params.Q, hint, limit)
 	if err != nil {
-		l.Errorf("Search failed: %w", err)
+		l.Errorf("Search failed: %s", err)
 		return torrents.NewSearchTorrentsInternalServerError()
 	}
 	l.Debugf("Got %d results", len(mov))
 
 	payload := torrents.SearchTorrentsOKBody{Results: []*models.SearchTorrentsResult{}}
 	for i := range mov {
-		// TODO: менеджмент ссылок и остальные параметры
-		result := &models.SearchTorrentsResult{
-			Link:    &mov[i].Link,
-			Seeders: int64(mov[i].Seeders),
-			Size:    0,
-			Title:   mov[i].Title,
-		}
-		payload.Results = append(payload.Results, result)
+		payload.Results = append(payload.Results, convertTorrent(&mov[i]))
 	}
 
 	return torrents.NewSearchTorrentsOK().WithPayload(&payload)

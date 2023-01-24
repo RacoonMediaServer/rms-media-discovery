@@ -40,7 +40,7 @@ func NewSearchTorrents(ctx *middleware.Context, handler SearchTorrentsHandler) *
 /*
 	SearchTorrents swagger:route GET /torrents/search torrents searchTorrents
 
-# Поиск контекнта на торрент-трекерах
+# Поиск контента на торрент-трекерах
 
 Поиск фильмов и сериалов по названию на различных платформах
 */

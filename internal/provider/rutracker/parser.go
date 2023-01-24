@@ -14,7 +14,7 @@ var (
 	extractSizeExpr = regexp.MustCompile(`^(\d+(.\d+)?) (MB|GB)`)
 )
 
-func parseTorrentSize(text string) float32 {
+func parseTorrentSize(text string) uint64 {
 	matches := extractSizeExpr.FindStringSubmatch(text)
 	if matches != nil {
 		result, err := strconv.ParseFloat(matches[1], 32)
@@ -24,7 +24,7 @@ func parseTorrentSize(text string) float32 {
 		if matches[3] == "GB" {
 			result *= 1024.
 		}
-		return float32(result)
+		return uint64(result)
 	}
 
 	return 0

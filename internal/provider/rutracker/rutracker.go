@@ -38,7 +38,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string) ([
 		if err != nil {
 			return nil, err
 		}
-		session, err := r.getOrCreateSession(ctx, cred)
+		s, err := r.getOrCreateSession(ctx, cred)
 		if err != nil {
 			if errors.Is(err, errBadAccount) {
 				r.access.MarkUnaccesible(cred.AccountId)
@@ -47,7 +47,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string) ([
 			return nil, err
 		}
 
-		return session.search(ctx, query)
+		return s.search(ctx, query)
 	}
 }
 
@@ -57,22 +57,22 @@ func (r *ruTrackerProvider) Download(ctx context.Context, link string) ([]byte, 
 }
 
 func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model.Credentials) (*session, error) {
-	if session, ok := r.getSession(cred.AccountId); ok {
-		return session, nil
+	if s, ok := r.getSession(cred.AccountId); ok {
+		return s, nil
 	}
 
-	session := newSession(cred, r.s)
+	s := newSession(cred, r.s)
 
-	if err := session.authorize(ctx); err != nil {
+	if err := s.authorize(ctx); err != nil {
 		return nil, fmt.Errorf("auth failed: %w", err)
 	}
 
 	r.mu.Lock()
-	r.sessions[cred.AccountId] = session
+	r.sessions[cred.AccountId] = s
 	r.mu.Unlock()
 
-	newSession := *session
-	newSession.c = session.c.Clone()
+	newSession := *s
+	newSession.c = s.c.Clone()
 	return &newSession, nil
 }
 
@@ -80,11 +80,11 @@ func (r *ruTrackerProvider) getSession(accountId string) (*session, bool) {
 	r.mu.RLock()
 	defer r.mu.RUnlock()
 
-	session, ok := r.sessions[accountId]
+	s, ok := r.sessions[accountId]
 	if !ok {
 		return nil, ok
 	}
-	newSession := *session
-	newSession.c = session.c.Clone()
+	newSession := *s
+	newSession.c = s.c.Clone()
 	return &newSession, ok
 }

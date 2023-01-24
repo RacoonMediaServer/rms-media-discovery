@@ -7,8 +7,8 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/debug"
+	"net/http"
 	"net/url"
-	"sync"
 )
 
 type session struct {
@@ -31,6 +31,8 @@ func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session 
 
 func (s *session) authorize(ctx context.Context) error {
 	s.c.SetDebugger(&debug.LogDebugger{})
+	collyWithContext(s.c, ctx)
+
 	var captcha struct {
 		required bool
 		url      string
@@ -107,28 +109,49 @@ func (s *session) authorize(ctx context.Context) error {
 
 func (s *session) search(ctx context.Context, query string) ([]model.Torrent, error) {
 	torrents := make([]model.Torrent, 0)
+	collyWithContext(s.c, ctx)
 
-	wg := sync.WaitGroup{}
+	scrapper := newScrapper(ctx)
 	s.c.OnHTML("#tor-tbl > tbody > tr", func(e *colly.HTMLElement) {
 		torrents = append(torrents, parseTorrent(e))
 		href, ok := e.DOM.Find(`a.tLink`).Attr("href")
 		if ok {
-			//t := &torrents[len(torrents)-1]
-			c := s.c.Clone()
-			wg.Add(1)
-			go func() {
-				defer wg.Done()
-				_ = c.Visit("https://rutracker.org/forum/" + href)
-				c.Wait()
-			}()
+			scrapper.scrapAsync(s.c, &torrents[len(torrents)-1], "https://rutracker.org/forum/"+href)
 		}
 	})
-	wg.Wait()
 
 	if err := s.c.Visit("https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)); err != nil {
 		return nil, err
 	}
 	s.c.Wait()
 
+	scrapper.wait()
+
 	return torrents, nil
+}
+
+type contextTransport struct {
+	ctx       context.Context
+	transport *http.Transport
+}
+
+func (t *contextTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req = req.WithContext(t.ctx)
+	return t.transport.RoundTrip(req)
+}
+
+func collyWithContext(c *colly.Collector, ctx context.Context) {
+	c.OnRequest(func(req *colly.Request) {
+		select {
+		case <-ctx.Done():
+			req.Abort()
+		default:
+		}
+	})
+
+	trans := &contextTransport{
+		ctx:       ctx,
+		transport: &http.Transport{},
+	}
+	c.WithTransport(trans)
 }
