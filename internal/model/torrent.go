@@ -8,4 +8,6 @@ type Torrent struct {
 	SizeMB  uint64
 	Seeders uint
 	Media   *media.Info
+
+	DetailLink string
 }

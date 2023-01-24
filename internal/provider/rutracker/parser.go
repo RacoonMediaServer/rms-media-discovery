@@ -47,5 +47,7 @@ func parseTorrent(e *colly.HTMLElement) model.Torrent {
 	peers, _ := strconv.Atoi(leechs)
 	torrent.Seeders += uint(peers)
 
+	torrent.DetailLink, _ = e.DOM.Find(`a.tLink`).Attr("href")
+
 	return torrent
 }

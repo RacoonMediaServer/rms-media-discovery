@@ -4,6 +4,7 @@ import (
 	"context"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"sync"
 )
 
@@ -11,7 +12,7 @@ type aggregator struct {
 	providers []provider.TorrentsProvider
 }
 
-func (a aggregator) SearchTorrents(ctx context.Context, query string) ([]model.Torrent, error) {
+func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
 	type result struct {
 		torrents []model.Torrent
 		err      error
@@ -25,7 +26,7 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string) ([]model.T
 	for _, p := range a.providers {
 		go func(p provider.TorrentsProvider) {
 			defer wg.Done()
-			r, err := p.SearchTorrents(ctx, query)
+			r, err := p.SearchTorrents(ctx, query, limit)
 			ch <- result{torrents: r, err: err}
 		}(p)
 	}
@@ -48,8 +49,8 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string) ([]model.T
 		return []model.Torrent{}, lastErr
 	}
 
-	// TODO: sort results
-	return total, nil
+	utils.SortTorrents(total)
+	return utils.Bound(total, limit), nil
 }
 
 func (a aggregator) Download(ctx context.Context, link string) ([]byte, error) {

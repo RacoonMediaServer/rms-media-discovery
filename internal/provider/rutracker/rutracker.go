@@ -32,7 +32,7 @@ func NewProvider(access model.AccessProvider, solver provider.CaptchaSolver) pro
 	}
 }
 
-func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string) ([]model.Torrent, error) {
+func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
 		if err != nil {
@@ -47,7 +47,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string) ([
 			return nil, err
 		}
 
-		return s.search(ctx, query)
+		return s.search(ctx, query, limit)
 	}
 }
 

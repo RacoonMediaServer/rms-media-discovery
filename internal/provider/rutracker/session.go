@@ -18,8 +18,6 @@ type session struct {
 	authorized  bool
 }
 
-const maxResults = 40
-
 func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session {
 	return &session{
 		credentials: cred,
@@ -109,20 +107,12 @@ func (s *session) authorize(ctx context.Context) error {
 	return nil
 }
 
-func (s *session) search(ctx context.Context, query string) ([]model.Torrent, error) {
-	torrents := make([]model.Torrent, 0, maxResults)
+func (s *session) search(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+	torrents := make([]model.Torrent, 0, limit)
 	utils.CollyWithContext(s.c, ctx)
 
-	scrapper := newScrapper(ctx)
 	s.c.OnHTML("#tor-tbl > tbody > tr", func(e *colly.HTMLElement) {
-		if len(torrents) >= maxResults {
-			return
-		}
 		torrents = append(torrents, parseTorrent(e))
-		href, ok := e.DOM.Find(`a.tLink`).Attr("href")
-		if ok {
-			scrapper.scrapAsync(s.c, &torrents[len(torrents)-1], "https://rutracker.org/forum/"+href)
-		}
 	})
 
 	if err := s.c.Visit("https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)); err != nil {
@@ -130,6 +120,16 @@ func (s *session) search(ctx context.Context, query string) ([]model.Torrent, er
 	}
 	s.c.Wait()
 
+	utils.SortTorrents(torrents)
+	torrents = utils.Bound(torrents, limit)
+
+	scrapper := newScrapper(ctx)
+	for i := range torrents {
+		t := &torrents[i]
+		if t.DetailLink != "" {
+			scrapper.scrapAsync(s.c, t, "https://rutracker.org/forum/"+t.DetailLink)
+		}
+	}
 	scrapper.wait()
 
 	return torrents, nil
