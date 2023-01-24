@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/debug"
-	"net/http"
 	"net/url"
 )
 
@@ -17,6 +17,8 @@ type session struct {
 	s           provider.CaptchaSolver
 	authorized  bool
 }
+
+const maxResults = 40
 
 func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session {
 	return &session{
@@ -31,7 +33,7 @@ func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session 
 
 func (s *session) authorize(ctx context.Context) error {
 	s.c.SetDebugger(&debug.LogDebugger{})
-	collyWithContext(s.c, ctx)
+	utils.CollyWithContext(s.c, ctx)
 
 	var captcha struct {
 		required bool
@@ -108,11 +110,14 @@ func (s *session) authorize(ctx context.Context) error {
 }
 
 func (s *session) search(ctx context.Context, query string) ([]model.Torrent, error) {
-	torrents := make([]model.Torrent, 0)
-	collyWithContext(s.c, ctx)
+	torrents := make([]model.Torrent, 0, maxResults)
+	utils.CollyWithContext(s.c, ctx)
 
 	scrapper := newScrapper(ctx)
 	s.c.OnHTML("#tor-tbl > tbody > tr", func(e *colly.HTMLElement) {
+		if len(torrents) >= maxResults {
+			return
+		}
 		torrents = append(torrents, parseTorrent(e))
 		href, ok := e.DOM.Find(`a.tLink`).Attr("href")
 		if ok {
@@ -128,30 +133,4 @@ func (s *session) search(ctx context.Context, query string) ([]model.Torrent, er
 	scrapper.wait()
 
 	return torrents, nil
-}
-
-type contextTransport struct {
-	ctx       context.Context
-	transport *http.Transport
-}
-
-func (t *contextTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	req = req.WithContext(t.ctx)
-	return t.transport.RoundTrip(req)
-}
-
-func collyWithContext(c *colly.Collector, ctx context.Context) {
-	c.OnRequest(func(req *colly.Request) {
-		select {
-		case <-ctx.Done():
-			req.Abort()
-		default:
-		}
-	})
-
-	trans := &contextTransport{
-		ctx:       ctx,
-		transport: &http.Transport{},
-	}
-	c.WithTransport(trans)
 }

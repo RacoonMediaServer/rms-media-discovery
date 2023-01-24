@@ -408,7 +408,7 @@ func init() {
         "tags": [
           "torrents"
         ],
-        "summary": "Поиск контекнта на торрент-трекерах",
+        "summary": "Поиск контента на торрент-трекерах",
         "operationId": "searchTorrents",
         "parameters": [
           {
@@ -549,25 +549,67 @@ func init() {
         "link"
       ],
       "properties": {
-        "audio": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "bitrate": {
-                "type": "number"
-              },
-              "codec": {
-                "type": "string"
-              },
-              "language": {
-                "type": "string"
+        "link": {
+          "type": "string"
+        },
+        "media": {
+          "type": "object",
+          "properties": {
+            "audio": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "codec": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  },
+                  "voice": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "format": {
+              "type": "string"
+            },
+            "subtitles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "codec": {
+                    "type": "string"
+                  },
+                  "language": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "video": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "aspectRatio": {
+                    "type": "string"
+                  },
+                  "codec": {
+                    "type": "string"
+                  },
+                  "height": {
+                    "type": "integer"
+                  },
+                  "width": {
+                    "type": "integer"
+                  }
+                }
               }
             }
           }
-        },
-        "link": {
-          "type": "string"
         },
         "seeders": {
           "type": "integer"
@@ -577,26 +619,6 @@ func init() {
         },
         "title": {
           "type": "string"
-        },
-        "video": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "codec": {
-                "type": "string"
-              },
-              "format": {
-                "type": "string"
-              },
-              "height": {
-                "type": "integer"
-              },
-              "width": {
-                "type": "integer"
-              }
-            }
-          }
         }
       }
     },
@@ -1012,7 +1034,7 @@ func init() {
         "tags": [
           "torrents"
         ],
-        "summary": "Поиск контекнта на торрент-трекерах",
+        "summary": "Поиск контента на торрент-трекерах",
         "operationId": "searchTorrents",
         "parameters": [
           {
@@ -1173,14 +1195,34 @@ func init() {
         "link"
       ],
       "properties": {
-        "audio": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SearchTorrentsResultAudioItems0"
-          }
-        },
         "link": {
           "type": "string"
+        },
+        "media": {
+          "type": "object",
+          "properties": {
+            "audio": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SearchTorrentsResultMediaAudioItems0"
+              }
+            },
+            "format": {
+              "type": "string"
+            },
+            "subtitles": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SearchTorrentsResultMediaSubtitlesItems0"
+              }
+            },
+            "video": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/SearchTorrentsResultMediaVideoItems0"
+              }
+            }
+          }
         },
         "seeders": {
           "type": "integer"
@@ -1190,21 +1232,52 @@ func init() {
         },
         "title": {
           "type": "string"
+        }
+      }
+    },
+    "SearchTorrentsResultMedia": {
+      "type": "object",
+      "properties": {
+        "audio": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchTorrentsResultMediaAudioItems0"
+          }
+        },
+        "format": {
+          "type": "string"
+        },
+        "subtitles": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SearchTorrentsResultMediaSubtitlesItems0"
+          }
         },
         "video": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/SearchTorrentsResultVideoItems0"
+            "$ref": "#/definitions/SearchTorrentsResultMediaVideoItems0"
           }
         }
       }
     },
-    "SearchTorrentsResultAudioItems0": {
+    "SearchTorrentsResultMediaAudioItems0": {
       "type": "object",
       "properties": {
-        "bitrate": {
-          "type": "number"
+        "codec": {
+          "type": "string"
         },
+        "language": {
+          "type": "string"
+        },
+        "voice": {
+          "type": "string"
+        }
+      }
+    },
+    "SearchTorrentsResultMediaSubtitlesItems0": {
+      "type": "object",
+      "properties": {
         "codec": {
           "type": "string"
         },
@@ -1213,13 +1286,13 @@ func init() {
         }
       }
     },
-    "SearchTorrentsResultVideoItems0": {
+    "SearchTorrentsResultMediaVideoItems0": {
       "type": "object",
       "properties": {
-        "codec": {
+        "aspectRatio": {
           "type": "string"
         },
-        "format": {
+        "codec": {
           "type": "string"
         },
         "height": {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/gocolly/colly/v2"
 	"strings"
 	"sync"
@@ -22,7 +23,7 @@ func newScrapper(ctx context.Context) *scrapper {
 
 func (s *scrapper) scrapAsync(c *colly.Collector, torrent *model.Torrent, link string) {
 	c = c.Clone()
-	collyWithContext(c, s.ctx)
+	utils.CollyWithContext(c, s.ctx)
 
 	t := *torrent
 
