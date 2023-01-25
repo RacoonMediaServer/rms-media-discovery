@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"net/http"
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
@@ -14,12 +15,17 @@ import (
 )
 
 type Server struct {
-	srv      *restapi.Server
-	log      *log.Entry
+	srv *restapi.Server
+	log *log.Entry
+
 	Movies   movies.Service
 	Torrents torrents.Service
 	Users    users.Service
 	Accounts accounts.Service
+}
+
+type monitor struct {
+	handler http.Handler
 }
 
 func (s *Server) ListenAndServer(host string, port int) error {
@@ -35,6 +41,10 @@ func (s *Server) ListenAndServer(host string, port int) error {
 		api := operations.NewServerAPI(swaggerSpec)
 		s.configureAPI(api)
 
+		// middleware для для тяжелых запросов
+		api.AddMiddlewareFor("GET", "/movies/search", setupRateLimitMiddleware)
+		api.AddMiddlewareFor("GET", "/torrents/search", setupRateLimitMiddleware)
+
 		// устанавливаем свой логгер
 		api.Logger = func(content string, i ...interface{}) {
 			s.log.Infof(content, i...)
@@ -42,6 +52,9 @@ func (s *Server) ListenAndServer(host string, port int) error {
 
 		// создаем и настраиваем сервер
 		s.srv = restapi.NewServer(api)
+
+		// устанавливаем middleware
+		s.srv.SetHandler(setupGlobalMiddleware(api.Serve(nil)))
 	}
 
 	s.srv.Host = host

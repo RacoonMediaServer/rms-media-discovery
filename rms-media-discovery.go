@@ -2,15 +2,16 @@ package main
 
 import (
 	"flag"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
-
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/apex/log"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"net/http"
 )
 
 const version = "0.0.1"
@@ -46,6 +47,13 @@ func main() {
 	if err := srv.Accounts.Initialize(); err != nil {
 		log.Fatalf("Initialize accounts service failed: %+s", err)
 	}
+
+	go func() {
+		http.Handle("/metrics", promhttp.Handler())
+		if err := http.ListenAndServe("127.0.0.1:2112", nil); err != nil {
+			log.Fatalf("Cannot bind monitoring endpoint: %s", err)
+		}
+	}()
 
 	if err := srv.ListenAndServer(*host, *port); err != nil {
 		log.Fatalf("Cannot start web server: %+s", err)

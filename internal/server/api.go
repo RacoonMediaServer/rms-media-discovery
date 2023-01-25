@@ -33,5 +33,4 @@ func (s *Server) configureAPI(api *operations.ServerAPI) {
 		}
 		return &models.Principal{Token: token, Admin: admin}, nil
 	}
-
 }
