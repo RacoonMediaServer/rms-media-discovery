@@ -25,9 +25,12 @@ func CollyWithContext(c *colly.Collector, ctx context.Context) {
 		}
 	})
 
-	trans := &contextTransport{
+	transport := &contextTransport{
 		ctx:       ctx,
 		transport: &http.Transport{},
 	}
-	c.WithTransport(trans)
+	c.SetClient(&http.Client{
+		Transport: transport,
+		Timeout:   requestTimeout,
+	})
 }

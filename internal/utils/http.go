@@ -7,9 +7,14 @@ import (
 	"github.com/apex/log"
 	"io"
 	"net/http"
+	"time"
 )
 
-func Get(l *log.Entry, cli http.Client, ctx context.Context, url string, response interface{}) error {
+const requestTimeout = 2 * time.Minute
+
+var HttpClient = http.Client{Timeout: requestTimeout}
+
+func Get(l *log.Entry, ctx context.Context, url string, response interface{}) error {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return fmt.Errorf("create request failed: %w", err)
@@ -17,7 +22,7 @@ func Get(l *log.Entry, cli http.Client, ctx context.Context, url string, respons
 	req = req.WithContext(ctx)
 
 	l.Debugf("Fetching '%s'...", url)
-	resp, err := cli.Do(req)
+	resp, err := HttpClient.Do(req)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}
@@ -41,7 +46,7 @@ func Get(l *log.Entry, cli http.Client, ctx context.Context, url string, respons
 	return nil
 }
 
-func Download(l *log.Entry, cli http.Client, ctx context.Context, url string) ([]byte, error) {
+func Download(l *log.Entry, ctx context.Context, url string) ([]byte, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, fmt.Errorf("create request failed: %w", err)
@@ -49,7 +54,7 @@ func Download(l *log.Entry, cli http.Client, ctx context.Context, url string) ([
 	req = req.WithContext(ctx)
 
 	l.Debugf("Downloading '%s'...", url)
-	resp, err := cli.Do(req)
+	resp, err := HttpClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
 	}

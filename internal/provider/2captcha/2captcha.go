@@ -9,7 +9,6 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	api2captcha "github.com/2captcha/2captcha-go"
 	"github.com/apex/log"
-	"net/http"
 )
 
 type captchaSolver struct {
@@ -20,7 +19,7 @@ type captchaSolver struct {
 func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
 	l := utils.LogFromContext(ctx, "2captcha", c.log)
 	l.Info("Captcha resolving requested")
-	content, err := utils.Download(l, http.Client{}, ctx, captcha.Url)
+	content, err := utils.Download(l, ctx, captcha.Url)
 	if err != nil {
 		return "", fmt.Errorf("download captcha failed: %w", err)
 	}

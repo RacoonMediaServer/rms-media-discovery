@@ -8,7 +8,6 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
-	"net/http"
 	"net/url"
 	"strconv"
 	"sync"
@@ -89,6 +88,6 @@ func NewProvider() provider.TorrentsProvider {
 func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
 		l := utils.LogFromContext(ctx, "rutor", r.log)
-		return utils.Download(l, http.Client{}, ctx, url)
+		return utils.Download(l, ctx, url)
 	}
 }
