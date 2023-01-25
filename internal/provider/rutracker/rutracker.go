@@ -51,11 +51,6 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string, li
 	}
 }
 
-func (r *ruTrackerProvider) Download(ctx context.Context, link string) ([]byte, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model.Credentials) (*session, error) {
 	if s, ok := r.getSession(cred.AccountId); ok {
 		return s, nil

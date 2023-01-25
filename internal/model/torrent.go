@@ -1,6 +1,11 @@
 package model
 
-import "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
+import (
+	"context"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
+)
+
+type DownloadFunc func(ctx context.Context) ([]byte, error)
 
 type Torrent struct {
 	Title   string
@@ -10,4 +15,5 @@ type Torrent struct {
 	Media   *media.Info
 
 	DetailLink string
+	Downloader DownloadFunc
 }

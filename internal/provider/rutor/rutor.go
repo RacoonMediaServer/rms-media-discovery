@@ -9,6 +9,7 @@ import (
 	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/debug"
+	"net/http"
 	"net/url"
 	"strconv"
 	"sync"
@@ -40,10 +41,10 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit u
 		if downloadLink != "" {
 			t := model.Torrent{
 				Title:      title,
-				Link:       downloadLink,
 				SizeMB:     size,
 				Seeders:    uint(seeds),
 				DetailLink: scrapLink,
+				Downloader: r.newDownloadLink(downloadLink),
 			}
 			result = append(result, t)
 		}
@@ -80,13 +81,14 @@ func (r rutorProvider) parseDetails(c *colly.Collector, torrents []model.Torrent
 	wg.Wait()
 }
 
-func (r rutorProvider) Download(ctx context.Context, link string) ([]byte, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func NewProvider() provider.TorrentsProvider {
 	return &rutorProvider{
 		log: log.WithField("from", "rutor"),
+	}
+}
+
+func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
+	return func(ctx context.Context) ([]byte, error) {
+		return utils.Download(r.log, http.Client{}, ctx, url)
 	}
 }

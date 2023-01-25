@@ -1,11 +1,14 @@
 package server
 
 import (
+	"errors"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
 	torrents2 "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
+	"net/http"
 )
 
 func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
@@ -79,6 +82,22 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 	return torrents.NewSearchTorrentsOK().WithPayload(&payload)
 }
 
+type downloadResponse struct {
+	data []byte
+}
+
+func (r *downloadResponse) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
+	_, _ = rw.Write(r.data)
+}
+
 func (s *Server) downloadTorrent(params torrents.DownloadTorrentParams, key *models.Principal) middleware.Responder {
-	return torrents.NewDownloadTorrentInternalServerError()
+	data, err := s.Torrents.Download(params.HTTPRequest.Context(), params.Link)
+	if err != nil {
+		if errors.Is(err, torrents2.ErrExpiredDownloadLink) {
+			return torrents.NewDownloadTorrentNotFound()
+		}
+		return torrents.NewDownloadTorrentInternalServerError()
+	}
+
+	return &downloadResponse{data: data}
 }

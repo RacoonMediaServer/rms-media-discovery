@@ -16,7 +16,6 @@ type MovieInfoProvider interface {
 // TorrentsProvider интерфейс сущностей, которые умеют искать по торрентами
 type TorrentsProvider interface {
 	SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error)
-	Download(ctx context.Context, link string) ([]byte, error)
 }
 
 // Captcha настройки капчи для распознования

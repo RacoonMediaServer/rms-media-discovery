@@ -2,10 +2,14 @@ package torrents
 
 import (
 	"context"
+	"errors"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutor"
 	"github.com/apex/log"
+	"github.com/teris-io/shortid"
+	"sync"
+	"time"
 )
 
 type SearchTypeHint int
@@ -17,6 +21,8 @@ const (
 	SearchType_Other
 )
 
+var ErrExpiredDownloadLink = errors.New("download link expired or not registered")
+
 type Service interface {
 	Search(ctx context.Context, query string, hint SearchTypeHint, limit uint) ([]model.Torrent, error)
 	Download(ctx context.Context, link string) ([]byte, error)
@@ -25,6 +31,8 @@ type Service interface {
 type service struct {
 	provider provider.TorrentsProvider
 	log      *log.Entry
+	gen      *shortid.Shortid
+	links    sync.Map
 }
 
 func New(access model.AccessProvider) Service {
@@ -34,5 +42,6 @@ func New(access model.AccessProvider) Service {
 			rutor.NewProvider(),
 		}),
 		log: log.WithField("from", "torrents"),
+		gen: shortid.MustNew(1, shortid.DefaultABC, uint64(time.Now().Nanosecond())),
 	}
 }
