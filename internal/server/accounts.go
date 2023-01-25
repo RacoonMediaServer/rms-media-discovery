@@ -12,13 +12,16 @@ import (
 )
 
 func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "getAccounts").WithField("key", key.Token)
+	l.Debug("Request")
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
 	registered, err := s.Accounts.GetAccounts()
 	if err != nil {
-		s.log.Errorf("Get accounts failed: %s", err)
+		l.Errorf("Get accounts failed: %s", err)
 		return accounts.NewGetAccountsInternalServerError()
 	}
 
@@ -36,11 +39,16 @@ func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Prin
 		})
 	}
 
+	l.Debugf("Got %d results", len(payload.Results))
+
 	return accounts.NewGetAccountsOK().WithPayload(&payload)
 }
 
 func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "createAccount").WithField("key", key.Token).WithField("account", *params.Account)
+	l.Debug("Request")
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
@@ -64,7 +72,7 @@ func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.
 	}
 
 	if err := s.Accounts.CreateAccount(acc); err != nil {
-		s.log.Errorf("Create account failed: %s", err)
+		l.Errorf("Request failed: %s", err)
 		return accounts.NewCreateAccountInternalServerError()
 	}
 
@@ -72,12 +80,15 @@ func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.
 }
 
 func (s *Server) deleteAccount(params accounts.DeleteAccountParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "deleteAccount").WithField("key", key.Token).WithField("id", params.ID)
+	l.Debug("Request")
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
 	if err := s.Accounts.DeleteAccount(params.ID); err != nil {
-		s.log.Errorf("Delete account '%s' failed: %s", params.ID, err)
+		l.Errorf("Request failed: %s", err)
 		if errors.Is(err, accounts_service.ErrNotFound) {
 			return accounts.NewDeleteAccountNotFound()
 		}

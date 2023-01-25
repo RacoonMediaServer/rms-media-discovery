@@ -73,7 +73,7 @@ func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvide
 }
 
 func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
-	l := p.log.WithField("query", query)
+	l := utils.LogFromContext(ctx, "kinopoisk", p.log)
 	if limit == 0 || limit > resultsLimit {
 		limit = uint(resultsLimit)
 	}

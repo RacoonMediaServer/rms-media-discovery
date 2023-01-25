@@ -15,6 +15,8 @@ func (s *service) CheckAccess(token string) (valid bool, admin bool) {
 		return
 	}
 
+	s.log.Debugf("Access for user '%s' granted", token)
+
 	valid = true
 	admin = user.IsAdmin
 	return
@@ -24,7 +26,7 @@ func (s *service) GetUsers() (result []model.User, err error) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	s.log.Debugf("users: %+v", s.users)
+	s.log.Debugf("Users: %+v", s.users)
 
 	for _, user := range s.users {
 		result = append(result, *user)
@@ -54,7 +56,7 @@ func (s *service) CreateUser(info string, isAdmin bool) (string, error) {
 
 func (s *service) DeleteUser(user string) error {
 	if err := s.db.DeleteUser(user); err != nil {
-		return fmt.Errorf("delete user from database failed: %+w", err)
+		return fmt.Errorf("delete user from database failed: %w", err)
 	}
 
 	s.mu.Lock()

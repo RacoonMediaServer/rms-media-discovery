@@ -40,7 +40,7 @@ func New(db db.AccountDatabase) Service {
 func (s *service) Initialize() error {
 	registered, err := s.db.LoadAccounts()
 	if err != nil {
-		return fmt.Errorf("load accounts from database failed: %+w", err)
+		return fmt.Errorf("load accounts from database failed: %w", err)
 	}
 
 	s.mu.Lock()

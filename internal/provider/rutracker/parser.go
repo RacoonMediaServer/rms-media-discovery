@@ -1,10 +1,13 @@
 package rutracker
 
 import (
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
 	"regexp"
 	"strconv"
+	"strings"
 )
 
 var (
@@ -50,4 +53,22 @@ func parseTorrent(e *colly.HTMLElement) model.Torrent {
 	torrent.DetailLink, _ = e.DOM.Find(`a.tLink`).Attr("href")
 
 	return torrent
+}
+
+func parseDetailPage(c *colly.Collector, t *model.Torrent) {
+	gotFirst := false
+	c.OnHTML(".post_body", func(e *colly.HTMLElement) {
+		if !gotFirst {
+			gotFirst = true
+			_, mediaInfo, ok := strings.Cut(e.Text, "MediaInfo\n")
+			if ok {
+				t.Media = media.ParseInfo(mediaInfo)
+			}
+		}
+	})
+	err := c.Visit("https://rutracker.org/forum/" + t.DetailLink)
+	if err != nil {
+		log.Warnf("visit details page failed: %s", err)
+	}
+	c.Wait()
 }

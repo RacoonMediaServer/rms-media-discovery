@@ -28,6 +28,7 @@ func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.KeyAuth = func(token string) (*models.Principal, error) {
 		valid, admin := s.Users.CheckAccess(token)
 		if !valid {
+			s.log.Warnf("Invalid user key: %s", token)
 			return nil, errors.New(http.StatusForbidden, "Forbidden")
 		}
 		return &models.Principal{Token: token, Admin: admin}, nil

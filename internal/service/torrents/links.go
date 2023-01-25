@@ -23,6 +23,8 @@ func (s *service) processTorrentLink(t *model.Torrent) {
 		created:    time.Now(),
 		downloader: t.Downloader,
 	})
+
+	s.log.Debugf("Link generated: %s", id)
 }
 
 func (s *service) cleanExpiredLinks() {
@@ -37,6 +39,7 @@ func (s *service) cleanExpiredLinks() {
 		return true
 	})
 	for k, _ := range tmp {
+		s.log.Debugf("Link '%s' is expired", k.(string))
 		s.links.Delete(k)
 	}
 }

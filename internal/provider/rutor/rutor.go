@@ -8,7 +8,6 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/debug"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -22,12 +21,12 @@ type rutorProvider struct {
 }
 
 func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+	l := utils.LogFromContext(ctx, "rutor", r.log)
 	c := colly.NewCollector(
 		colly.UserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"),
 		colly.AllowURLRevisit(),
 	)
 	utils.CollyWithContext(c, ctx)
-	c.SetDebugger(&debug.LogDebugger{})
 
 	var result []model.Torrent
 
@@ -58,11 +57,11 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit u
 	utils.SortTorrents(result)
 	result = utils.Bound(result, limit)
 
-	r.parseDetails(c, result)
+	r.parseDetails(l, c, result)
 	return result, nil
 }
 
-func (r rutorProvider) parseDetails(c *colly.Collector, torrents []model.Torrent) {
+func (r rutorProvider) parseDetails(l *log.Entry, c *colly.Collector, torrents []model.Torrent) {
 	wg := sync.WaitGroup{}
 	for i := range torrents {
 		t := &torrents[i]
@@ -73,7 +72,7 @@ func (r rutorProvider) parseDetails(c *colly.Collector, torrents []model.Torrent
 			defer wg.Done()
 			u := fmt.Sprintf("http://%s%s", domain, t.DetailLink)
 			if err := c.Visit(u); err != nil {
-				r.log.Warnf("Extract details failed: %s", err)
+				l.Warnf("Extract details failed: %s", err)
 			}
 			c.Wait()
 		}()
@@ -89,6 +88,7 @@ func NewProvider() provider.TorrentsProvider {
 
 func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
-		return utils.Download(r.log, http.Client{}, ctx, url)
+		l := utils.LogFromContext(ctx, "rutor", r.log)
+		return utils.Download(l, http.Client{}, ctx, url)
 	}
 }

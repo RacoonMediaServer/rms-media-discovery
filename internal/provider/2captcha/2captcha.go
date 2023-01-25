@@ -18,7 +18,9 @@ type captchaSolver struct {
 }
 
 func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
-	content, err := utils.Download(c.log, http.Client{}, ctx, captcha.Url)
+	l := utils.LogFromContext(ctx, "2captcha", c.log)
+	l.Info("Captcha resolving requested")
+	content, err := utils.Download(l, http.Client{}, ctx, captcha.Url)
 	if err != nil {
 		return "", fmt.Errorf("download captcha failed: %w", err)
 	}

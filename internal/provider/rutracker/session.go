@@ -7,8 +7,8 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/debug"
 	"net/url"
+	"sync"
 )
 
 type session struct {
@@ -30,7 +30,6 @@ func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session 
 }
 
 func (s *session) authorize(ctx context.Context) error {
-	s.c.SetDebugger(&debug.LogDebugger{})
 	utils.CollyWithContext(s.c, ctx)
 
 	var captcha struct {
@@ -123,14 +122,22 @@ func (s *session) search(ctx context.Context, query string, limit uint) ([]model
 	utils.SortTorrents(torrents)
 	torrents = utils.Bound(torrents, limit)
 
-	scrapper := newScrapper(ctx)
-	for i := range torrents {
-		t := &torrents[i]
-		if t.DetailLink != "" {
-			scrapper.scrapAsync(s.c, t, "https://rutracker.org/forum/"+t.DetailLink)
-		}
-	}
-	scrapper.wait()
+	s.parseDetails(torrents)
 
 	return torrents, nil
+}
+
+func (s *session) parseDetails(torrents []model.Torrent) {
+	wg := sync.WaitGroup{}
+
+	for i := range torrents {
+		t := &torrents[i]
+		if t.DetailLink == "" {
+			continue
+		}
+		wg.Add(1)
+		c := s.c.Clone()
+		go parseDetailPage(c, t)
+	}
+	wg.Wait()
 }

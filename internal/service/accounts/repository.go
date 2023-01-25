@@ -32,6 +32,7 @@ func newRepository(log *log.Entry) *repository {
 func (r *repository) Add(acc model.Account) {
 	r.accounts = append(r.accounts, account{Account: acc})
 	r.mapIdToIndex[acc.Id] = len(r.accounts) - 1
+	r.log.Debugf("Account '%s' registered", acc.Id)
 }
 
 func (r *repository) Delete(id string) error {
@@ -47,6 +48,8 @@ func (r *repository) Delete(id string) error {
 	for i := range r.accounts {
 		r.mapIdToIndex[r.accounts[i].Id] = i
 	}
+
+	r.log.Debugf("Account '%s' deleted", id)
 
 	return nil
 }
@@ -67,6 +70,8 @@ func (r *repository) Get() (model.Account, bool) {
 		acc.Mark()
 		r.log.Infof("Account '%s' is marked unaccessible, because limit reached (%d / %d)", acc.Id, acc.reqPerDay, acc.Limit)
 	}
+
+	r.log.Debugf("Account '%s' is used", acc.Id)
 
 	return acc.Account, true
 }

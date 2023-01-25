@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
@@ -23,13 +24,16 @@ func convertSearchMoviesResult(mov *model.Movie) *models.SearchMoviesResult {
 }
 
 func (s *Server) searchMovies(params movies.SearchMoviesParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("key", key.Token).WithField("req", "searchMovies").WithField("q", params.Q)
+	l.Debug("Request")
+
 	var limit uint
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
 	}
-	result, err := s.Movies.Search(params.HTTPRequest.Context(), params.Q, limit)
+	result, err := s.Movies.Search(context.WithValue(params.HTTPRequest.Context(), "log", l), params.Q, limit)
 	if err != nil {
-		s.log.Errorf("search movies failed: %s", err)
+		l.Errorf("Request failed: %s", err)
 		return movies.NewSearchMoviesInternalServerError()
 	}
 
@@ -40,6 +44,8 @@ func (s *Server) searchMovies(params movies.SearchMoviesParams, key *models.Prin
 	for i := range result {
 		payload.Results[i] = convertSearchMoviesResult(&result[i])
 	}
+
+	l.Debugf("Got %d results", len(result))
 
 	return movies.NewSearchMoviesOK().WithPayload(&payload)
 }

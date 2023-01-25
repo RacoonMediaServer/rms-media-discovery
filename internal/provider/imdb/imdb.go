@@ -74,7 +74,7 @@ func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 
 func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
 
-	l := p.log.WithField("query", query)
+	l := utils.LogFromContext(ctx, "imdb", p.log)
 	l.Info("Searching...")
 	list, err := p.search(l, ctx, query)
 	if err != nil {

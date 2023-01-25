@@ -50,7 +50,8 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 }
 
 func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
-	l := s.log.WithField("query", params.Q)
+	l := s.log.WithField("req", "searchTorrents").WithField("key", key.Token).WithField("q", params.Q)
+	l.Debug("Request")
 	var limit uint
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
@@ -69,7 +70,7 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 	}
 	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), params.Q, hint, limit)
 	if err != nil {
-		l.Errorf("Search failed: %s", err)
+		l.Errorf("Request failed: %s", err)
 		return torrents.NewSearchTorrentsInternalServerError()
 	}
 	l.Debugf("Got %d results", len(mov))
@@ -91,13 +92,16 @@ func (r *downloadResponse) WriteResponse(rw http.ResponseWriter, producer runtim
 }
 
 func (s *Server) downloadTorrent(params torrents.DownloadTorrentParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "downloadTorrent").WithField("key", key.Token).WithField("link", params.Link)
+	l.Debug("Request")
 	data, err := s.Torrents.Download(params.HTTPRequest.Context(), params.Link)
 	if err != nil {
+		l.Errorf("Request failed: %s", err)
 		if errors.Is(err, torrents2.ErrExpiredDownloadLink) {
 			return torrents.NewDownloadTorrentNotFound()
 		}
 		return torrents.NewDownloadTorrentInternalServerError()
 	}
-
+	l.Debug("Downloaded")
 	return &downloadResponse{data: data}
 }

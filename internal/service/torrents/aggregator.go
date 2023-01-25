@@ -53,11 +53,6 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint
 	return utils.Bound(total, limit), nil
 }
 
-func (a aggregator) Download(ctx context.Context, link string) ([]byte, error) {
-	//TODO implement me
-	panic("implement me")
-}
-
 func newAggregator(providers []provider.TorrentsProvider) provider.TorrentsProvider {
 	return &aggregator{providers: providers}
 }

@@ -11,7 +11,10 @@ import (
 )
 
 func (s *Server) getUsers(params users.GetUsersParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "getUsers").WithField("key", key.Token)
+	l.Debug("Request")
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
@@ -33,7 +36,9 @@ func (s *Server) getUsers(params users.GetUsersParams, key *models.Principal) mi
 }
 
 func (s *Server) createUser(params users.CreateUserParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "createUser").WithField("key", key.Token)
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
@@ -51,12 +56,14 @@ func (s *Server) createUser(params users.CreateUserParams, key *models.Principal
 }
 
 func (s *Server) deleteUser(params users.DeleteUserParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "deleteUser").WithField("key", key.Token).WithField("id", params.ID)
 	if !key.Admin {
+		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
 
 	if err := s.Users.DeleteUser(params.ID); err != nil {
-		s.log.Errorf("Delete user failed: %s", err)
+		l.Errorf("Request failed: %s", err)
 		if errors.Is(err, usersrv.ErrUserNotFound) {
 			return users.NewDeleteUserNotFound()
 		}
