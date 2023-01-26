@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"net/url"
 	"strconv"
@@ -19,6 +20,7 @@ type imdbProvider struct {
 	log    *log.Entry
 	access model.AccessProvider
 	p      pipeline.Pipeline
+	r      requester.Requester
 }
 
 const (
@@ -62,11 +64,13 @@ type getResponse struct {
 }
 
 func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
-	return &imdbProvider{
+	p := &imdbProvider{
 		log:    log.WithField("from", "imdb"),
 		access: access,
 		p:      pipeline.Open(pipeline.Settings{Id: "imdb"}),
 	}
+	p.r = requester.New(p)
+	return p
 }
 
 func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
@@ -133,7 +137,7 @@ func (p *imdbProvider) search(l *log.Entry, ctx context.Context, query string) (
 			}
 			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "SearchMovie", token.Key, url.PathEscape(query))
 			resp := searchResponse{}
-			err = utils.Get(l, ctx, u, &resp)
+			err = p.r.Get(ctx, u, &resp)
 
 			if err == nil && resp.ErrorMessage != "" {
 				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {
@@ -173,7 +177,7 @@ func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*getRe
 			}
 			u := fmt.Sprintf("%s/%s/%s/%s", imdbEndpoint, "Title", token.Key, id)
 			resp := getResponse{}
-			err = utils.Get(l, ctx, u, &resp)
+			err = p.r.Get(ctx, u, &resp)
 
 			if err == nil && resp.ErrorMessage != "" {
 				if strings.HasPrefix(resp.ErrorMessage, "Maximum usage") {

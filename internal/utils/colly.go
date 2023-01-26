@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gocolly/colly/v2"
 	"net/http"
+	"time"
 )
 
 type contextTransport struct {
@@ -31,6 +32,6 @@ func CollyWithContext(c *colly.Collector, ctx context.Context) {
 	}
 	c.SetClient(&http.Client{
 		Transport: transport,
-		Timeout:   requestTimeout,
+		Timeout:   2 * time.Minute,
 	})
 }

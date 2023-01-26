@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
@@ -91,7 +92,7 @@ func NewProvider() provider.TorrentsProvider {
 
 func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
-		l := utils.LogFromContext(ctx, "rutor", r.log)
-		return utils.Download(l, ctx, url)
+		r := requester.New(r)
+		return r.Download(ctx, url)
 	}
 }
