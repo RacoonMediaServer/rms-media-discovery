@@ -1,10 +1,10 @@
-package utils
+package scraper
 
 import (
 	"context"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"github.com/gocolly/colly/v2"
 	"net/http"
-	"time"
 )
 
 type contextTransport struct {
@@ -17,21 +17,13 @@ func (t *contextTransport) RoundTrip(req *http.Request) (*http.Response, error) 
 	return t.transport.RoundTrip(req)
 }
 
-func CollyWithContext(c *colly.Collector, ctx context.Context) {
-	c.OnRequest(func(req *colly.Request) {
-		select {
-		case <-ctx.Done():
-			req.Abort()
-		default:
-		}
-	})
-
+func setCollyContext(c *colly.Collector, ctx context.Context) {
 	transport := &contextTransport{
 		ctx:       ctx,
 		transport: &http.Transport{},
 	}
 	c.SetClient(&http.Client{
 		Transport: transport,
-		Timeout:   2 * time.Minute,
+		Timeout:   requester.Timeout,
 	})
 }

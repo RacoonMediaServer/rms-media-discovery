@@ -13,9 +13,9 @@ import (
 	"time"
 )
 
-const requestTimeout = 2 * time.Minute
+const Timeout = 30 * time.Second
 
-var httpClient = http.Client{Timeout: requestTimeout}
+var httpClient = http.Client{Timeout: Timeout}
 
 type Requester interface {
 	Get(ctx context.Context, url string, response interface{}) error
@@ -52,11 +52,11 @@ func (r requester) Download(ctx context.Context, url string) ([]byte, error) {
 	}
 	req = req.WithContext(ctx)
 
-	timer := prometheus.NewTimer(outgoingRequestsMetric.WithLabelValues(r.p.ID()))
+	timer := prometheus.NewTimer(OutgoingRequestsMetric.WithLabelValues(r.p.ID()))
 
 	var status int
 	defer func() {
-		outgoingRequestsCounter.WithLabelValues(fmt.Sprintf("%d", status), r.p.ID()).Inc()
+		OutgoingRequestsCounter.WithLabelValues(fmt.Sprintf("%d", status), r.p.ID()).Inc()
 		timer.ObserveDuration()
 	}()
 

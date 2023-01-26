@@ -3,17 +3,19 @@ package rutracker
 import (
 	"context"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/scraper"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/gocolly/colly/v2"
 	"net/url"
-	"sync"
+	"strings"
 )
 
 type session struct {
 	credentials model.Credentials
-	c           *colly.Collector
+	c           scraper.Scraper
 	s           provider.CaptchaSolver
 	authorized  bool
 }
@@ -21,16 +23,13 @@ type session struct {
 func newSession(cred model.Credentials, solver provider.CaptchaSolver) *session {
 	return &session{
 		credentials: cred,
-		c: colly.NewCollector(
-			colly.UserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36"),
-			colly.AllowURLRevisit(),
-		),
-		s: solver,
+		c:           scraper.New("rutracker"),
+		s:           solver,
 	}
 }
 
 func (s *session) authorize(ctx context.Context) error {
-	utils.CollyWithContext(s.c, ctx)
+	s.c.SetContext(ctx)
 
 	var captcha struct {
 		required bool
@@ -39,11 +38,11 @@ func (s *session) authorize(ctx context.Context) error {
 		sid      string
 	}
 
-	s.c.OnHTML("#logged-in-username", func(e *colly.HTMLElement) {
+	sel := s.c.Select("#logged-in-username", func(e *colly.HTMLElement, userData interface{}) {
 		s.authorized = true
 	})
 
-	s.c.OnResponse(func(response *colly.Response) {
+	sel = sel.SelectResponse(func(response *colly.Response, userData interface{}) {
 		content := string(response.Body)
 
 		matches := captchaUrlExpr.FindStringSubmatch(content)
@@ -65,7 +64,7 @@ func (s *session) authorize(ctx context.Context) error {
 		}
 	})
 
-	err := s.c.Post("https://rutracker.org/forum/login.php", map[string]string{
+	err := sel.Post("https://rutracker.org/forum/login.php", map[string]string{
 		"login_username": s.credentials.Login,
 		"login_password": s.credentials.Password,
 		"login":          "Вход",
@@ -74,7 +73,6 @@ func (s *session) authorize(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	s.c.Wait()
 
 	if captcha.required {
 		code, err := s.s.Solve(ctx, provider.Captcha{
@@ -87,7 +85,7 @@ func (s *session) authorize(ctx context.Context) error {
 			return fmt.Errorf("cannot solve captcha: %w", err)
 		}
 
-		err = s.c.Post("https://rutracker.org/forum/login.php", map[string]string{
+		err = sel.Post("https://rutracker.org/forum/login.php", map[string]string{
 			"login_username": s.credentials.Login,
 			"login_password": s.credentials.Password,
 			"login":          "Вход",
@@ -97,7 +95,6 @@ func (s *session) authorize(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("cannot login with captcha: %w", err)
 		}
-		s.c.Wait()
 	}
 
 	if !s.authorized {
@@ -108,16 +105,15 @@ func (s *session) authorize(ctx context.Context) error {
 
 func (s *session) search(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
 	torrents := make([]model.Torrent, 0, limit)
-	utils.CollyWithContext(s.c, ctx)
 
-	s.c.OnHTML("#tor-tbl > tbody > tr", func(e *colly.HTMLElement) {
+	u := "https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)
+	err := s.c.Select("#tor-tbl > tbody > tr", func(e *colly.HTMLElement, userData interface{}) {
 		torrents = append(torrents, parseTorrent(e))
-	})
+	}).Get(u)
 
-	if err := s.c.Visit("https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)); err != nil {
+	if err != nil {
 		return nil, err
 	}
-	s.c.Wait()
 
 	utils.SortTorrents(torrents)
 	torrents = utils.Bound(torrents, limit)
@@ -128,16 +124,27 @@ func (s *session) search(ctx context.Context, query string, limit uint) ([]model
 }
 
 func (s *session) parseDetails(torrents []model.Torrent) {
-	wg := sync.WaitGroup{}
+	type scrapCtx struct {
+		t    *model.Torrent
+		done bool
+	}
+
+	c := s.c.Clone()
+	sel := c.Select(".post_body", func(e *colly.HTMLElement, userData interface{}) {
+		ctx := userData.(scrapCtx)
+		if !ctx.done {
+			ctx.done = true
+			_, mediaInfo, ok := strings.Cut(e.Text, "MediaInfo\n")
+			if ok {
+				ctx.t.Media = media.ParseInfo(mediaInfo)
+			}
+		}
+	})
 
 	for i := range torrents {
-		t := &torrents[i]
-		if t.DetailLink == "" {
-			continue
-		}
-		wg.Add(1)
-		c := s.c.Clone()
-		go parseDetailPage(c, t)
+		ctx := scrapCtx{t: &torrents[i]}
+		sel.GetAsync("https://rutracker.org/forum/"+ctx.t.DetailLink, &ctx)
 	}
-	wg.Wait()
+
+	c.Wait()
 }

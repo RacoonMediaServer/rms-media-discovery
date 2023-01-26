@@ -6,19 +6,19 @@ import (
 )
 
 var (
-	outgoingRequestsCounter *prometheus.CounterVec
-	outgoingRequestsMetric  *prometheus.HistogramVec
+	OutgoingRequestsCounter *prometheus.CounterVec
+	OutgoingRequestsMetric  *prometheus.HistogramVec
 )
 
 func init() {
-	outgoingRequestsCounter = promauto.NewCounterVec(prometheus.CounterOpts{
+	OutgoingRequestsCounter = promauto.NewCounterVec(prometheus.CounterOpts{
 		Namespace: "rms",
 		Subsystem: "media_discovery",
 		Name:      "outgoing_requests_count",
 		Help:      "Total amount of outgoing requests",
 	}, []string{"code", "service"})
 
-	outgoingRequestsMetric = promauto.NewHistogramVec(prometheus.HistogramOpts{
+	OutgoingRequestsMetric = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: "rms",
 		Subsystem: "media_discovery",
 		Name:      "outgoing_request_duration",
