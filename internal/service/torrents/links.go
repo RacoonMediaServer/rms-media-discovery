@@ -25,6 +25,7 @@ func (s *service) processTorrentLink(t *model.Torrent) {
 	})
 
 	s.log.Debugf("Link generated: %s", id)
+	linksRegisteredLinksGauge.Inc()
 }
 
 func (s *service) cleanExpiredLinks() {
@@ -35,6 +36,7 @@ func (s *service) cleanExpiredLinks() {
 		dl, ok := value.(*downloadLink)
 		if ok && now.Sub(dl.created) >= linkExpiredTime {
 			tmp[key] = struct{}{}
+			linksRegisteredLinksGauge.Dec()
 		}
 		return true
 	})

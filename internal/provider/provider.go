@@ -7,14 +7,19 @@ import (
 
 const resultsLimit = 10
 
+type Provider interface {
+	ID() string
+}
+
 // MovieInfoProvider интерфейс сущностей, которые позволяют получать информацию о фильмах и сериалах
 type MovieInfoProvider interface {
-	ID() string
+	Provider
 	SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error)
 }
 
 // TorrentsProvider интерфейс сущностей, которые умеют искать по торрентами
 type TorrentsProvider interface {
+	Provider
 	SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error)
 }
 
@@ -28,5 +33,6 @@ type Captcha struct {
 
 // CaptchaSolver интерфейс рапознавателя капчи
 type CaptchaSolver interface {
+	Provider
 	Solve(ctx context.Context, captcha Captcha) (string, error)
 }

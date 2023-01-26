@@ -16,6 +16,10 @@ type captchaSolver struct {
 	access model.AccessProvider
 }
 
+func (c captchaSolver) ID() string {
+	return "2captcha"
+}
+
 func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
 	l := utils.LogFromContext(ctx, "2captcha", c.log)
 	l.Info("Captcha resolving requested")

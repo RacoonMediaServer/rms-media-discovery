@@ -12,6 +12,10 @@ type aggregator struct {
 	providers []provider.TorrentsProvider
 }
 
+func (a aggregator) ID() string {
+	return "aggregator"
+}
+
 func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
 	type result struct {
 		torrents []model.Torrent

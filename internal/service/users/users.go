@@ -16,6 +16,7 @@ func (s *service) CheckAccess(token string) (valid bool, admin bool) {
 	}
 
 	s.log.Debugf("Access for user '%s' granted", token)
+	userRequestsCounter.WithLabelValues(token).Inc()
 
 	valid = true
 	admin = user.IsAdmin

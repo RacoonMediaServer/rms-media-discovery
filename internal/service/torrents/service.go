@@ -40,7 +40,7 @@ type service struct {
 func New(access model.AccessProvider) Service {
 	return &service{
 		provider: newAggregator([]provider.TorrentsProvider{
-			rutracker.NewProvider(access, _captcha.NewSolver(access)),
+			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
 			rutor.NewProvider(),
 		}),
 		log: log.WithField("from", "torrents"),

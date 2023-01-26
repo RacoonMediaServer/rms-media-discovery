@@ -115,9 +115,11 @@ func (r *repository) MarkUnaccessible(id string) {
 func (a *account) Mark() {
 	a.marked = true
 	a.markedTime = time.Now()
+	unaccessibleAccountsGauge.WithLabelValues(a.Service()).Inc()
 }
 
 func (a *account) UnMark() {
 	a.marked = false
 	a.reqPerDay = 0
+	unaccessibleAccountsGauge.WithLabelValues(a.Service()).Dec()
 }

@@ -19,6 +19,10 @@ type rutorProvider struct {
 	log *log.Entry
 }
 
+func (r rutorProvider) ID() string {
+	return "rutor"
+}
+
 func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
 	l := utils.LogFromContext(ctx, "rutor", r.log)
 	c := colly.NewCollector(
