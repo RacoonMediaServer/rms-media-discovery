@@ -82,6 +82,7 @@ func NewProvider() provider.TorrentsProvider {
 func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
 		r := requester.New(r)
-		return r.Download(ctx, url)
+		data, _, err := r.Download(ctx, url)
+		return data, err
 	}
 }
