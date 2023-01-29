@@ -61,6 +61,7 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit u
 }
 
 func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent) {
+	c = c.Clone()
 	sel := c.Select("#logo > a > img", func(e *colly.HTMLElement, userData interface{}) {
 		// TODO: scrap
 	})

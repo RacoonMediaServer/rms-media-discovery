@@ -3,6 +3,7 @@ package scraper
 import (
 	"context"
 	"github.com/gocolly/colly/v2"
+	"net/http"
 )
 
 type HTMLCallback func(e *colly.HTMLElement, userData interface{})
@@ -21,6 +22,7 @@ type Scraper interface {
 	Clone() Scraper
 	Select(selector string, f HTMLCallback) Selector
 	SelectResponse(f ResponseCallback) Selector
+	SetCookies(url string, cookies []*http.Cookie) error
 	Wait()
 }
 
@@ -104,6 +106,10 @@ func (s *scraper) SelectResponse(f ResponseCallback) Selector {
 
 func (s *scraper) Wait() {
 	s.c.Wait()
+}
+
+func (s *scraper) SetCookies(url string, cookies []*http.Cookie) error {
+	return s.c.SetCookies(url, cookies)
 }
 
 func (s *scraper) clear() {

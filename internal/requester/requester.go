@@ -19,19 +19,25 @@ var httpClient = http.Client{Timeout: Timeout}
 
 type Requester interface {
 	Get(ctx context.Context, url string, response interface{}) error
-	Download(ctx context.Context, url string) ([]byte, error)
+	Download(ctx context.Context, url string) ([]byte, string, error)
+	SetCookies(cookies []*http.Cookie)
 }
 
 type requester struct {
-	p provider.Provider
+	p       provider.Provider
+	cookies []*http.Cookie
 }
 
 func New(p provider.Provider) Requester {
 	return &requester{p: p}
 }
 
-func (r requester) Get(ctx context.Context, url string, response interface{}) error {
-	buf, err := r.Download(ctx, url)
+func (r *requester) SetCookies(cookies []*http.Cookie) {
+	r.cookies = cookies
+}
+
+func (r *requester) Get(ctx context.Context, url string, response interface{}) error {
+	buf, _, err := r.Download(ctx, url)
 	if err != nil {
 		return err
 	}
@@ -43,15 +49,18 @@ func (r requester) Get(ctx context.Context, url string, response interface{}) er
 	return nil
 }
 
-func (r requester) Download(ctx context.Context, url string) ([]byte, error) {
+func (r *requester) Download(ctx context.Context, url string) ([]byte, string, error) {
 	l := utils.LogFromContext(ctx, r.p.ID(), log.WithField("from", r.p.ID())).WithField("url", url)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return nil, fmt.Errorf("create request failed: %w", err)
+		return nil, "", fmt.Errorf("create request failed: %w", err)
 	}
 	req = req.WithContext(ctx)
 
+	for _, cookie := range r.cookies {
+		req.AddCookie(cookie)
+	}
 	timer := prometheus.NewTimer(OutgoingRequestsMetric.WithLabelValues(r.p.ID()))
 
 	var status int
@@ -63,7 +72,7 @@ func (r requester) Download(ctx context.Context, url string) ([]byte, error) {
 	l.Debugf("Fetching...")
 	resp, err := httpClient.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("'%s' request failed: %w", url, err)
+		return nil, "", fmt.Errorf("'%s' request failed: %w", url, err)
 	}
 	defer resp.Body.Close()
 	status = resp.StatusCode
@@ -71,13 +80,13 @@ func (r requester) Download(ctx context.Context, url string) ([]byte, error) {
 	l.Debugf("Got response: %s", resp.Status)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("'%s': unexpected status code: %d", url, resp.StatusCode)
+		return nil, "", fmt.Errorf("'%s': unexpected status code: %d", url, resp.StatusCode)
 	}
 
 	buf, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("'%s': network I/O error: %w", url, err)
+		return nil, "", fmt.Errorf("'%s': network I/O error: %w", url, err)
 	}
 
-	return buf, nil
+	return buf, resp.Header.Get("Content-Type"), nil
 }

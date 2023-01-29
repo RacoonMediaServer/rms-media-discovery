@@ -2,15 +2,12 @@ package rutracker
 
 import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"github.com/gocolly/colly/v2"
+	"github.com/PuerkitoBio/goquery"
 	"regexp"
 	"strconv"
 )
 
 var (
-	captchaSidExpr  = regexp.MustCompile(`<input[^>]*name="cap_sid"[^>]*value="([^"]+)"[^>]*>`)
-	captchaCodeExpr = regexp.MustCompile(`<input[^>]*name="(cap_code_[^"]+)"[^>]*value="[^"]*"[^>]*>`)
-	captchaUrlExpr  = regexp.MustCompile(`<img[^>]*src="([^"]+\/captcha\/[^"]+)"[^>]*>`)
 	extractSizeExpr = regexp.MustCompile(`^(\d+(.\d+)?) (MB|GB)`)
 )
 
@@ -30,24 +27,24 @@ func parseTorrentSize(text string) uint64 {
 	return 0
 }
 
-func parseTorrent(e *colly.HTMLElement) model.Torrent {
+func parseTorrent(e *goquery.Selection) model.Torrent {
 	torrent := model.Torrent{}
-	torrent.Title = e.DOM.Find(`a.tLink`).Text()
+	torrent.Title = e.Find(`a.tLink`).Text()
 
-	dl := e.DOM.Find(`a.tr-dl`)
+	dl := e.Find(`a.tr-dl`)
 	link, _ := dl.Attr("href")
 	torrent.Link = link
 	torrent.SizeMB = parseTorrentSize(dl.Text())
 
-	seeds := e.DOM.Find(`b.seedmed`).Text()
+	seeds := e.Find(`b.seedmed`).Text()
 	seedersCount, _ := strconv.ParseUint(seeds, 10, 32)
 	torrent.Seeders = uint(seedersCount)
 
-	leechs := e.DOM.Find(`td.leechmed`).Text()
+	leechs := e.Find(`td.leechmed`).Text()
 	peers, _ := strconv.Atoi(leechs)
 	torrent.Seeders += uint(peers)
 
-	torrent.DetailLink, _ = e.DOM.Find(`a.tLink`).Attr("href")
+	torrent.DetailLink, _ = e.Find(`a.tLink`).Attr("href")
 
 	return torrent
 }

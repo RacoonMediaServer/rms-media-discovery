@@ -6,7 +6,10 @@ import (
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"github.com/apex/log"
+	"net/http"
+	"strings"
 	"sync"
 )
 
@@ -51,7 +54,36 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string, li
 			return nil, err
 		}
 
-		return s.search(ctx, query, limit)
+		result, err := s.search(ctx, query, limit)
+		if err != nil {
+			return nil, err
+		}
+
+		cookies, err := s.n.GetCookies()
+		if err != nil {
+			return nil, fmt.Errorf("extract cookies failed: %w", err)
+		}
+		for i := range result {
+			t := &result[i]
+			t.Downloader = r.newDownloader(t.Link, cookies)
+		}
+
+		return result, err
+	}
+}
+
+func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) model.DownloadFunc {
+	return func(ctx context.Context) ([]byte, error) {
+		r := requester.New(r)
+		r.SetCookies(cookies)
+		data, contentType, err := r.Download(ctx, "https://rutracker.org/forum/"+link)
+		if err != nil {
+			return nil, err
+		}
+		if !strings.HasPrefix(contentType, "application/x-bittorrent") {
+			return nil, errors.New("unexpected Content-Type")
+		}
+		return data, err
 	}
 }
 
@@ -60,9 +92,12 @@ func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model.C
 		return s, nil
 	}
 
-	s := newSession(cred, r.s)
+	s, err := newSession(cred, r.s)
+	if err != nil {
+		return nil, fmt.Errorf("create new session failed: %w", err)
+	}
 
-	if err := s.authorize(ctx); err != nil {
+	if err = s.authorize(ctx); err != nil {
 		return nil, fmt.Errorf("auth failed: %w", err)
 	}
 
@@ -70,9 +105,7 @@ func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model.C
 	r.sessions[cred.AccountId] = s
 	r.mu.Unlock()
 
-	newSession := *s
-	newSession.c = s.c.Clone()
-	return &newSession, nil
+	return s, nil
 }
 
 func (r *ruTrackerProvider) getSession(accountId string) (*session, bool) {
@@ -83,7 +116,5 @@ func (r *ruTrackerProvider) getSession(accountId string) (*session, bool) {
 	if !ok {
 		return nil, ok
 	}
-	newSession := *s
-	newSession.c = s.c.Clone()
-	return &newSession, ok
+	return s, ok
 }

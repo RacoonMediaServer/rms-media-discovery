@@ -25,7 +25,7 @@ func (c captchaSolver) ID() string {
 func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
 	l := utils.LogFromContext(ctx, "2captcha", c.log)
 	l.Info("Captcha resolving requested")
-	content, err := c.r.Download(ctx, captcha.Url)
+	content, _, err := c.r.Download(ctx, captcha.Url)
 	if err != nil {
 		return "", fmt.Errorf("download captcha failed: %w", err)
 	}

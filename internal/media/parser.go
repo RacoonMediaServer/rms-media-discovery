@@ -18,7 +18,10 @@ func ParseInfo(content string) *Info {
 	scanner := bufio.NewScanner(strings.NewReader(content))
 	for scanner.Scan() {
 		text := scanner.Text()
-		key, value, ok := strings.Cut(text, " : ")
+		key, value, ok := strings.Cut(text, ": ")
+		key = strings.TrimRight(key, " ")
+		key = strings.TrimRight(key, string(rune(0xa0)))
+		key = strings.TrimRight(key, "\t")
 		if !ok {
 			continue
 		}
