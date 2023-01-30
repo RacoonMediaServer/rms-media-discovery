@@ -70,11 +70,6 @@ DeleteAccountInternalServerError Ошибка на стороне сервера
 swagger:response deleteAccountInternalServerError
 */
 type DeleteAccountInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewDeleteAccountInternalServerError creates DeleteAccountInternalServerError with default headers values
@@ -83,23 +78,10 @@ func NewDeleteAccountInternalServerError() *DeleteAccountInternalServerError {
 	return &DeleteAccountInternalServerError{}
 }
 
-// WithPayload adds the payload to the delete account internal server error response
-func (o *DeleteAccountInternalServerError) WithPayload(payload interface{}) *DeleteAccountInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the delete account internal server error response
-func (o *DeleteAccountInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *DeleteAccountInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }

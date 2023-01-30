@@ -65,11 +65,6 @@ SearchTorrentsInternalServerError Ошибка на стороне сервер�
 swagger:response searchTorrentsInternalServerError
 */
 type SearchTorrentsInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewSearchTorrentsInternalServerError creates SearchTorrentsInternalServerError with default headers values
@@ -78,23 +73,10 @@ func NewSearchTorrentsInternalServerError() *SearchTorrentsInternalServerError {
 	return &SearchTorrentsInternalServerError{}
 }
 
-// WithPayload adds the payload to the search torrents internal server error response
-func (o *SearchTorrentsInternalServerError) WithPayload(payload interface{}) *SearchTorrentsInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the search torrents internal server error response
-func (o *SearchTorrentsInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *SearchTorrentsInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }

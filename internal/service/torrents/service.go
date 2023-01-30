@@ -7,7 +7,6 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	_captcha "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/2captcha"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/aggregator"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutor"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutracker"
 	"github.com/apex/log"
 	"github.com/teris-io/shortid"
@@ -33,7 +32,7 @@ func New(access model.AccessProvider) Service {
 	return &service{
 		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider.TorrentsProvider{
 			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
-			rutor.NewProvider(),
+			//rutor.NewProvider(),
 		}),
 		log: log.WithField("from", "torrents"),
 		gen: shortid.MustNew(1, shortid.DefaultABC, uint64(time.Now().Nanosecond())),

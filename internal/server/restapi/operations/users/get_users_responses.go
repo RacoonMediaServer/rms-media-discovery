@@ -65,11 +65,6 @@ GetUsersInternalServerError Ошибка на стороне сервера
 swagger:response getUsersInternalServerError
 */
 type GetUsersInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewGetUsersInternalServerError creates GetUsersInternalServerError with default headers values
@@ -78,23 +73,10 @@ func NewGetUsersInternalServerError() *GetUsersInternalServerError {
 	return &GetUsersInternalServerError{}
 }
 
-// WithPayload adds the payload to the get users internal server error response
-func (o *GetUsersInternalServerError) WithPayload(payload interface{}) *GetUsersInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the get users internal server error response
-func (o *GetUsersInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *GetUsersInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }

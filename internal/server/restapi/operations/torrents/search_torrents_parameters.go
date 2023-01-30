@@ -57,7 +57,7 @@ type SearchTorrentsParams struct {
 	  In: query
 	*/
 	Q string
-	/*Подсказка, какого типа инфу искать
+	/*Подсказка, какого типа торренты искать
 	  In: query
 	*/
 	Type *string

@@ -65,11 +65,6 @@ GetAccountsInternalServerError Ошибка на стороне сервера
 swagger:response getAccountsInternalServerError
 */
 type GetAccountsInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewGetAccountsInternalServerError creates GetAccountsInternalServerError with default headers values
@@ -78,23 +73,10 @@ func NewGetAccountsInternalServerError() *GetAccountsInternalServerError {
 	return &GetAccountsInternalServerError{}
 }
 
-// WithPayload adds the payload to the get accounts internal server error response
-func (o *GetAccountsInternalServerError) WithPayload(payload interface{}) *GetAccountsInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the get accounts internal server error response
-func (o *GetAccountsInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *GetAccountsInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }

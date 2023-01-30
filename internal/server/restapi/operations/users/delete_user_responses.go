@@ -70,11 +70,6 @@ DeleteUserInternalServerError Ошибка на стороне сервера
 swagger:response deleteUserInternalServerError
 */
 type DeleteUserInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewDeleteUserInternalServerError creates DeleteUserInternalServerError with default headers values
@@ -83,23 +78,10 @@ func NewDeleteUserInternalServerError() *DeleteUserInternalServerError {
 	return &DeleteUserInternalServerError{}
 }
 
-// WithPayload adds the payload to the delete user internal server error response
-func (o *DeleteUserInternalServerError) WithPayload(payload interface{}) *DeleteUserInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the delete user internal server error response
-func (o *DeleteUserInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *DeleteUserInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }

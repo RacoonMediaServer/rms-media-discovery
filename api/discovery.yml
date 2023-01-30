@@ -63,8 +63,6 @@ paths:
             
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -86,7 +84,7 @@ paths:
         - name: type
           in: query
           required: false
-          description: Подсказка, какого типа инфу искать
+          description: Подсказка, какого типа торренты искать
           type: string
           enum:
             - movies
@@ -120,8 +118,6 @@ paths:
             
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -149,8 +145,6 @@ paths:
             
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -185,8 +179,6 @@ paths:
                       type: number
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -220,8 +212,6 @@ paths:
                 type: string
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -244,8 +234,6 @@ paths:
           description: Ключ не найден
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -269,8 +257,6 @@ paths:
                   $ref: "#/definitions/Account"
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -296,8 +282,6 @@ paths:
                 type: string
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 
@@ -320,8 +304,6 @@ paths:
           description: Аккаунт не найден
         '500':
           description: Ошибка на стороне сервера
-          schema:
-            type: object
       security:
         - key: [ ]
 

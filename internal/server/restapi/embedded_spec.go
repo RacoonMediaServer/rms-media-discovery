@@ -62,10 +62,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       },
@@ -105,10 +102,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -142,10 +136,7 @@ func init() {
             "description": "Аккаунт не найден"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -198,10 +189,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       },
@@ -253,10 +241,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -290,10 +275,7 @@ func init() {
             "description": "Ключ не найден"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -348,10 +330,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -389,10 +368,7 @@ func init() {
             "description": "Неверный хеш ссылки"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -428,7 +404,7 @@ func init() {
               "others"
             ],
             "type": "string",
-            "description": "Подсказка, какого типа инфу искать",
+            "description": "Подсказка, какого типа торренты искать",
             "name": "type",
             "in": "query"
           },
@@ -466,10 +442,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -712,10 +685,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       },
@@ -755,10 +725,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -792,10 +759,7 @@ func init() {
             "description": "Аккаунт не найден"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -831,10 +795,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       },
@@ -886,10 +847,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -923,10 +881,7 @@ func init() {
             "description": "Ключ не найден"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -981,10 +936,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -1022,10 +974,7 @@ func init() {
             "description": "Неверный хеш ссылки"
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }
@@ -1061,7 +1010,7 @@ func init() {
               "others"
             ],
             "type": "string",
-            "description": "Подсказка, какого типа инфу искать",
+            "description": "Подсказка, какого типа торренты искать",
             "name": "type",
             "in": "query"
           },
@@ -1099,10 +1048,7 @@ func init() {
             }
           },
           "500": {
-            "description": "Ошибка на стороне сервера",
-            "schema": {
-              "type": "object"
-            }
+            "description": "Ошибка на стороне сервера"
           }
         }
       }

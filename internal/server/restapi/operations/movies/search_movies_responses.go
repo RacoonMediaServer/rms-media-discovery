@@ -65,11 +65,6 @@ SearchMoviesInternalServerError Ошибка на стороне сервера
 swagger:response searchMoviesInternalServerError
 */
 type SearchMoviesInternalServerError struct {
-
-	/*
-	  In: Body
-	*/
-	Payload interface{} `json:"body,omitempty"`
 }
 
 // NewSearchMoviesInternalServerError creates SearchMoviesInternalServerError with default headers values
@@ -78,23 +73,10 @@ func NewSearchMoviesInternalServerError() *SearchMoviesInternalServerError {
 	return &SearchMoviesInternalServerError{}
 }
 
-// WithPayload adds the payload to the search movies internal server error response
-func (o *SearchMoviesInternalServerError) WithPayload(payload interface{}) *SearchMoviesInternalServerError {
-	o.Payload = payload
-	return o
-}
-
-// SetPayload sets the payload to the search movies internal server error response
-func (o *SearchMoviesInternalServerError) SetPayload(payload interface{}) {
-	o.Payload = payload
-}
-
 // WriteResponse to the client
 func (o *SearchMoviesInternalServerError) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
+	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
+
 	rw.WriteHeader(500)
-	payload := o.Payload
-	if err := producer.Produce(rw, payload); err != nil {
-		panic(err) // let the recovery middleware deal with this
-	}
 }
