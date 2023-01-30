@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
@@ -18,7 +18,7 @@ import (
 
 type imdbProvider struct {
 	log    *log.Entry
-	access model2.AccessProvider
+	access model.AccessProvider
 	p      pipeline.Pipeline
 	r      requester.Requester
 }
@@ -63,7 +63,7 @@ type getResponse struct {
 	}
 }
 
-func NewProvider(access model2.AccessProvider) provider.MovieInfoProvider {
+func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &imdbProvider{
 		log:    log.WithField("from", "imdb"),
 		access: access,
@@ -73,7 +73,7 @@ func NewProvider(access model2.AccessProvider) provider.MovieInfoProvider {
 	return p
 }
 
-func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model2.Movie, error) {
+func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
 
 	l := utils.LogFromContext(ctx, "imdb", p.log)
 	l.Info("Searching...")
@@ -83,14 +83,14 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 	}
 	l.Infof("Got %d results", len(list.Results))
 
-	movies := make([]model2.Movie, 0)
+	movies := make([]model.Movie, 0)
 	for _, item := range list.Results {
 		info, err := p.get(l, ctx, item.Id)
 		if err != nil {
 			l.Errorf("Retrieve info about '%s' failed: %s", item.Title, err)
 			continue
 		}
-		m := model2.Movie{
+		m := model.Movie{
 			ID:          item.Id,
 			Title:       info.Title,
 			Description: info.Plot,
@@ -114,9 +114,9 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 			m.Genres = append(m.Genres, genre.Value)
 		}
 
-		m.Type = model2.MovieType_Movie
+		m.Type = model.MovieType_Movie
 		if info.Type == "TVSeries" {
-			m.Type = model2.MovieType_TvSeries
+			m.Type = model.MovieType_TvSeries
 		}
 
 		movies = append(movies, m)

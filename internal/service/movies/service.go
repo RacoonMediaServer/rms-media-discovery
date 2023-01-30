@@ -2,23 +2,23 @@ package movies
 
 import (
 	"context"
-	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	provider2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/imdb"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/kinopoisk"
 )
 
 type Service interface {
-	Search(ctx context.Context, query string, limit uint) ([]model2.Movie, error)
+	Search(ctx context.Context, query string, limit uint) ([]model.Movie, error)
 }
 
 type service struct {
-	mainProvider provider2.MovieInfoProvider
+	mainProvider provider.MovieInfoProvider
 }
 
-func New(access model2.AccessProvider) Service {
+func New(access model.AccessProvider) Service {
 	return &service{
-		mainProvider: provider2.NewFallbackProvider([]provider2.MovieInfoProvider{
+		mainProvider: provider.NewFallbackProvider([]provider.MovieInfoProvider{
 			imdb.NewProvider(access),
 			kinopoisk.NewKinopoiskProvider(access),
 		}),

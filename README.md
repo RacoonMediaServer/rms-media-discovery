@@ -1,7 +1,8 @@
 # rms-media-discovery
 
 This is a backend-service, which provide ability of searching and downloading movies/TV series/music via torrent
-trackers for free. Is uses a set of providers (external systems), which contents searched information. `rms-media-service` could be described as web-crawler application.
+trackers for free. Is uses a set of providers (external systems), which contents searched
+information. `rms-media-service` could be described as web-crawler application.
 
 ## Capabilities
 
@@ -71,7 +72,8 @@ docker run -p 8080:8080 -e RMS_DATABASE=mongodb://192.168.1.19:27017 rms-media-d
 
 ## Accounts management
 
-Some external systems need user accounts or limited API keys for providing functionality. You can register and append they to database manually or via [API](api/discovery.yml). Each account links to external system id. They can be:
+Some external systems need user accounts or limited API keys for providing functionality. You can register and append
+they to database manually or via [API](api/discovery.yml). Each account links to external system id. They can be:
 
 * `imdb` - [IMDB](https://www.imdb.com/) API key. You can get it [here](https://imdb-api.com/Identity/Account/Register).
 * `kinopoisk` - [Кинопоиск](https://www.kinopoisk.ru/) API key. You can get i [here](https://kinopoisk.dev/)

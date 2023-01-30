@@ -53,14 +53,14 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - results
             properties:
               results:
                 type: array
                 items:
                   $ref: "#/definitions/SearchMoviesResult"
-            
+
         '500':
           description: Ошибка на стороне сервера
       security:
@@ -108,14 +108,14 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - results
             properties:
               results:
                 type: array
                 items:
                   $ref: "#/definitions/SearchTorrentsResult"
-            
+
         '500':
           description: Ошибка на стороне сервера
       security:
@@ -142,7 +142,7 @@ paths:
 
         '404':
           description: Неверный хеш ссылки
-            
+
         '500':
           description: Ошибка на стороне сервера
       security:
@@ -159,7 +159,7 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - results
             properties:
               results:
@@ -167,7 +167,7 @@ paths:
                 items:
                   type: object
                   properties:
-                    id: 
+                    id:
                       type: string
                     info:
                       type: string
@@ -205,7 +205,7 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - id
             properties:
               id:
@@ -248,7 +248,7 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - results
             properties:
               results:
@@ -275,7 +275,7 @@ paths:
           description: OK
           schema:
             type: object
-            required: 
+            required:
               - id
             properties:
               id:
@@ -310,7 +310,7 @@ paths:
 definitions:
   SearchMoviesResult:
     type: object
-    required: 
+    required:
       - id
       - title
     properties:
@@ -412,9 +412,9 @@ definitions:
         type: integer
         default: 0
   principal:
-      type: object
-      properties:
-        token: 
-          type: string
-        admin:
-          type: boolean  
+    type: object
+    properties:
+      token:
+        type: string
+      admin:
+        type: boolean
