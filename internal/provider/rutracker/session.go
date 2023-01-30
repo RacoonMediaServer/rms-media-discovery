@@ -19,7 +19,7 @@ import (
 
 type session struct {
 	credentials model.Credentials
-	n           *navigator.Navigator
+	n           navigator.Navigator
 	s           provider.CaptchaSolver
 	authorized  bool
 	l           *log.Entry

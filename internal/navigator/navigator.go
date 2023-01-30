@@ -1,12 +1,9 @@
 package navigator
 
 import (
-	"bytes"
 	"context"
-	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"github.com/playwright-community/playwright-go"
-	"io/ioutil"
 	"net/http"
 	"time"
 )
@@ -18,20 +15,15 @@ var (
 	browser     playwright.Browser
 )
 
-type Navigator struct {
+type navigator struct {
 	ctx      playwright.BrowserContext
 	dumpPath string
 }
 
-type Page struct {
-	ctx      context.Context
-	ch       chan error
-	page     playwright.Page
-	log      *log.Entry
-	err      error
-	batch    string
-	dumpPath string
-	doc      *goquery.Document
+type Navigator interface {
+	NewPage(log *log.Entry, ctx context.Context) (Page, error)
+	GetCookies(urls ...string) (result []*http.Cookie, err error)
+	Close()
 }
 
 func init() {
@@ -51,7 +43,7 @@ func init() {
 	}
 }
 
-func New(dumpPath ...string) (*Navigator, error) {
+func New(dumpPath ...string) (Navigator, error) {
 	dp := ""
 	if len(dumpPath) > 0 {
 		dp = dumpPath[0]
@@ -61,173 +53,29 @@ func New(dumpPath ...string) (*Navigator, error) {
 		return nil, err
 	}
 
-	return &Navigator{ctx: ctx, dumpPath: dp}, nil
+	return &navigator{ctx: ctx, dumpPath: dp}, nil
 }
 
-func (n *Navigator) NewPage(log *log.Entry, ctx context.Context) (*Page, error) {
-	page, err := n.ctx.NewPage()
+func (n *navigator) NewPage(log *log.Entry, ctx context.Context) (Page, error) {
+	p, err := n.ctx.NewPage()
 	if err != nil {
 		return nil, err
 	}
 
-	result := &Page{
+	result := &page{
 		ch:       make(chan error),
 		ctx:      ctx,
-		page:     page,
+		page:     p,
 		log:      log,
 		dumpPath: n.dumpPath,
 	}
 
-	page.SetDefaultTimeout(defaultTimeout)
+	p.SetDefaultTimeout(defaultTimeout)
 
 	return result, nil
 }
 
-func (p *Page) Batch(title string) *Page {
-	p.batch = title
-	return p
-}
-
-func (p *Page) Goto(url string) *Page {
-	if p.err != nil {
-		return nil
-	}
-
-	go func() {
-		p.goTo(url)
-	}()
-
-	select {
-	case p.err = <-p.ch:
-	case <-p.ctx.Done():
-		p.err = p.ctx.Err()
-	}
-	p.checkError("Goto")
-	return p
-}
-
-func (p *Page) goTo(url string) {
-
-	p.log.Debugf("%s: navigating to '%s'...", p.batch, url)
-	_, err := p.page.Goto(url)
-	select {
-	case p.ch <- err:
-	case <-p.ctx.Done():
-	}
-}
-
-func (p *Page) Error() error {
-	return p.err
-}
-
-func (p *Page) RaiseError(err error) {
-	p.err = err
-	p.checkError("Raise")
-}
-
-func (p *Page) ClearError() *Page {
-	p.err = nil
-	return p
-}
-
-func (p *Page) Type(selector, text string) *Page {
-	if p.err != nil {
-		return p
-	}
-	p.log.Debugf("%s: typing '%s' to '%s'...", p.batch, text, selector)
-	p.err = p.page.Type(selector, text)
-
-	p.checkError("Type")
-	return p
-}
-
-func (p *Page) Click(selector string) *Page {
-	if p.err != nil {
-		return p
-	}
-
-	go p.click(selector)
-
-	select {
-	case p.err = <-p.ch:
-	case <-p.ctx.Done():
-		p.err = p.ctx.Err()
-	}
-
-	p.checkError("Click")
-	return p
-}
-
-func (p *Page) click(selector string) {
-	p.log.Debugf("%s: clicking on '%s'...", p.batch, selector)
-	err := p.page.Click(selector)
-	select {
-	case p.ch <- err:
-	case <-p.ctx.Done():
-	}
-}
-
-func (p *Page) FetchContent() *Page {
-	if p.err != nil {
-		return p
-	}
-
-	p.log.Debugf("%s: fetching content", p.batch)
-	output := ""
-	output, p.err = p.page.Content()
-	if p.err == nil {
-		p.doc, p.err = goquery.NewDocumentFromReader(bytes.NewReader([]byte(output)))
-	}
-	p.checkError("FetchContent")
-	return p
-}
-
-func (p *Page) Document() *goquery.Document {
-	return p.doc
-}
-
-func (p *Page) Screenshot(fileName string) *Page {
-	data, err := p.page.Screenshot()
-	if err != nil {
-		p.log.Warnf("Cannot get screenshot: %+v", err)
-		return p
-	}
-	if err = ioutil.WriteFile(fileName, data, 0644); err != nil {
-		p.log.Warnf("Cannot save screenshot: %+v", err)
-	}
-	return p
-}
-
-func (p *Page) TracePage(fileName string) *Page {
-	content, err := p.page.Content()
-	if err != nil {
-		p.log.Warnf("Cannot fetch page content: %+v", err)
-		return p
-	}
-	if err = ioutil.WriteFile(fileName, []byte(content), 0644); err != nil {
-		p.log.Warnf("Cannot save page content: %+v", err)
-	}
-	return p
-}
-
-func (p *Page) Sleep(d time.Duration) *Page {
-	if p.err != nil {
-		return p
-	}
-	p.log.Debugf("%s: waiting for %+v", p.batch, d)
-	<-time.After(d)
-	return p
-}
-
-func (p *Page) Address() string {
-	return p.page.URL()
-}
-
-func (p *Page) Close() {
-	_ = p.page.Close()
-}
-
-func (n *Navigator) GetCookies(urls ...string) (result []*http.Cookie, err error) {
+func (n *navigator) GetCookies(urls ...string) (result []*http.Cookie, err error) {
 	cookies, err := n.ctx.Cookies(urls...)
 	if err != nil {
 		return
@@ -249,6 +97,6 @@ func (n *Navigator) GetCookies(urls ...string) (result []*http.Cookie, err error
 	return
 }
 
-func (n *Navigator) Close() {
+func (n *navigator) Close() {
 	_ = n.ctx.Close()
 }
