@@ -17,3 +17,19 @@ type Torrent struct {
 	DetailLink string
 	Downloader DownloadFunc
 }
+
+type SearchTypeHint int
+
+const (
+	SearchType_Movies SearchTypeHint = iota
+	SearchType_Music
+	SearchType_Books
+	SearchType_Other
+)
+
+type SearchQuery struct {
+	Query    string
+	Hint     SearchTypeHint
+	Limit    uint
+	Detailed bool
+}

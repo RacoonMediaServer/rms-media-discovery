@@ -14,19 +14,10 @@ import (
 	"time"
 )
 
-type SearchTypeHint int
-
-const (
-	SearchType_Movies SearchTypeHint = iota
-	SearchType_Music
-	SearchType_Books
-	SearchType_Other
-)
-
 var ErrExpiredDownloadLink = errors.New("download link expired or not registered")
 
 type Service interface {
-	Search(ctx context.Context, query string, hint SearchTypeHint, limit uint) ([]model.Torrent, error)
+	Search(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
 	Download(ctx context.Context, link string) ([]byte, error)
 }
 

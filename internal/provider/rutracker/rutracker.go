@@ -39,7 +39,7 @@ func (r *ruTrackerProvider) ID() string {
 	return "rutracker"
 }
 
-func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
 		if err != nil {
@@ -54,7 +54,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, query string, li
 			return nil, err
 		}
 
-		result, err := s.search(ctx, query, limit)
+		result, err := s.search(ctx, q)
 		if err != nil {
 			return nil, err
 		}

@@ -16,7 +16,7 @@ func (a aggregator) ID() string {
 	return "aggregator"
 }
 
-func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+func (a aggregator) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	type result struct {
 		torrents []model.Torrent
 		err      error
@@ -30,7 +30,7 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint
 	for _, p := range a.providers {
 		go func(p provider.TorrentsProvider) {
 			defer wg.Done()
-			r, err := p.SearchTorrents(ctx, query, limit)
+			r, err := p.SearchTorrents(ctx, q)
 			ch <- result{torrents: r, err: err}
 		}(p)
 	}
@@ -54,7 +54,7 @@ func (a aggregator) SearchTorrents(ctx context.Context, query string, limit uint
 	}
 
 	utils.SortTorrents(total)
-	return utils.Bound(total, limit), nil
+	return utils.Bound(total, q.Limit), nil
 }
 
 func newAggregator(providers []provider.TorrentsProvider) provider.TorrentsProvider {

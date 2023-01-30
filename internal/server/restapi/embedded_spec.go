@@ -438,6 +438,13 @@ func init() {
             "description": "Ограничение на кол-во результатов",
             "name": "limit",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Забирать ли детальное описание раздачи",
+            "name": "detailed",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1063,6 +1070,13 @@ func init() {
             "type": "integer",
             "description": "Ограничение на кол-во результатов",
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Забирать ли детальное описание раздачи",
+            "name": "detailed",
             "in": "query"
           }
         ],

@@ -116,15 +116,15 @@ func (s *session) authorize(ctx context.Context) error {
 	return nil
 }
 
-func (s *session) search(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	l := utils.LogFromContext(ctx, "rutracker", s.l)
 	p, err := s.n.NewPage(l, ctx)
 	if err != nil {
 		return []model.Torrent{}, fmt.Errorf("cannot create browser page: %w", err)
 	}
-	torrents := make([]model.Torrent, 0, limit)
+	torrents := make([]model.Torrent, 0, q.Limit)
 
-	u := "https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(query)
+	u := "https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(q.Query)
 	err = p.Batch("searching...").
 		Goto(u).
 		FetchContent().
@@ -140,9 +140,11 @@ func (s *session) search(ctx context.Context, query string, limit uint) ([]model
 	})
 
 	utils.SortTorrents(torrents)
-	torrents = utils.Bound(torrents, limit)
+	torrents = utils.Bound(torrents, q.Limit)
 
-	s.parseDetails(ctx, torrents)
+	if q.Detailed {
+		s.parseDetails(ctx, torrents)
+	}
 
 	return torrents, nil
 }

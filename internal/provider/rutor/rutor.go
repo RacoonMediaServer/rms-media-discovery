@@ -24,13 +24,13 @@ func (r rutorProvider) ID() string {
 	return "rutor"
 }
 
-func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit uint) ([]model.Torrent, error) {
+func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	c := scraper.New("rutor")
 	c.SetContext(ctx)
 
 	var result []model.Torrent
 
-	u := fmt.Sprintf("http://%s/search/%s", domain, url.PathEscape(query))
+	u := fmt.Sprintf("http://%s/search/%s", domain, url.PathEscape(q.Query))
 	err := c.Select("#index > table > tbody > tr", func(e *colly.HTMLElement, userData interface{}) {
 		downloadLink := e.ChildAttr("td:nth-child(2) > a.downgif", "href")
 		title := e.ChildText("td:nth-child(2) > a:nth-child(3)")
@@ -54,9 +54,11 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, query string, limit u
 	}
 
 	utils.SortTorrents(result)
-	result = utils.Bound(result, limit)
+	result = utils.Bound(result, q.Limit)
 
-	r.parseDetails(c, result)
+	if q.Detailed {
+		r.parseDetails(c, result)
+	}
 	return result, nil
 }
 

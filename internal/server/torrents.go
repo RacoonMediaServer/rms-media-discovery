@@ -49,26 +49,39 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 	return result
 }
 
-func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
-	l := s.log.WithField("req", "searchTorrents").WithField("key", key.Token).WithField("q", params.Q)
-	l.Debug("Request")
+func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQuery {
 	var limit uint
+	var detailed bool
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
 	}
+	if params.Detailed != nil {
+		detailed = *params.Detailed
+	}
 
-	hint := torrents2.SearchType_Other
+	hint := model.SearchType_Other
 	if params.Type != nil {
 		switch *params.Type {
 		case "movies":
-			hint = torrents2.SearchType_Movies
+			hint = model.SearchType_Movies
 		case "music":
-			hint = torrents2.SearchType_Music
+			hint = model.SearchType_Music
 		case "books":
-			hint = torrents2.SearchType_Books
+			hint = model.SearchType_Books
 		}
 	}
-	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), params.Q, hint, limit)
+	return model.SearchQuery{
+		Query:    params.Q,
+		Hint:     hint,
+		Limit:    limit,
+		Detailed: detailed,
+	}
+}
+func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("req", "searchTorrents").WithField("key", key.Token).WithField("q", params.Q)
+	l.Debug("Request")
+
+	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), searchQueryFromParams(&params))
 	if err != nil {
 		l.Errorf("Request failed: %s", err)
 		return torrents.NewSearchTorrentsInternalServerError()

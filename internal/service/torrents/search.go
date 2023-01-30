@@ -8,21 +8,21 @@ import (
 
 const maxResultsLimit uint = 40
 
-func (s *service) Search(ctx context.Context, query string, hint SearchTypeHint, limit uint) ([]model.Torrent, error) {
-	if limit == 0 || limit > maxResultsLimit {
-		limit = maxResultsLimit
+func (s *service) Search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+	if q.Limit == 0 || q.Limit > maxResultsLimit {
+		q.Limit = maxResultsLimit
 	}
 
 	// чистим протухшие ссылки
 	s.cleanExpiredLinks()
 
-	found, err := s.provider.SearchTorrents(ctx, query, limit)
+	found, err := s.provider.SearchTorrents(ctx, q)
 	if err != nil {
 		return nil, err
 	}
 
 	// если кто-то накосячил из провайдеров - исправляем
-	found = utils.Bound(found, limit)
+	found = utils.Bound(found, q.Limit)
 
 	// генерируем ссылки на скачивание
 	for i := range found {

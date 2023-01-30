@@ -15,9 +15,10 @@ import (
 
 // SearchTorrentsURL generates an URL for the search torrents operation
 type SearchTorrentsURL struct {
-	Limit *int64
-	Q     string
-	Type  *string
+	Detailed *bool
+	Limit    *int64
+	Q        string
+	Type     *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -49,6 +50,14 @@ func (o *SearchTorrentsURL) Build() (*url.URL, error) {
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)
 
 	qs := make(url.Values)
+
+	var detailedQ string
+	if o.Detailed != nil {
+		detailedQ = swag.FormatBool(*o.Detailed)
+	}
+	if detailedQ != "" {
+		qs.Set("detailed", detailedQ)
+	}
 
 	var limitQ string
 	if o.Limit != nil {

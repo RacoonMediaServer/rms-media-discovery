@@ -99,6 +99,12 @@ paths:
           description: Ограничение на кол-во результатов
           type: integer
           minimum: 1
+        - name: detailed
+          in: query
+          required: false
+          type: boolean
+          description: Забирать ли детальное описание раздачи
+          default: false
       responses:
         '200':
           description: OK
