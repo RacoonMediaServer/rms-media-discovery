@@ -11,6 +11,7 @@ import (
 const defaultTimeout float64 = 4000.0 * 10
 
 var (
+	initialized bool
 	environment *playwright.Playwright
 	browser     playwright.Browser
 )
@@ -26,24 +27,33 @@ type Navigator interface {
 	Close()
 }
 
-func init() {
+func initializeEngine() error {
 	var err error
 	opts := &playwright.RunOptions{SkipInstallBrowsers: true}
 
 	if err = playwright.Install(opts); err != nil {
-		panic(err)
+		return err
 	}
 
 	if environment, err = playwright.Run(); err != nil {
-		panic(err)
+		return err
 	}
 
 	if browser, err = environment.Chromium.Launch(); err != nil {
-		panic(err)
+		return err
 	}
+
+	initialized = true
+
+	return nil
 }
 
 func New(dumpPath ...string) (Navigator, error) {
+	if !initialized {
+		if err := initializeEngine(); err != nil {
+			return nil, err
+		}
+	}
 	dp := ""
 	if len(dumpPath) > 0 {
 		dp = dumpPath[0]
