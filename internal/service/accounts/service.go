@@ -3,10 +3,10 @@ package accounts
 import (
 	"errors"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"sync"
 
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"github.com/apex/log"
 )
 

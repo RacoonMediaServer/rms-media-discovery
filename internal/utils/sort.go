@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"sort"
 )
 

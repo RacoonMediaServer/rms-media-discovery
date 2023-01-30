@@ -1,6 +1,8 @@
 package aggregator
 
-import "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
+import (
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+)
 
 // Policy определяет политику аггрегации результатов
 type Policy int

@@ -5,9 +5,9 @@
 package mocks
 
 import (
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	reflect "reflect"
 
-	model "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	gomock "github.com/golang/mock/gomock"
 )
 

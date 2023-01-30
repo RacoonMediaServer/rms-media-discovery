@@ -3,11 +3,11 @@ package torrents
 import (
 	"context"
 	"errors"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
-	_captcha "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/2captcha"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/aggregator"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutracker"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	provider2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/2captcha"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/aggregator"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/rutracker"
 	"github.com/apex/log"
 	"github.com/teris-io/shortid"
 	"sync"
@@ -17,21 +17,21 @@ import (
 var ErrExpiredDownloadLink = errors.New("download link expired or not registered")
 
 type Service interface {
-	Search(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
+	Search(ctx context.Context, query model2.SearchQuery) ([]model2.Torrent, error)
 	Download(ctx context.Context, link string) ([]byte, error)
 }
 
 type service struct {
-	provider provider.TorrentsProvider
+	provider provider2.TorrentsProvider
 	log      *log.Entry
 	gen      *shortid.Shortid
 	links    sync.Map
 }
 
-func New(access model.AccessProvider) Service {
+func New(access model2.AccessProvider) Service {
 	return &service{
-		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider.TorrentsProvider{
-			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
+		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider2.TorrentsProvider{
+			rutracker.NewProvider(access, provider2.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
 			//rutor.NewProvider(),
 		}),
 		log: log.WithField("from", "torrents"),

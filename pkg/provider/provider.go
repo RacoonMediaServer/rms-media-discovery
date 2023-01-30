@@ -2,7 +2,7 @@ package provider
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 const resultsLimit = 10
@@ -14,13 +14,13 @@ type Provider interface {
 // MovieInfoProvider интерфейс сущностей, которые позволяют получать информацию о фильмах и сериалах
 type MovieInfoProvider interface {
 	Provider
-	SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error)
+	SearchMovies(ctx context.Context, query string, limit uint) ([]model2.Movie, error)
 }
 
 // TorrentsProvider интерфейс сущностей, которые умеют искать по торрентами
 type TorrentsProvider interface {
 	Provider
-	SearchTorrents(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
+	SearchTorrents(ctx context.Context, query model2.SearchQuery) ([]model2.Torrent, error)
 }
 
 // Captcha настройки капчи для распознования

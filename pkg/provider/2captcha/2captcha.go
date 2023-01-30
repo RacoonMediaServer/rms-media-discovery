@@ -4,10 +4,10 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	api2captcha "github.com/2captcha/2captcha-go"
 	"github.com/apex/log"
 )

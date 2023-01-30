@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/navigator"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"net/url"
@@ -18,7 +18,7 @@ import (
 )
 
 type session struct {
-	credentials model.Credentials
+	credentials model2.Credentials
 	n           navigator.Navigator
 	s           provider.CaptchaSolver
 	authorized  bool
@@ -28,7 +28,7 @@ type session struct {
 const emulateDelay = 300 * time.Millisecond
 const parseDetailsTimeout = 10 * time.Second
 
-func newSession(cred model.Credentials, solver provider.CaptchaSolver) (*session, error) {
+func newSession(cred model2.Credentials, solver provider.CaptchaSolver) (*session, error) {
 	n, err := navigator.New()
 	if err != nil {
 		return nil, fmt.Errorf("cannot create session browser: %w", err)
@@ -116,13 +116,13 @@ func (s *session) authorize(ctx context.Context) error {
 	return nil
 }
 
-func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+func (s *session) search(ctx context.Context, q model2.SearchQuery) ([]model2.Torrent, error) {
 	l := utils.LogFromContext(ctx, "rutracker", s.l)
 	p, err := s.n.NewPage(l, ctx)
 	if err != nil {
-		return []model.Torrent{}, fmt.Errorf("cannot create browser page: %w", err)
+		return []model2.Torrent{}, fmt.Errorf("cannot create browser page: %w", err)
 	}
-	torrents := make([]model.Torrent, 0, q.Limit)
+	torrents := make([]model2.Torrent, 0, q.Limit)
 
 	u := "https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(q.Query)
 	err = p.Batch("searching...").
@@ -149,7 +149,7 @@ func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 	return torrents, nil
 }
 
-func (s *session) parseDetails(ctx context.Context, torrents []model.Torrent) {
+func (s *session) parseDetails(ctx context.Context, torrents []model2.Torrent) {
 	wg := sync.WaitGroup{}
 	childCtx, cancel := context.WithTimeout(ctx, parseDetailsTimeout)
 	defer cancel()

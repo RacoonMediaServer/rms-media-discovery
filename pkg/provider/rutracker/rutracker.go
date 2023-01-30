@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/apex/log"
 	"net/http"
 	"strings"
@@ -19,14 +19,14 @@ var (
 
 type ruTrackerProvider struct {
 	log    *log.Entry
-	access model.AccessProvider
+	access model2.AccessProvider
 	s      provider.CaptchaSolver
 
 	mu       sync.RWMutex
 	sessions map[string]*session
 }
 
-func NewProvider(access model.AccessProvider, solver provider.CaptchaSolver) provider.TorrentsProvider {
+func NewProvider(access model2.AccessProvider, solver provider.CaptchaSolver) provider.TorrentsProvider {
 	return &ruTrackerProvider{
 		log:      log.WithField("from", "rutracker"),
 		access:   access,
@@ -39,7 +39,7 @@ func (r *ruTrackerProvider) ID() string {
 	return "rutracker"
 }
 
-func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model2.SearchQuery) ([]model2.Torrent, error) {
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
 		if err != nil {
@@ -72,7 +72,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQu
 	}
 }
 
-func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) model.DownloadFunc {
+func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) model2.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
 		r := requester.New(r)
 		r.SetCookies(cookies)
@@ -87,7 +87,7 @@ func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) m
 	}
 }
 
-func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model.Credentials) (*session, error) {
+func (r *ruTrackerProvider) getOrCreateSession(ctx context.Context, cred model2.Credentials) (*session, error) {
 	if s, ok := r.getSession(cred.AccountId); ok {
 		return s, nil
 	}

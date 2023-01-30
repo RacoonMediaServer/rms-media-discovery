@@ -2,9 +2,9 @@ package server
 
 import (
 	"errors"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"net/http"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
 	accounts_service "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"

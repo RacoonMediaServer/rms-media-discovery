@@ -3,12 +3,12 @@ package main
 import (
 	"flag"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
 	"github.com/apex/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"

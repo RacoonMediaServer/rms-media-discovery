@@ -2,7 +2,7 @@ package model
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/media"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 )
 
 type DownloadFunc func(ctx context.Context) ([]byte, error)

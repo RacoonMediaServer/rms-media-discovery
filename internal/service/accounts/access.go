@@ -1,6 +1,8 @@
 package accounts
 
-import "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+import (
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+)
 
 func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {
 	s.mu.Lock()

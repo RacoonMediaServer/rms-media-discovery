@@ -2,8 +2,8 @@ package db
 
 import (
 	"context"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

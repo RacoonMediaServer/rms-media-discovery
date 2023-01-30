@@ -4,18 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/apex/log"
 	"net/url"
 )
 
 type kinopoiskProvider struct {
 	log    *log.Entry
-	access model.AccessProvider
+	access model2.AccessProvider
 	p      pipeline.Pipeline
 	r      requester.Requester
 }
@@ -63,7 +63,7 @@ type getResponse struct {
 	}
 }
 
-func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvider {
+func NewKinopoiskProvider(access model2.AccessProvider) provider.MovieInfoProvider {
 	p := &kinopoiskProvider{
 		log:    log.WithField("from", "kinopoisk"),
 		access: access,
@@ -73,7 +73,7 @@ func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvide
 	return p
 }
 
-func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
+func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model2.Movie, error) {
 	l := utils.LogFromContext(ctx, "kinopoisk", p.log)
 	l.Info("Searching...")
 	list, err := p.search(ctx, query, limit)
@@ -82,7 +82,7 @@ func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limi
 	}
 	l.Infof("Got %d results", len(list.Docs))
 
-	movies := make([]model.Movie, 0)
+	movies := make([]model2.Movie, 0)
 	for _, item := range list.Docs {
 		if len(item.ExternalID.Imdb) == 0 {
 			continue
@@ -92,7 +92,7 @@ func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limi
 			l.Errorf("Retrieve info about '%s' failed: %s", item.Name, err)
 			continue
 		}
-		m := model.Movie{
+		m := model2.Movie{
 			ID:          item.ExternalID.Imdb,
 			Title:       info.Name,
 			Description: info.Description,
@@ -106,9 +106,9 @@ func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limi
 			m.Genres = append(m.Genres, genre.Name)
 		}
 
-		m.Type = model.MovieType_Movie
+		m.Type = model2.MovieType_Movie
 		if info.Type == "tv-series" {
-			m.Type = model.MovieType_TvSeries
+			m.Type = model2.MovieType_TvSeries
 		}
 
 		movies = append(movies, m)

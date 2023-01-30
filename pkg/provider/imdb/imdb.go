@@ -4,21 +4,21 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	model2 "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"net/url"
 	"strconv"
 	"strings"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/pipeline"
 	"github.com/apex/log"
 )
 
 type imdbProvider struct {
 	log    *log.Entry
-	access model.AccessProvider
+	access model2.AccessProvider
 	p      pipeline.Pipeline
 	r      requester.Requester
 }
@@ -63,7 +63,7 @@ type getResponse struct {
 	}
 }
 
-func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
+func NewProvider(access model2.AccessProvider) provider.MovieInfoProvider {
 	p := &imdbProvider{
 		log:    log.WithField("from", "imdb"),
 		access: access,
@@ -73,7 +73,7 @@ func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	return p
 }
 
-func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
+func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model2.Movie, error) {
 
 	l := utils.LogFromContext(ctx, "imdb", p.log)
 	l.Info("Searching...")
@@ -83,14 +83,14 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 	}
 	l.Infof("Got %d results", len(list.Results))
 
-	movies := make([]model.Movie, 0)
+	movies := make([]model2.Movie, 0)
 	for _, item := range list.Results {
 		info, err := p.get(l, ctx, item.Id)
 		if err != nil {
 			l.Errorf("Retrieve info about '%s' failed: %s", item.Title, err)
 			continue
 		}
-		m := model.Movie{
+		m := model2.Movie{
 			ID:          item.Id,
 			Title:       info.Title,
 			Description: info.Plot,
@@ -114,9 +114,9 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 			m.Genres = append(m.Genres, genre.Value)
 		}
 
-		m.Type = model.MovieType_Movie
+		m.Type = model2.MovieType_Movie
 		if info.Type == "TVSeries" {
-			m.Type = model.MovieType_TvSeries
+			m.Type = model2.MovieType_TvSeries
 		}
 
 		movies = append(movies, m)

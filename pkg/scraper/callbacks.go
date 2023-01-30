@@ -2,8 +2,8 @@ package scraper
 
 import (
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/apex/log"
 	"github.com/gocolly/colly/v2"
 	"github.com/prometheus/client_golang/prometheus"
