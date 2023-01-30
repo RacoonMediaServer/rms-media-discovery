@@ -6,6 +6,7 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider"
 	_captcha "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/2captcha"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/aggregator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutor"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/provider/rutracker"
 	"github.com/apex/log"
@@ -30,7 +31,7 @@ type service struct {
 
 func New(access model.AccessProvider) Service {
 	return &service{
-		provider: newAggregator([]provider.TorrentsProvider{
+		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider.TorrentsProvider{
 			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
 			rutor.NewProvider(),
 		}),

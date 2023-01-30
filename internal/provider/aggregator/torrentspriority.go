@@ -1,4 +1,4 @@
-package torrents
+package aggregator
 
 import (
 	"context"
@@ -8,15 +8,15 @@ import (
 	"sync"
 )
 
-type aggregator struct {
+type torrentsPriorityAggregator struct {
 	providers []provider.TorrentsProvider
 }
 
-func (a aggregator) ID() string {
+func (a torrentsPriorityAggregator) ID() string {
 	return "aggregator"
 }
 
-func (a aggregator) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+func (a torrentsPriorityAggregator) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	type result struct {
 		torrents []model.Torrent
 		err      error
@@ -55,8 +55,4 @@ func (a aggregator) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]
 
 	utils.SortTorrents(total)
 	return utils.Bound(total, q.Limit), nil
-}
-
-func newAggregator(providers []provider.TorrentsProvider) provider.TorrentsProvider {
-	return &aggregator{providers: providers}
 }
