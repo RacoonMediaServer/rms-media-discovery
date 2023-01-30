@@ -1,0 +1,20 @@
+version: '3'
+services:
+  discovery:
+    build:
+      context: .
+    restart: always
+    container_name: discovery
+    environment:
+      - RMS_DATABASE=mongodb://MediaDiscovery:qwerty123@mongodb
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=MediaDiscovery
+      - MONGO_INITDB_ROOT_PASSWORD=qwerty123

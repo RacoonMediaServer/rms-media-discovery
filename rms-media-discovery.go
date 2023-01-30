@@ -30,7 +30,7 @@ func main() {
 
 	db, err := db.Connect(*dbString)
 	if err != nil {
-		log.Fatalf("Connect to database failed: %+w", err)
+		log.Fatalf("Connect to database failed: %s", err)
 	}
 	log.Info("Connected to MongoDB")
 
