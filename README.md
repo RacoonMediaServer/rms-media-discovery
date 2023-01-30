@@ -11,6 +11,15 @@ trackers for free. Is uses a set of providers (external systems), which contents
 * external systems accounts management;
 * Prometheus monitoring.
 
+## Packages
+
+Some packages of source code are importable. Some useful of this:
+
+* `client` - Swagger-generated client to the service API;
+* `provider` - crawlers and API-clients for various external systems;
+* `navigator` - comfortable wrapper for headless browser;
+* etc.
+
 ## Providers
 
 ### Search information about movies
@@ -33,10 +42,12 @@ Service have RESTful JSON API, described as OpenAPI schema [here](api/discovery.
 
 * [MongoDb](https://www.mongodb.com/)
 * [Prometheus](https://prometheus.io/) (**optional**)
+* [Chromium](https://www.chromium.org/chromium-projects/)
 
 ### Admin Key
 
 At the first run of service, admin key will be generated automatically. You can find out the key via logs or database.
+
 ### Command Line Arguments
 
 ```
