@@ -57,9 +57,9 @@ func (t *tpbProvider) ID() string {
 }
 
 func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
-	l := utils.LogFromContext(ctx, "thepiratebay", t.l)
+	l := utils.LogFromContext(ctx, t.ID(), t.l)
 	if t.n == nil {
-		n, err := navigator.New()
+		n, err := navigator.New(t.ID())
 		if err != nil {
 			return []model.Torrent{}, fmt.Errorf("cannot create headless browser: %w", err)
 		}

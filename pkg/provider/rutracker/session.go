@@ -27,7 +27,7 @@ type session struct {
 const parseDetailsTimeout = 10 * time.Second
 
 func newSession(cred model.Credentials, solver provider.CaptchaSolver) (*session, error) {
-	n, err := navigator.New()
+	n, err := navigator.New("rutracker")
 	if err != nil {
 		return nil, fmt.Errorf("cannot create session browser: %w", err)
 	}

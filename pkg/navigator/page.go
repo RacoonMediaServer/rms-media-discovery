@@ -200,7 +200,13 @@ func (p *page) checkError(method string) {
 		return
 	}
 
-	p.Screenshot(path.Join(p.dumpPath, tmpUUID+".jpg")).TracePage(path.Join(p.dumpPath, tmpUUID+".html"))
+	if settings.StoreDumpOnError {
+		if err := os.MkdirAll(p.dumpPath, os.ModePerm); err != nil {
+			p.log.Warnf("cannot create dump directory: %s", err)
+			return
+		}
+		p.Screenshot(path.Join(p.dumpPath, tmpUUID+".jpg")).TracePage(path.Join(p.dumpPath, tmpUUID+".html"))
+	}
 }
 
 func (p *page) Close() {

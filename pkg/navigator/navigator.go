@@ -5,6 +5,7 @@ import (
 	"github.com/apex/log"
 	"github.com/playwright-community/playwright-go"
 	"net/http"
+	"path"
 	"time"
 )
 
@@ -14,6 +15,7 @@ var (
 	initialized bool
 	environment *playwright.Playwright
 	browser     playwright.Browser
+	settings    Settings
 )
 
 type navigator struct {
@@ -54,9 +56,9 @@ func New(dumpPath ...string) (Navigator, error) {
 			return nil, err
 		}
 	}
-	dp := ""
+	dp := settings.DefaultDumpLocation
 	if len(dumpPath) > 0 {
-		dp = dumpPath[0]
+		dp = path.Join(dp, dumpPath[0])
 	}
 	ctx, err := browser.NewContext(playwright.BrowserNewContextOptions{Locale: playwright.String("ru-RU")})
 	if err != nil {

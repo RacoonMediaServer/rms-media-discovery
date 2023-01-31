@@ -8,6 +8,7 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
 	"github.com/apex/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -26,6 +27,7 @@ func main() {
 
 	if *verbose {
 		log.SetLevel(log.DebugLevel)
+		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
 	}
 
 	db, err := db.Connect(*dbString)
