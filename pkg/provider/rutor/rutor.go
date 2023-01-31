@@ -2,23 +2,19 @@ package rutor
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/scraper"
-	"github.com/apex/log"
-	"github.com/gocolly/colly/v2"
 	"net/url"
-	"strconv"
 )
 
 const domain = "rutor.info"
 
 type rutorProvider struct {
-	log *log.Entry
 }
 
 func (r rutorProvider) ID() string {
@@ -30,28 +26,18 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 	c.SetContext(ctx)
 
 	var result []model.Torrent
+	available := false
 
 	u := fmt.Sprintf("http://%s/search/%s", domain, url.PathEscape(q.Query))
-	err := c.Select("#index > table > tbody > tr", func(e *colly.HTMLElement, userData interface{}) {
-		downloadLink := e.ChildAttr("td:nth-child(2) > a.downgif", "href")
-		title := e.ChildText("td:nth-child(2) > a:nth-child(3)")
-		scrapLink := e.ChildAttr("td:nth-child(2) > a:nth-child(3)", "href")
-		size := parseTorrentSize(e.Text)
-		seeds, _ := strconv.ParseUint(e.ChildText("td > span.green"), 10, 32)
-
-		if downloadLink != "" {
-			t := model.Torrent{
-				Title:      title,
-				SizeMB:     size,
-				Seeders:    uint(seeds),
-				DetailLink: scrapLink,
-				Downloader: r.newDownloadLink(downloadLink),
-			}
-			result = append(result, t)
-		}
-	}).Get(u)
+	err := c.
+		Select(`#index > table > tbody > tr`, r.torrentsParser(&result)).
+		Select(`#logo`, pageChecker(&available)). // проверяем, что видим реально rutor, а не заглушку РКН
+		Get(u)
 	if err != nil {
-		return nil, err
+		return result, err
+	}
+	if !available {
+		return nil, errors.New("domain is unavailable")
 	}
 
 	utils.SortTorrents(result)
@@ -65,11 +51,7 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 
 func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent) {
 	c = c.Clone()
-	sel := c.Select("#details > tbody > tr:nth-child(1) > td:nth-child(2)", func(e *colly.HTMLElement, userData interface{}) {
-		t := userData.(*model.Torrent)
-		parser := heuristic.MediaInfoParser{}
-		t.Media = parser.Parse(e.Text)
-	})
+	sel := c.Select("#details > tbody > tr:nth-child(1) > td:nth-child(2)", detailsParser)
 	for i := range torrents {
 		t := &torrents[i]
 		sel.GetAsync("http://"+domain+t.DetailLink, t)
@@ -79,15 +61,16 @@ func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent)
 }
 
 func NewProvider() provider.TorrentsProvider {
-	return &rutorProvider{
-		log: log.WithField("from", "rutor"),
-	}
+	return &rutorProvider{}
 }
 
 func (r rutorProvider) newDownloadLink(url string) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
 		r := requester.New(r)
-		data, _, err := r.Download(ctx, url)
+		data, contentType, err := r.Download(ctx, url)
+		if contentType != "application/x-bittorrent" {
+			return nil, errors.New("not accepted content-type received")
+		}
 		return data, err
 	}
 }
