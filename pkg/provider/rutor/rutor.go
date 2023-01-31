@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
@@ -64,8 +65,10 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 
 func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent) {
 	c = c.Clone()
-	sel := c.Select("#logo > a > img", func(e *colly.HTMLElement, userData interface{}) {
-		// TODO: scrap
+	sel := c.Select("#details > tbody > tr:nth-child(1) > td:nth-child(2)", func(e *colly.HTMLElement, userData interface{}) {
+		t := userData.(*model.Torrent)
+		parser := heuristic.MediaInfoParser{}
+		t.Media = parser.Parse(e.Text)
 	})
 	for i := range torrents {
 		t := &torrents[i]

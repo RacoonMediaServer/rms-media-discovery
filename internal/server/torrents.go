@@ -20,6 +20,11 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 	}
 	if t.Media != nil {
 		result.Media = new(models.SearchTorrentsResultMedia)
+		result.Media.Format = t.Media.Format
+		result.Media.Video = make([]*models.SearchTorrentsResultMediaVideoItems0, 0, len(t.Media.Video))
+		result.Media.Audio = make([]*models.SearchTorrentsResultMediaAudioItems0, 0, len(t.Media.Audio))
+		result.Media.Subtitles = make([]*models.SearchTorrentsResultMediaSubtitlesItems0, 0, len(t.Media.Subtitle))
+
 		for _, v := range t.Media.Video {
 			target := &models.SearchTorrentsResultMediaVideoItems0{
 				AspectRatio: v.AspectRatio,

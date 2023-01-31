@@ -5,14 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"net/url"
-	"strings"
 	"sync"
 	"time"
 )
@@ -173,11 +172,10 @@ func (s *session) parseDetails(ctx context.Context, torrents []model.Torrent) {
 				return
 			}
 
+			parser := heuristic.MediaInfoParser{}
 			post := p.Document().Find(`.post_body`).First()
-			_, mediaInfo, ok := strings.Cut(post.Text(), "MediaInfo\n")
-			if ok {
-				t.Media = media.ParseInfo(mediaInfo)
-			}
+			t.Media = parser.Parse(post.Text())
+
 		}(i)
 	}
 	wg.Wait()

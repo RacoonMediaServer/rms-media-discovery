@@ -32,6 +32,7 @@ Some packages of source code are importable. Some useful of this:
 
 * [RuTracker.org](https://rutracker.org/)
 * [Rutor](http://www.rutor.info/)
+* [ThePirateBay](https://thepiratebay.org/)
 
 ## API
 
