@@ -47,6 +47,7 @@ func (s *service) DeleteAccount(id string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	repo := s.getOrCreateRepo(model.Account{Id: id}.Service())
+	m := &model.Account{Id: id}
+	repo := s.getOrCreateRepo(m.Service())
 	return repo.Delete(id)
 }
