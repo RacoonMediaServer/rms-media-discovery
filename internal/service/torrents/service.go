@@ -5,7 +5,10 @@ import (
 	"errors"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	_captcha "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/2captcha"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/aggregator"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/rutor"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/rutracker"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider/thepiratebay"
 	"github.com/apex/log"
 	"github.com/teris-io/shortid"
@@ -30,8 +33,8 @@ type service struct {
 func New(access model.AccessProvider) Service {
 	return &service{
 		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider.TorrentsProvider{
-			//rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
-			//rutor.NewProvider(),
+			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
+			rutor.NewProvider(),
 			thepiratebay.New(),
 		}),
 		log: log.WithField("from", "torrents"),
