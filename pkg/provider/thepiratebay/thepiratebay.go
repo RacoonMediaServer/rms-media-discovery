@@ -7,36 +7,13 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
-	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"net/url"
-	"regexp"
-	"strconv"
 )
 
 type tpbProvider struct {
 	n navigator.Navigator
 	l *log.Entry
-}
-
-var (
-	extractSizeExpr = regexp.MustCompile(`^(^\d+(\.\d+)?).(G|M)iB`)
-)
-
-func parseTorrentSize(text string) uint64 {
-	matches := extractSizeExpr.FindStringSubmatch(text)
-	if matches != nil {
-		result, err := strconv.ParseFloat(matches[1], 32)
-		if err != nil {
-			return 0
-		}
-		if matches[3] == "G" {
-			result *= 1024.
-		}
-		return uint64(result)
-	}
-
-	return 0
 }
 
 func getFilter(hint model.SearchTypeHint) string {
@@ -85,26 +62,10 @@ func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) (
 	}
 
 	result := []model.Torrent{}
-
-	doc := p.Document()
-	doc.Find("#st").Each(func(i int, selection *goquery.Selection) {
-		t := model.Torrent{}
-		t.Title = selection.Find("span.list-item.item-name.item-title").First().Text()
-		seeders, _ := strconv.ParseInt(selection.Find("span.list-item.item-seed").Text(), 10, 32)
-		t.Seeders = uint(seeders)
-		t.SizeMB = parseTorrentSize(selection.Find("span.list-item.item-size").Text())
-		dl, ok := selection.Find("span.item-icons > a").Attr("href")
-		if ok {
-			t.Link = dl
-		}
-
-		if t.Link != "" {
-			result = append(result, t)
-		}
-	})
+	p.Document().Find("#st").Each(torrentsParser(&result))
 
 	utils.SortTorrents(result)
-	utils.Bound(result, q.Limit)
+	result = utils.Bound(result, q.Limit)
 
 	for i := range result {
 		torrent := &result[i]

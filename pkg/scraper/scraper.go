@@ -23,6 +23,7 @@ type Scraper interface {
 	Select(selector string, f HTMLCallback) Selector
 	SelectResponse(f ResponseCallback) Selector
 	SetCookies(url string, cookies []*http.Cookie) error
+	Cookies(url string) []*http.Cookie
 	Wait()
 }
 
@@ -110,6 +111,10 @@ func (s *scraper) Wait() {
 
 func (s *scraper) SetCookies(url string, cookies []*http.Cookie) error {
 	return s.c.SetCookies(url, cookies)
+}
+
+func (s *scraper) Cookies(url string) []*http.Cookie {
+	return s.c.Cookies(url)
 }
 
 func (s *scraper) clear() {

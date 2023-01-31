@@ -13,7 +13,7 @@ type Account struct {
 	Limit       uint
 }
 
-func (a Account) Service() string {
+func (a *Account) Service() string {
 	idx := strings.Index(a.Id, ".")
 	if idx < 0 {
 		return ""
@@ -21,7 +21,7 @@ func (a Account) Service() string {
 	return a.Id[:idx]
 }
 
-func (a Account) IsValid() bool {
+func (a *Account) IsValid() bool {
 	return strings.Contains(a.Id, ".")
 }
 

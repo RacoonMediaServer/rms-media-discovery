@@ -32,6 +32,7 @@ type Page interface {
 	Type(selector, text string) Page
 	Click(selector string) Page
 	FetchContent() Page
+	Screenshot(fileName string) Page
 	TracePage(fileName string) Page
 	Sleep(d time.Duration) Page
 
