@@ -16,13 +16,13 @@ type tpbProvider struct {
 	l *log.Entry
 }
 
-func getFilter(hint model.SearchTypeHint) string {
+func getFilter(hint model.ContentType) string {
 	switch hint {
-	case model.SearchType_Movies:
+	case model.Movies:
 		return "video=on"
-	case model.SearchType_Music:
+	case model.Music:
 		return "audio=on"
-	case model.SearchType_Books:
+	case model.Books:
 		return "other=on"
 	default:
 		return "all=on"
@@ -32,8 +32,19 @@ func getFilter(hint model.SearchTypeHint) string {
 func (t *tpbProvider) ID() string {
 	return "thepiratebay"
 }
-
+func applySearchHints(q *model.SearchQuery) {
+	// применяем дополнительные параметры поиска так, как это лучше всего будет работать на конкретном трекере
+	if q.Type == model.Movies {
+		if q.Year != nil {
+			q.Query += fmt.Sprintf(" %d", *q.Year)
+		}
+		if q.Season != nil {
+			q.Query += fmt.Sprintf(" S%02d", *q.Season)
+		}
+	}
+}
 func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+	applySearchHints(&q)
 	l := utils.LogFromContext(ctx, t.ID(), t.l)
 	if t.n == nil {
 		n, err := navigator.New(t.ID())
@@ -50,7 +61,7 @@ func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) (
 
 	u := fmt.Sprintf("https://thepiratebay.org/search.php?q=%s&%s&search=Pirate+Search&page=0&orderby=",
 		url.QueryEscape(q.Query),
-		getFilter(q.Hint))
+		getFilter(q.Type))
 
 	err = p.Batch("searching").
 		Goto(u).

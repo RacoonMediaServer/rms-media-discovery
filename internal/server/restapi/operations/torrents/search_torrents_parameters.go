@@ -24,10 +24,14 @@ func NewSearchTorrentsParams() SearchTorrentsParams {
 		// initialize parameters with default values
 
 		detailedDefault = bool(false)
+
+		orderbyDefault = string("seeders")
 	)
 
 	return SearchTorrentsParams{
 		Detailed: &detailedDefault,
+
+		Orderby: &orderbyDefault,
 	}
 }
 
@@ -50,6 +54,11 @@ type SearchTorrentsParams struct {
 	  In: query
 	*/
 	Limit *int64
+	/*
+	  In: query
+	  Default: "seeders"
+	*/
+	Orderby *string
 	/*Искомый запрос
 	  Required: true
 	  Max Length: 128
@@ -57,10 +66,20 @@ type SearchTorrentsParams struct {
 	  In: query
 	*/
 	Q string
+	/*Номер сезона (для сериалов)
+	  Minimum: 1
+	  In: query
+	*/
+	Season *int64
 	/*Подсказка, какого типа торренты искать
 	  In: query
 	*/
 	Type *string
+	/*Год выхода (для фильмов и сериалов)
+	  Minimum: 1900
+	  In: query
+	*/
+	Year *int64
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -84,13 +103,28 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 		res = append(res, err)
 	}
 
+	qOrderby, qhkOrderby, _ := qs.GetOK("orderby")
+	if err := o.bindOrderby(qOrderby, qhkOrderby, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qQ, qhkQ, _ := qs.GetOK("q")
 	if err := o.bindQ(qQ, qhkQ, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
+	qSeason, qhkSeason, _ := qs.GetOK("season")
+	if err := o.bindSeason(qSeason, qhkSeason, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qType, qhkType, _ := qs.GetOK("type")
 	if err := o.bindType(qType, qhkType, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qYear, qhkYear, _ := qs.GetOK("year")
+	if err := o.bindYear(qYear, qhkYear, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -160,6 +194,39 @@ func (o *SearchTorrentsParams) validateLimit(formats strfmt.Registry) error {
 	return nil
 }
 
+// bindOrderby binds and validates parameter Orderby from query.
+func (o *SearchTorrentsParams) bindOrderby(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchTorrentsParams()
+		return nil
+	}
+	o.Orderby = &raw
+
+	if err := o.validateOrderby(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateOrderby carries on validations for parameter Orderby
+func (o *SearchTorrentsParams) validateOrderby(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("orderby", "query", *o.Orderby, []interface{}{"seeders", "title", "size", "quality"}, true); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // bindQ binds and validates parameter Q from query.
 func (o *SearchTorrentsParams) bindQ(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	if !hasKey {
@@ -199,6 +266,43 @@ func (o *SearchTorrentsParams) validateQ(formats strfmt.Registry) error {
 	return nil
 }
 
+// bindSeason binds and validates parameter Season from query.
+func (o *SearchTorrentsParams) bindSeason(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("season", "query", "int64", raw)
+	}
+	o.Season = &value
+
+	if err := o.validateSeason(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateSeason carries on validations for parameter Season
+func (o *SearchTorrentsParams) validateSeason(formats strfmt.Registry) error {
+
+	if err := validate.MinimumInt("season", "query", *o.Season, 1, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // bindType binds and validates parameter Type from query.
 func (o *SearchTorrentsParams) bindType(rawData []string, hasKey bool, formats strfmt.Registry) error {
 	var raw string
@@ -225,6 +329,43 @@ func (o *SearchTorrentsParams) bindType(rawData []string, hasKey bool, formats s
 func (o *SearchTorrentsParams) validateType(formats strfmt.Registry) error {
 
 	if err := validate.EnumCase("type", "query", *o.Type, []interface{}{"movies", "music", "books", "others"}, true); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindYear binds and validates parameter Year from query.
+func (o *SearchTorrentsParams) bindYear(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		return nil
+	}
+
+	value, err := swag.ConvertInt64(raw)
+	if err != nil {
+		return errors.InvalidType("year", "query", "int64", raw)
+	}
+	o.Year = &value
+
+	if err := o.validateYear(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateYear carries on validations for parameter Year
+func (o *SearchTorrentsParams) validateYear(formats strfmt.Registry) error {
+
+	if err := validate.MinimumInt("year", "query", *o.Year, 1900, false); err != nil {
 		return err
 	}
 

@@ -39,7 +39,20 @@ func (r *ruTrackerProvider) ID() string {
 	return "rutracker"
 }
 
+func applySearchHints(q *model.SearchQuery) {
+	// применяем дополнительные параметры поиска так, как это лучше всего будет работать на конкретном трекере
+	if q.Type == model.Movies {
+		if q.Year != nil {
+			q.Query += fmt.Sprintf(" %d", *q.Year)
+		}
+		if q.Season != nil {
+			q.Query += fmt.Sprintf(" сезон %d", *q.Season)
+		}
+	}
+}
+
 func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+	applySearchHints(&q)
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
 		if err != nil {

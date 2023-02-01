@@ -17,8 +17,11 @@ import (
 type SearchTorrentsURL struct {
 	Detailed *bool
 	Limit    *int64
+	Orderby  *string
 	Q        string
+	Season   *int64
 	Type     *string
+	Year     *int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -67,9 +70,25 @@ func (o *SearchTorrentsURL) Build() (*url.URL, error) {
 		qs.Set("limit", limitQ)
 	}
 
+	var orderbyQ string
+	if o.Orderby != nil {
+		orderbyQ = *o.Orderby
+	}
+	if orderbyQ != "" {
+		qs.Set("orderby", orderbyQ)
+	}
+
 	qQ := o.Q
 	if qQ != "" {
 		qs.Set("q", qQ)
+	}
+
+	var seasonQ string
+	if o.Season != nil {
+		seasonQ = swag.FormatInt64(*o.Season)
+	}
+	if seasonQ != "" {
+		qs.Set("season", seasonQ)
 	}
 
 	var typeVarQ string
@@ -78,6 +97,14 @@ func (o *SearchTorrentsURL) Build() (*url.URL, error) {
 	}
 	if typeVarQ != "" {
 		qs.Set("type", typeVarQ)
+	}
+
+	var yearQ string
+	if o.Year != nil {
+		yearQ = swag.FormatInt64(*o.Year)
+	}
+	if yearQ != "" {
+		qs.Set("year", yearQ)
 	}
 
 	_result.RawQuery = qs.Encode()

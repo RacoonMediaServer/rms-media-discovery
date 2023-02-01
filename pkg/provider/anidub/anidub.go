@@ -22,7 +22,7 @@ func (a *anidubProvider) ID() string {
 }
 
 func (a *anidubProvider) SearchTorrents(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error) {
-	if query.Hint == model.SearchType_Music || query.Hint == model.SearchType_Books {
+	if query.Type == model.Music || query.Type == model.Books {
 		return []model.Torrent{}, nil
 	}
 

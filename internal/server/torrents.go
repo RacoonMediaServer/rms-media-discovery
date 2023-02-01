@@ -64,23 +64,50 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 		detailed = *params.Detailed
 	}
 
-	hint := model.SearchType_Other
+	hint := model.Other
 	if params.Type != nil {
 		switch *params.Type {
 		case "movies":
-			hint = model.SearchType_Movies
+			hint = model.Movies
 		case "music":
-			hint = model.SearchType_Music
+			hint = model.Music
 		case "books":
-			hint = model.SearchType_Books
+			hint = model.Books
 		}
 	}
-	return model.SearchQuery{
+
+	var year uint
+	var season uint
+	q := model.SearchQuery{
 		Query:    params.Q,
-		Hint:     hint,
+		Type:     hint,
 		Limit:    limit,
 		Detailed: detailed,
+		OrderBy:  model.OrderBySeeders,
 	}
+
+	if hint == model.Movies {
+		if params.Year != nil {
+			year = uint(*params.Year)
+			q.Year = &year
+		}
+
+		if params.Season != nil {
+			season = uint(*params.Season)
+			q.Season = &season
+		}
+	}
+
+	if params.Orderby != nil {
+		switch *params.Orderby {
+		case "title":
+			q.OrderBy = model.OrderByTitle
+		case "size":
+			q.OrderBy = model.OrderBySize
+		}
+	}
+
+	return q
 }
 func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "searchTorrents").WithField("key", key.Token).WithField("q", params.Q)

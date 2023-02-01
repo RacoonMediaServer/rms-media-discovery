@@ -380,7 +380,7 @@ func init() {
             "key": []
           }
         ],
-        "description": "Поиск фильмов и сериалов по названию на различных платформах",
+        "description": "Поиск раздач на различных платформах",
         "tags": [
           "torrents"
         ],
@@ -420,6 +420,32 @@ func init() {
             "default": false,
             "description": "Забирать ли детальное описание раздачи",
             "name": "detailed",
+            "in": "query"
+          },
+          {
+            "minimum": 1900,
+            "type": "integer",
+            "description": "Год выхода (для фильмов и сериалов)",
+            "name": "year",
+            "in": "query"
+          },
+          {
+            "minimum": 1,
+            "type": "integer",
+            "description": "Номер сезона (для сериалов)",
+            "name": "season",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "seeders",
+              "title",
+              "size",
+              "quality"
+            ],
+            "type": "string",
+            "default": "seeders",
+            "name": "orderby",
             "in": "query"
           }
         ],
@@ -986,7 +1012,7 @@ func init() {
             "key": []
           }
         ],
-        "description": "Поиск фильмов и сериалов по названию на различных платформах",
+        "description": "Поиск раздач на различных платформах",
         "tags": [
           "torrents"
         ],
@@ -1026,6 +1052,32 @@ func init() {
             "default": false,
             "description": "Забирать ли детальное описание раздачи",
             "name": "detailed",
+            "in": "query"
+          },
+          {
+            "minimum": 1900,
+            "type": "integer",
+            "description": "Год выхода (для фильмов и сериалов)",
+            "name": "year",
+            "in": "query"
+          },
+          {
+            "minimum": 1,
+            "type": "integer",
+            "description": "Номер сезона (для сериалов)",
+            "name": "season",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "seeders",
+              "title",
+              "size",
+              "quality"
+            ],
+            "type": "string",
+            "default": "seeders",
+            "name": "orderby",
             "in": "query"
           }
         ],

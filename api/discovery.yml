@@ -71,7 +71,7 @@ paths:
       tags:
         - torrents
       summary: Поиск контента на торрент-трекерах
-      description: Поиск фильмов и сериалов по названию на различных платформах
+      description: Поиск раздач на различных платформах
       operationId: searchTorrents
       parameters:
         - name: q
@@ -103,6 +103,25 @@ paths:
           type: boolean
           description: Забирать ли детальное описание раздачи
           default: false
+        - name: year
+          in: query
+          type: integer
+          minimum: 1900
+          description: Год выхода (для фильмов и сериалов)
+        - name: season
+          in: query
+          type: integer
+          minimum: 1
+          description: Номер сезона (для сериалов)
+        - name: orderby
+          in: query
+          type: string
+          enum:
+            - "seeders"
+            - "title"
+            - "size"
+            - "quality"
+          default: "seeders"
       responses:
         '200':
           description: OK

@@ -42,7 +42,7 @@ func NewSearchTorrents(ctx *middleware.Context, handler SearchTorrentsHandler) *
 
 # Поиск контента на торрент-трекерах
 
-Поиск фильмов и сериалов по названию на различных платформах
+Поиск раздач на различных платформах
 */
 type SearchTorrents struct {
 	Context *middleware.Context
