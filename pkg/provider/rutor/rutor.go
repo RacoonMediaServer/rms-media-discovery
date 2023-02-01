@@ -40,7 +40,7 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 		return nil, errors.New("domain is unavailable")
 	}
 
-	utils.SortTorrents(result)
+	model.SortTorrents(result, q.OrderBy)
 	result = utils.Bound(result, q.Limit)
 
 	if q.Detailed {

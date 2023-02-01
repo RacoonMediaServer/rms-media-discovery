@@ -60,6 +60,6 @@ func (a torrentsFastAggregator) SearchTorrents(ctx context.Context, q model.Sear
 		return []model.Torrent{}, lastErr
 	}
 
-	utils.SortTorrents(total)
+	model.SortTorrents(total, q.OrderBy)
 	return utils.Bound(total, q.Limit), nil
 }

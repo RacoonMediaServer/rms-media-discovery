@@ -137,7 +137,7 @@ func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 		torrents = append(torrents, parseTorrent(selection))
 	})
 
-	utils.SortTorrents(torrents)
+	model.SortTorrents(torrents, q.OrderBy)
 	torrents = utils.Bound(torrents, q.Limit)
 
 	if q.Detailed {

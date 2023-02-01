@@ -53,6 +53,6 @@ func (a torrentsPriorityAggregator) SearchTorrents(ctx context.Context, q model.
 		return []model.Torrent{}, lastErr
 	}
 
-	utils.SortTorrents(total)
+	model.SortTorrents(total, q.OrderBy)
 	return utils.Bound(total, q.Limit), nil
 }

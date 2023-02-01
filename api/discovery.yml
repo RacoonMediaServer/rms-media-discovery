@@ -118,7 +118,6 @@ paths:
           type: string
           enum:
             - "seeders"
-            - "title"
             - "size"
             - "quality"
           default: "seeders"

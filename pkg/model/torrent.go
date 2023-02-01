@@ -29,9 +29,6 @@ const (
 	Other
 )
 
-// OrderByFunc is a func for sort results
-type OrderByFunc func(a, b *Torrent) bool
-
 type SearchQuery struct {
 	Query    string
 	Type     ContentType
@@ -40,16 +37,4 @@ type SearchQuery struct {
 	Year     *uint
 	Season   *uint
 	OrderBy  OrderByFunc
-}
-
-func OrderBySeeders(a, b *Torrent) bool {
-	return a.Seeders > b.Seeders
-}
-
-func OrderByTitle(a, b *Torrent) bool {
-	return a.Title < b.Title
-}
-
-func OrderBySize(a, b *Torrent) bool {
-	return a.SizeMB > b.SizeMB
 }

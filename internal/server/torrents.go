@@ -100,8 +100,6 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 
 	if params.Orderby != nil {
 		switch *params.Orderby {
-		case "title":
-			q.OrderBy = model.OrderByTitle
 		case "size":
 			q.OrderBy = model.OrderBySize
 		}

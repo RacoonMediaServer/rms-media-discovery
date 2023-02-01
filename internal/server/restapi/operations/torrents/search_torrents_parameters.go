@@ -220,7 +220,7 @@ func (o *SearchTorrentsParams) bindOrderby(rawData []string, hasKey bool, format
 // validateOrderby carries on validations for parameter Orderby
 func (o *SearchTorrentsParams) validateOrderby(formats strfmt.Registry) error {
 
-	if err := validate.EnumCase("orderby", "query", *o.Orderby, []interface{}{"seeders", "title", "size", "quality"}, true); err != nil {
+	if err := validate.EnumCase("orderby", "query", *o.Orderby, []interface{}{"seeders", "size", "quality"}, true); err != nil {
 		return err
 	}
 
