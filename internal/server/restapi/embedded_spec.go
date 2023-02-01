@@ -439,7 +439,6 @@ func init() {
           {
             "enum": [
               "seeders",
-              "title",
               "size",
               "quality"
             ],
@@ -1071,7 +1070,6 @@ func init() {
           {
             "enum": [
               "seeders",
-              "title",
               "size",
               "quality"
             ],

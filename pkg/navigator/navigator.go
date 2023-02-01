@@ -29,10 +29,10 @@ type Navigator interface {
 	Close()
 }
 
-func initializeEngine() error {
+func Initialize() error {
 	var err error
-	opts := &playwright.RunOptions{SkipInstallBrowsers: true}
 
+	opts := &playwright.RunOptions{Browsers: []string{"chromium"}}
 	if err = playwright.Install(opts); err != nil {
 		return err
 	}
@@ -51,11 +51,6 @@ func initializeEngine() error {
 }
 
 func New(dumpPath ...string) (Navigator, error) {
-	if !initialized {
-		if err := initializeEngine(); err != nil {
-			return nil, err
-		}
-	}
 	dp := settings.DefaultDumpLocation
 	if len(dumpPath) > 0 {
 		dp = path.Join(dp, dumpPath[0])

@@ -3,8 +3,7 @@ WORKDIR /src/rms-media-descovery
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o rms-media-discovery -a -installsuffix cgo rms-media-discovery.go
 
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
+FROM mcr.microsoft.com/playwright:v1.30.0-focal
 RUN mkdir /app
 WORKDIR /app
 COPY --from=builder /src/rms-media-descovery/rms-media-discovery .

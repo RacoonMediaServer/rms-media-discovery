@@ -25,6 +25,11 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Verbose mode")
 	flag.Parse()
 
+	log.Info("Headless browser engine initializing...")
+	if err := navigator.Initialize(); err != nil {
+		log.Fatalf("Failed: %s", err)
+	}
+
 	if *verbose {
 		log.SetLevel(log.DebugLevel)
 		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
