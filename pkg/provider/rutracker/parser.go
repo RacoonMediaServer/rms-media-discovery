@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	extractSizeExpr = regexp.MustCompile(`^(\d+(.\d+)?) (MB|GB)`)
+	extractSizeExpr = regexp.MustCompile(`^(\d+(.\d+)?).(M|G)B`)
 )
 
 func parseTorrentSize(text string) uint64 {
@@ -18,7 +18,7 @@ func parseTorrentSize(text string) uint64 {
 		if err != nil {
 			return 0
 		}
-		if matches[3] == "GB" {
+		if matches[3] == "G" {
 			result *= 1024.
 		}
 		return uint64(result)
