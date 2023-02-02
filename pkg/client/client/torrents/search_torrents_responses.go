@@ -84,6 +84,11 @@ func (o *SearchTorrentsOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the search torrents o k response
+func (o *SearchTorrentsOK) Code() int {
+	return 200
+}
+
 func (o *SearchTorrentsOK) Error() string {
 	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsOK  %+v", 200, o.Payload)
 }
@@ -119,7 +124,6 @@ SearchTorrentsInternalServerError describes a response with status code 500, wit
 Ошибка на стороне сервера
 */
 type SearchTorrentsInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this search torrents internal server error response has a 2xx status code
@@ -147,24 +151,20 @@ func (o *SearchTorrentsInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the search torrents internal server error response
+func (o *SearchTorrentsInternalServerError) Code() int {
+	return 500
+}
+
 func (o *SearchTorrentsInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError ", 500)
 }
 
 func (o *SearchTorrentsInternalServerError) String() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *SearchTorrentsInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError ", 500)
 }
 
 func (o *SearchTorrentsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

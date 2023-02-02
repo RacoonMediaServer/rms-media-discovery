@@ -7,7 +7,6 @@ package accounts
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
@@ -82,6 +81,11 @@ func (o *DeleteAccountOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete account o k response
+func (o *DeleteAccountOK) Code() int {
+	return 200
+}
+
 func (o *DeleteAccountOK) Error() string {
 	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountOK ", 200)
 }
@@ -133,6 +137,11 @@ func (o *DeleteAccountNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the delete account not found response
+func (o *DeleteAccountNotFound) Code() int {
+	return 404
+}
+
 func (o *DeleteAccountNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountNotFound ", 404)
 }
@@ -157,7 +166,6 @@ DeleteAccountInternalServerError describes a response with status code 500, with
 Ошибка на стороне сервера
 */
 type DeleteAccountInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this delete account internal server error response has a 2xx status code
@@ -185,24 +193,20 @@ func (o *DeleteAccountInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the delete account internal server error response
+func (o *DeleteAccountInternalServerError) Code() int {
+	return 500
+}
+
 func (o *DeleteAccountInternalServerError) Error() string {
-	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountInternalServerError ", 500)
 }
 
 func (o *DeleteAccountInternalServerError) String() string {
-	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *DeleteAccountInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[DELETE /admin/accounts/{id}][%d] deleteAccountInternalServerError ", 500)
 }
 
 func (o *DeleteAccountInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

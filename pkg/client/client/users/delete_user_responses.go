@@ -7,7 +7,6 @@ package users
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
@@ -82,6 +81,11 @@ func (o *DeleteUserOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the delete user o k response
+func (o *DeleteUserOK) Code() int {
+	return 200
+}
+
 func (o *DeleteUserOK) Error() string {
 	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserOK ", 200)
 }
@@ -133,6 +137,11 @@ func (o *DeleteUserNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the delete user not found response
+func (o *DeleteUserNotFound) Code() int {
+	return 404
+}
+
 func (o *DeleteUserNotFound) Error() string {
 	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserNotFound ", 404)
 }
@@ -157,7 +166,6 @@ DeleteUserInternalServerError describes a response with status code 500, with de
 Ошибка на стороне сервера
 */
 type DeleteUserInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this delete user internal server error response has a 2xx status code
@@ -185,24 +193,20 @@ func (o *DeleteUserInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the delete user internal server error response
+func (o *DeleteUserInternalServerError) Code() int {
+	return 500
+}
+
 func (o *DeleteUserInternalServerError) Error() string {
-	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserInternalServerError ", 500)
 }
 
 func (o *DeleteUserInternalServerError) String() string {
-	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *DeleteUserInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[DELETE /admin/users/{id}][%d] deleteUserInternalServerError ", 500)
 }
 
 func (o *DeleteUserInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

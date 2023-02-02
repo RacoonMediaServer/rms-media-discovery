@@ -7,7 +7,6 @@ package torrents
 
 import (
 	"fmt"
-	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
@@ -82,6 +81,11 @@ func (o *DownloadTorrentOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the download torrent o k response
+func (o *DownloadTorrentOK) Code() int {
+	return 200
+}
+
 func (o *DownloadTorrentOK) Error() string {
 	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK ", 200)
 }
@@ -133,6 +137,11 @@ func (o *DownloadTorrentNotFound) IsCode(code int) bool {
 	return code == 404
 }
 
+// Code gets the status code for the download torrent not found response
+func (o *DownloadTorrentNotFound) Code() int {
+	return 404
+}
+
 func (o *DownloadTorrentNotFound) Error() string {
 	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentNotFound ", 404)
 }
@@ -157,7 +166,6 @@ DownloadTorrentInternalServerError describes a response with status code 500, wi
 Ошибка на стороне сервера
 */
 type DownloadTorrentInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this download torrent internal server error response has a 2xx status code
@@ -185,24 +193,20 @@ func (o *DownloadTorrentInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the download torrent internal server error response
+func (o *DownloadTorrentInternalServerError) Code() int {
+	return 500
+}
+
 func (o *DownloadTorrentInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError ", 500)
 }
 
 func (o *DownloadTorrentInternalServerError) String() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *DownloadTorrentInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError ", 500)
 }
 
 func (o *DownloadTorrentInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

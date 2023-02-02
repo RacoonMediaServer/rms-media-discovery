@@ -81,6 +81,11 @@ func (o *CreateUserOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the create user o k response
+func (o *CreateUserOK) Code() int {
+	return 200
+}
+
 func (o *CreateUserOK) Error() string {
 	return fmt.Sprintf("[POST /admin/users][%d] createUserOK  %+v", 200, o.Payload)
 }
@@ -116,7 +121,6 @@ CreateUserInternalServerError describes a response with status code 500, with de
 Ошибка на стороне сервера
 */
 type CreateUserInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this create user internal server error response has a 2xx status code
@@ -144,24 +148,20 @@ func (o *CreateUserInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the create user internal server error response
+func (o *CreateUserInternalServerError) Code() int {
+	return 500
+}
+
 func (o *CreateUserInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /admin/users][%d] createUserInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /admin/users][%d] createUserInternalServerError ", 500)
 }
 
 func (o *CreateUserInternalServerError) String() string {
-	return fmt.Sprintf("[POST /admin/users][%d] createUserInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *CreateUserInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[POST /admin/users][%d] createUserInternalServerError ", 500)
 }
 
 func (o *CreateUserInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
@@ -175,6 +175,9 @@ type CreateUserBody struct {
 	// info
 	// Required: true
 	Info *string `json:"info"`
+
+	// is admin
+	IsAdmin *bool `json:"isAdmin,omitempty"`
 }
 
 // Validate validates this create user body
@@ -232,9 +235,6 @@ type CreateUserOKBody struct {
 	// id
 	// Required: true
 	ID *string `json:"id"`
-
-	// is admin
-	IsAdmin *bool `json:"isAdmin,omitempty"`
 }
 
 // Validate validates this create user o k body

@@ -62,11 +62,22 @@ SearchTorrentsParams contains all the parameters to send to the API endpoint
 */
 type SearchTorrentsParams struct {
 
+	/* Detailed.
+
+	   Забирать ли детальное описание раздачи
+	*/
+	Detailed *bool
+
 	/* Limit.
 
 	   Ограничение на кол-во результатов
 	*/
 	Limit *int64
+
+	// Orderby.
+	//
+	// Default: "seeders"
+	Orderby *string
 
 	/* Q.
 
@@ -74,11 +85,23 @@ type SearchTorrentsParams struct {
 	*/
 	Q string
 
+	/* Season.
+
+	   Номер сезона (для сериалов)
+	*/
+	Season *int64
+
 	/* Type.
 
-	   Подсказка, какого типа инфу искать
+	   Подсказка, какого типа торренты искать
 	*/
 	Type *string
+
+	/* Year.
+
+	   Год выхода (для фильмов и сериалов)
+	*/
+	Year *int64
 
 	timeout    time.Duration
 	Context    context.Context
@@ -97,7 +120,21 @@ func (o *SearchTorrentsParams) WithDefaults() *SearchTorrentsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *SearchTorrentsParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		detailedDefault = bool(false)
+
+		orderbyDefault = string("seeders")
+	)
+
+	val := SearchTorrentsParams{
+		Detailed: &detailedDefault,
+		Orderby:  &orderbyDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the search torrents params
@@ -133,6 +170,17 @@ func (o *SearchTorrentsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
+// WithDetailed adds the detailed to the search torrents params
+func (o *SearchTorrentsParams) WithDetailed(detailed *bool) *SearchTorrentsParams {
+	o.SetDetailed(detailed)
+	return o
+}
+
+// SetDetailed adds the detailed to the search torrents params
+func (o *SearchTorrentsParams) SetDetailed(detailed *bool) {
+	o.Detailed = detailed
+}
+
 // WithLimit adds the limit to the search torrents params
 func (o *SearchTorrentsParams) WithLimit(limit *int64) *SearchTorrentsParams {
 	o.SetLimit(limit)
@@ -142,6 +190,17 @@ func (o *SearchTorrentsParams) WithLimit(limit *int64) *SearchTorrentsParams {
 // SetLimit adds the limit to the search torrents params
 func (o *SearchTorrentsParams) SetLimit(limit *int64) {
 	o.Limit = limit
+}
+
+// WithOrderby adds the orderby to the search torrents params
+func (o *SearchTorrentsParams) WithOrderby(orderby *string) *SearchTorrentsParams {
+	o.SetOrderby(orderby)
+	return o
+}
+
+// SetOrderby adds the orderby to the search torrents params
+func (o *SearchTorrentsParams) SetOrderby(orderby *string) {
+	o.Orderby = orderby
 }
 
 // WithQ adds the q to the search torrents params
@@ -155,6 +214,17 @@ func (o *SearchTorrentsParams) SetQ(q string) {
 	o.Q = q
 }
 
+// WithSeason adds the season to the search torrents params
+func (o *SearchTorrentsParams) WithSeason(season *int64) *SearchTorrentsParams {
+	o.SetSeason(season)
+	return o
+}
+
+// SetSeason adds the season to the search torrents params
+func (o *SearchTorrentsParams) SetSeason(season *int64) {
+	o.Season = season
+}
+
 // WithType adds the typeVar to the search torrents params
 func (o *SearchTorrentsParams) WithType(typeVar *string) *SearchTorrentsParams {
 	o.SetType(typeVar)
@@ -166,6 +236,17 @@ func (o *SearchTorrentsParams) SetType(typeVar *string) {
 	o.Type = typeVar
 }
 
+// WithYear adds the year to the search torrents params
+func (o *SearchTorrentsParams) WithYear(year *int64) *SearchTorrentsParams {
+	o.SetYear(year)
+	return o
+}
+
+// SetYear adds the year to the search torrents params
+func (o *SearchTorrentsParams) SetYear(year *int64) {
+	o.Year = year
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -173,6 +254,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		return err
 	}
 	var res []error
+
+	if o.Detailed != nil {
+
+		// query param detailed
+		var qrDetailed bool
+
+		if o.Detailed != nil {
+			qrDetailed = *o.Detailed
+		}
+		qDetailed := swag.FormatBool(qrDetailed)
+		if qDetailed != "" {
+
+			if err := r.SetQueryParam("detailed", qDetailed); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.Limit != nil {
 
@@ -191,6 +289,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		}
 	}
 
+	if o.Orderby != nil {
+
+		// query param orderby
+		var qrOrderby string
+
+		if o.Orderby != nil {
+			qrOrderby = *o.Orderby
+		}
+		qOrderby := qrOrderby
+		if qOrderby != "" {
+
+			if err := r.SetQueryParam("orderby", qOrderby); err != nil {
+				return err
+			}
+		}
+	}
+
 	// query param q
 	qrQ := o.Q
 	qQ := qrQ
@@ -198,6 +313,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 
 		if err := r.SetQueryParam("q", qQ); err != nil {
 			return err
+		}
+	}
+
+	if o.Season != nil {
+
+		// query param season
+		var qrSeason int64
+
+		if o.Season != nil {
+			qrSeason = *o.Season
+		}
+		qSeason := swag.FormatInt64(qrSeason)
+		if qSeason != "" {
+
+			if err := r.SetQueryParam("season", qSeason); err != nil {
+				return err
+			}
 		}
 	}
 
@@ -213,6 +345,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		if qType != "" {
 
 			if err := r.SetQueryParam("type", qType); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Year != nil {
+
+		// query param year
+		var qrYear int64
+
+		if o.Year != nil {
+			qrYear = *o.Year
+		}
+		qYear := swag.FormatInt64(qrYear)
+		if qYear != "" {
+
+			if err := r.SetQueryParam("year", qYear); err != nil {
 				return err
 			}
 		}

@@ -84,6 +84,11 @@ func (o *SearchMoviesOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the search movies o k response
+func (o *SearchMoviesOK) Code() int {
+	return 200
+}
+
 func (o *SearchMoviesOK) Error() string {
 	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesOK  %+v", 200, o.Payload)
 }
@@ -119,7 +124,6 @@ SearchMoviesInternalServerError describes a response with status code 500, with 
 Ошибка на стороне сервера
 */
 type SearchMoviesInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this search movies internal server error response has a 2xx status code
@@ -147,24 +151,20 @@ func (o *SearchMoviesInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the search movies internal server error response
+func (o *SearchMoviesInternalServerError) Code() int {
+	return 500
+}
+
 func (o *SearchMoviesInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError ", 500)
 }
 
 func (o *SearchMoviesInternalServerError) String() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *SearchMoviesInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError ", 500)
 }
 
 func (o *SearchMoviesInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

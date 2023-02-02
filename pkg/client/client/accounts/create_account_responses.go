@@ -81,6 +81,11 @@ func (o *CreateAccountOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the create account o k response
+func (o *CreateAccountOK) Code() int {
+	return 200
+}
+
 func (o *CreateAccountOK) Error() string {
 	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountOK  %+v", 200, o.Payload)
 }
@@ -116,7 +121,6 @@ CreateAccountInternalServerError describes a response with status code 500, with
 Ошибка на стороне сервера
 */
 type CreateAccountInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this create account internal server error response has a 2xx status code
@@ -144,24 +148,20 @@ func (o *CreateAccountInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the create account internal server error response
+func (o *CreateAccountInternalServerError) Code() int {
+	return 500
+}
+
 func (o *CreateAccountInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError ", 500)
 }
 
 func (o *CreateAccountInternalServerError) String() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *CreateAccountInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError ", 500)
 }
 
 func (o *CreateAccountInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }

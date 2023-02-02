@@ -79,9 +79,9 @@ func (a *Client) DownloadTorrent(params *DownloadTorrentParams, authInfo runtime
 }
 
 /*
-SearchTorrents поискs контекнта на торрент трекерах
+SearchTorrents поискs контента на торрент трекерах
 
-Поиск фильмов и сериалов по названию на различных платформах
+Поиск раздач на различных платформах
 */
 func (a *Client) SearchTorrents(params *SearchTorrentsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsOK, error) {
 	// TODO: Validate the params before sending

@@ -84,6 +84,11 @@ func (o *GetAccountsOK) IsCode(code int) bool {
 	return code == 200
 }
 
+// Code gets the status code for the get accounts o k response
+func (o *GetAccountsOK) Code() int {
+	return 200
+}
+
 func (o *GetAccountsOK) Error() string {
 	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsOK  %+v", 200, o.Payload)
 }
@@ -119,7 +124,6 @@ GetAccountsInternalServerError describes a response with status code 500, with d
 Ошибка на стороне сервера
 */
 type GetAccountsInternalServerError struct {
-	Payload interface{}
 }
 
 // IsSuccess returns true when this get accounts internal server error response has a 2xx status code
@@ -147,24 +151,20 @@ func (o *GetAccountsInternalServerError) IsCode(code int) bool {
 	return code == 500
 }
 
+// Code gets the status code for the get accounts internal server error response
+func (o *GetAccountsInternalServerError) Code() int {
+	return 500
+}
+
 func (o *GetAccountsInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError  %+v", 500, o.Payload)
+	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError ", 500)
 }
 
 func (o *GetAccountsInternalServerError) String() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError  %+v", 500, o.Payload)
-}
-
-func (o *GetAccountsInternalServerError) GetPayload() interface{} {
-	return o.Payload
+	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError ", 500)
 }
 
 func (o *GetAccountsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
-
-	// response payload
-	if err := consumer.Consume(response.Body(), &o.Payload); err != nil && err != io.EOF {
-		return err
-	}
 
 	return nil
 }
