@@ -7,6 +7,7 @@ package torrents
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
@@ -15,13 +16,14 @@ import (
 // DownloadTorrentReader is a Reader for the DownloadTorrent structure.
 type DownloadTorrentReader struct {
 	formats strfmt.Registry
+	writer  io.Writer
 }
 
 // ReadResponse reads a server response into the received o.
 func (o *DownloadTorrentReader) ReadResponse(response runtime.ClientResponse, consumer runtime.Consumer) (interface{}, error) {
 	switch response.Code() {
 	case 200:
-		result := NewDownloadTorrentOK()
+		result := NewDownloadTorrentOK(o.writer)
 		if err := result.readResponse(response, consumer, o.formats); err != nil {
 			return nil, err
 		}
@@ -44,8 +46,11 @@ func (o *DownloadTorrentReader) ReadResponse(response runtime.ClientResponse, co
 }
 
 // NewDownloadTorrentOK creates a DownloadTorrentOK with default headers values
-func NewDownloadTorrentOK() *DownloadTorrentOK {
-	return &DownloadTorrentOK{}
+func NewDownloadTorrentOK(writer io.Writer) *DownloadTorrentOK {
+	return &DownloadTorrentOK{
+
+		Payload: writer,
+	}
 }
 
 /*
@@ -54,6 +59,7 @@ DownloadTorrentOK describes a response with status code 200, with default header
 OK
 */
 type DownloadTorrentOK struct {
+	Payload io.Writer
 }
 
 // IsSuccess returns true when this download torrent o k response has a 2xx status code
@@ -87,14 +93,23 @@ func (o *DownloadTorrentOK) Code() int {
 }
 
 func (o *DownloadTorrentOK) Error() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK ", 200)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK  %+v", 200, o.Payload)
 }
 
 func (o *DownloadTorrentOK) String() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK ", 200)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK  %+v", 200, o.Payload)
+}
+
+func (o *DownloadTorrentOK) GetPayload() io.Writer {
+	return o.Payload
 }
 
 func (o *DownloadTorrentOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
+
+	// response payload
+	if err := consumer.Consume(response.Body(), o.Payload); err != nil && err != io.EOF {
+		return err
+	}
 
 	return nil
 }

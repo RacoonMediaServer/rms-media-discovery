@@ -1,14 +1,14 @@
 package server
 
 import (
+	"bytes"
 	"errors"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
 	torrents2 "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
-	"net/http"
+	"io"
 )
 
 func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
@@ -126,14 +126,6 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 	return torrents.NewSearchTorrentsOK().WithPayload(&payload)
 }
 
-type downloadResponse struct {
-	data []byte
-}
-
-func (r *downloadResponse) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
-	_, _ = rw.Write(r.data)
-}
-
 func (s *Server) downloadTorrent(params torrents.DownloadTorrentParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "downloadTorrent").WithField("key", key.Token).WithField("link", params.Link)
 	l.Debug("Request")
@@ -146,5 +138,6 @@ func (s *Server) downloadTorrent(params torrents.DownloadTorrentParams, key *mod
 		return torrents.NewDownloadTorrentInternalServerError()
 	}
 	l.Debug("Downloaded")
-	return &downloadResponse{data: data}
+	rd := bytes.NewReader(data)
+	return torrents.NewDownloadTorrentOK().WithPayload(io.NopCloser(rd))
 }

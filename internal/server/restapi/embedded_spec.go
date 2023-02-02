@@ -362,7 +362,11 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
           },
           "404": {
             "description": "Неверный хеш ссылки"
@@ -993,7 +997,11 @@ func init() {
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "binary"
+            }
           },
           "404": {
             "description": "Неверный хеш ссылки"

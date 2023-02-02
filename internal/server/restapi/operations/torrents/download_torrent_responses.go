@@ -6,6 +6,7 @@ package torrents
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/go-openapi/runtime"
@@ -20,6 +21,11 @@ DownloadTorrentOK OK
 swagger:response downloadTorrentOK
 */
 type DownloadTorrentOK struct {
+
+	/*
+	  In: Body
+	*/
+	Payload io.ReadCloser `json:"body,omitempty"`
 }
 
 // NewDownloadTorrentOK creates DownloadTorrentOK with default headers values
@@ -28,12 +34,25 @@ func NewDownloadTorrentOK() *DownloadTorrentOK {
 	return &DownloadTorrentOK{}
 }
 
+// WithPayload adds the payload to the download torrent o k response
+func (o *DownloadTorrentOK) WithPayload(payload io.ReadCloser) *DownloadTorrentOK {
+	o.Payload = payload
+	return o
+}
+
+// SetPayload sets the payload to the download torrent o k response
+func (o *DownloadTorrentOK) SetPayload(payload io.ReadCloser) {
+	o.Payload = payload
+}
+
 // WriteResponse to the client
 func (o *DownloadTorrentOK) WriteResponse(rw http.ResponseWriter, producer runtime.Producer) {
 
-	rw.Header().Del(runtime.HeaderContentType) //Remove Content-Type on empty responses
-
 	rw.WriteHeader(200)
+	payload := o.Payload
+	if err := producer.Produce(rw, payload); err != nil {
+		panic(err) // let the recovery middleware deal with this
+	}
 }
 
 // DownloadTorrentNotFoundCode is the HTTP code returned for type DownloadTorrentNotFound

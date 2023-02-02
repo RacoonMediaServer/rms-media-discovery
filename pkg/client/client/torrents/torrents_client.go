@@ -7,6 +7,7 @@ package torrents
 
 import (
 	"fmt"
+	"io"
 
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/strfmt"
@@ -30,7 +31,7 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	DownloadTorrent(params *DownloadTorrentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadTorrentOK, error)
+	DownloadTorrent(params *DownloadTorrentParams, authInfo runtime.ClientAuthInfoWriter, writer io.Writer, opts ...ClientOption) (*DownloadTorrentOK, error)
 
 	SearchTorrents(params *SearchTorrentsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsOK, error)
 
@@ -42,7 +43,7 @@ DownloadTorrent загрузкаs торрент файла
 
 Позволяет скачать торрент-файл, с помощью которого можно скачать контент
 */
-func (a *Client) DownloadTorrent(params *DownloadTorrentParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*DownloadTorrentOK, error) {
+func (a *Client) DownloadTorrent(params *DownloadTorrentParams, authInfo runtime.ClientAuthInfoWriter, writer io.Writer, opts ...ClientOption) (*DownloadTorrentOK, error) {
 	// TODO: Validate the params before sending
 	if params == nil {
 		params = NewDownloadTorrentParams()
@@ -55,7 +56,7 @@ func (a *Client) DownloadTorrent(params *DownloadTorrentParams, authInfo runtime
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
 		Params:             params,
-		Reader:             &DownloadTorrentReader{formats: a.formats},
+		Reader:             &DownloadTorrentReader{formats: a.formats, writer: writer},
 		AuthInfo:           authInfo,
 		Context:            params.Context,
 		Client:             params.HTTPClient,

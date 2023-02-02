@@ -157,6 +157,9 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            type: string
+            format: binary
 
         '404':
           description: Неверный хеш ссылки
