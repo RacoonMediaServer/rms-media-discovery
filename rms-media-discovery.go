@@ -15,7 +15,7 @@ import (
 	"net/http"
 )
 
-const version = "1.0.0"
+const version = "1.0.1"
 
 func main() {
 	log.Infof("rms-media-discovery v%s", version)
@@ -57,7 +57,7 @@ func main() {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		if err := http.ListenAndServe("127.0.0.1:2112", nil); err != nil {
+		if err := http.ListenAndServe(":2112", nil); err != nil {
 			log.Fatalf("Cannot bind monitoring endpoint: %s", err)
 		}
 	}()
