@@ -17,7 +17,6 @@ import (
 )
 
 type imdbProvider struct {
-	log    *log.Entry
 	access model.AccessProvider
 	p      pipeline.Pipeline
 	r      requester.Requester
@@ -65,7 +64,6 @@ type getResponse struct {
 
 func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &imdbProvider{
-		log:    log.WithField("from", "imdb"),
 		access: access,
 		p:      pipeline.Open(pipeline.Settings{Id: "imdb"}),
 	}
@@ -75,7 +73,7 @@ func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 
 func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
 
-	l := utils.LogFromContext(ctx, "imdb", p.log)
+	l := utils.LogFromContext(ctx, "imdb")
 	l.Info("Searching...")
 	list, err := p.search(l, ctx, query)
 	if err != nil {

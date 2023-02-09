@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
-	"github.com/apex/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"net/http"
@@ -50,7 +49,7 @@ func (r *requester) Get(ctx context.Context, url string, response interface{}) e
 }
 
 func (r *requester) Download(ctx context.Context, url string) ([]byte, string, error) {
-	l := utils.LogFromContext(ctx, r.p.ID(), log.WithField("from", r.p.ID())).WithField("url", url)
+	l := utils.LogFromContext(ctx, r.p.ID()).WithField("url", url)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {

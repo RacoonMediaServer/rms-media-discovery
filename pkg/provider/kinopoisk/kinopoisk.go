@@ -9,12 +9,10 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
-	"github.com/apex/log"
 	"net/url"
 )
 
 type kinopoiskProvider struct {
-	log    *log.Entry
 	access model.AccessProvider
 	p      pipeline.Pipeline
 	r      requester.Requester
@@ -65,7 +63,6 @@ type getResponse struct {
 
 func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &kinopoiskProvider{
-		log:    log.WithField("from", "kinopoisk"),
 		access: access,
 		p:      pipeline.Open(pipeline.Settings{Id: "kinopoisk"}),
 	}
@@ -74,7 +71,7 @@ func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvide
 }
 
 func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
-	l := utils.LogFromContext(ctx, "kinopoisk", p.log)
+	l := utils.LogFromContext(ctx, "kinopoisk")
 	l.Info("Searching...")
 	list, err := p.search(ctx, query, limit)
 	if err != nil {

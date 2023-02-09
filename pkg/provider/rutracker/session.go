@@ -115,7 +115,7 @@ func (s *session) authorize(ctx context.Context) error {
 }
 
 func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
-	l := utils.LogFromContext(ctx, "rutracker", s.l)
+	l := utils.LogFromContext(ctx, "rutracker")
 	p, err := s.n.NewPage(l, ctx)
 	if err != nil {
 		return []model.Torrent{}, fmt.Errorf("cannot create browser page: %w", err)

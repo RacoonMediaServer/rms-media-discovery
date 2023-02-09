@@ -23,7 +23,7 @@ func (c captchaSolver) ID() string {
 }
 
 func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (string, error) {
-	l := utils.LogFromContext(ctx, "2captcha", c.log)
+	l := utils.LogFromContext(ctx, "2captcha")
 	l.Info("Captcha resolving requested")
 	content, _, err := c.r.Download(ctx, captcha.Url)
 	if err != nil {
@@ -49,7 +49,7 @@ func (c captchaSolver) Solve(ctx context.Context, captcha provider.Captcha) (str
 }
 
 func NewSolver(access model.AccessProvider) provider.CaptchaSolver {
-	s := &captchaSolver{access: access, log: log.WithField("from", "2captcha")}
+	s := &captchaSolver{access: access}
 	s.r = requester.New(s)
 	return s
 }

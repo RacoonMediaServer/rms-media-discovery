@@ -45,7 +45,7 @@ func applySearchHints(q *model.SearchQuery) {
 }
 func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	applySearchHints(&q)
-	l := utils.LogFromContext(ctx, t.ID(), t.l)
+	l := utils.LogFromContext(ctx, t.ID())
 	if t.n == nil {
 		n, err := navigator.New(t.ID())
 		if err != nil {
@@ -89,5 +89,5 @@ func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) (
 }
 
 func New() provider.TorrentsProvider {
-	return &tpbProvider{l: log.WithField("from", "thepiratebay")}
+	return &tpbProvider{}
 }

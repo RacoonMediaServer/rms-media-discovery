@@ -25,7 +25,7 @@ func (s *scraper) setCallbacks() {
 		default:
 		}
 
-		l := utils.LogFromContext(s.ctx, s.service, log.WithField("from", s.service)).WithField("url", r.URL.String())
+		l := utils.LogFromContext(s.ctx, s.service).WithField("url", r.URL.String())
 		l.Debugf("Fetching...")
 		timer := prometheus.NewTimer(requester.OutgoingRequestsMetric.WithLabelValues(s.service))
 		r.Ctx.Put("timer", timer)
