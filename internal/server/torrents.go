@@ -12,43 +12,18 @@ import (
 )
 
 func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
+	seeders := int64(t.Seeders)
+	size := int64(t.SizeMB)
+
 	result := &models.SearchTorrentsResult{
 		Link:    &t.Link,
-		Seeders: int64(t.Seeders),
-		Size:    int64(t.SizeMB),
-		Title:   t.Title,
+		Seeders: &seeders,
+		Size:    &size,
+		Title:   &t.Title,
 	}
-	if t.Media != nil {
-		result.Media = new(models.SearchTorrentsResultMedia)
-		result.Media.Format = t.Media.Format
-		result.Media.Video = make([]*models.SearchTorrentsResultMediaVideoItems0, 0, len(t.Media.Video))
-		result.Media.Audio = make([]*models.SearchTorrentsResultMediaAudioItems0, 0, len(t.Media.Audio))
-		result.Media.Subtitles = make([]*models.SearchTorrentsResultMediaSubtitlesItems0, 0, len(t.Media.Subtitle))
 
-		for _, v := range t.Media.Video {
-			target := &models.SearchTorrentsResultMediaVideoItems0{
-				AspectRatio: v.AspectRatio,
-				Codec:       v.Codec,
-				Height:      int64(v.Height),
-				Width:       int64(v.Width),
-			}
-			result.Media.Video = append(result.Media.Video, target)
-		}
-		for _, a := range t.Media.Audio {
-			target := &models.SearchTorrentsResultMediaAudioItems0{
-				Codec:    a.Codec,
-				Language: a.Language,
-				Voice:    a.Voice,
-			}
-			result.Media.Audio = append(result.Media.Audio, target)
-		}
-		for _, s := range t.Media.Subtitle {
-			target := &models.SearchTorrentsResultMediaSubtitlesItems0{
-				Codec:    s.Codec,
-				Language: s.Language,
-			}
-			result.Media.Subtitles = append(result.Media.Subtitles, target)
-		}
+	for _, s := range t.Seasons {
+		result.Seasons = append(result.Seasons, int64(s))
 	}
 
 	return result

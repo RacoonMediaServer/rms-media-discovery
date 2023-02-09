@@ -24,17 +24,22 @@ type SearchTorrentsResult struct {
 	// Required: true
 	Link *string `json:"link"`
 
-	// media
-	Media *SearchTorrentsResultMedia `json:"media,omitempty"`
+	// Количество сезонов в сериале (если удалось определить)
+	Seasons []int64 `json:"seasons"`
 
 	// seeders
-	Seeders int64 `json:"seeders,omitempty"`
+	// Required: true
+	// Minimum: 0
+	Seeders *int64 `json:"seeders"`
 
 	// size
-	Size int64 `json:"size,omitempty"`
+	// Required: true
+	// Minimum: 0
+	Size *int64 `json:"size"`
 
 	// title
-	Title string `json:"title,omitempty"`
+	// Required: true
+	Title *string `json:"title"`
 }
 
 // Validate validates this search torrents result
@@ -45,7 +50,19 @@ func (m *SearchTorrentsResult) Validate(formats strfmt.Registry) error {
 		res = append(res, err)
 	}
 
-	if err := m.validateMedia(formats); err != nil {
+	if err := m.validateSeasons(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSeeders(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateSize(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateTitle(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -64,52 +81,59 @@ func (m *SearchTorrentsResult) validateLink(formats strfmt.Registry) error {
 	return nil
 }
 
-func (m *SearchTorrentsResult) validateMedia(formats strfmt.Registry) error {
-	if swag.IsZero(m.Media) { // not required
+func (m *SearchTorrentsResult) validateSeasons(formats strfmt.Registry) error {
+	if swag.IsZero(m.Seasons) { // not required
 		return nil
 	}
 
-	if m.Media != nil {
-		if err := m.Media.Validate(formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("media")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("media")
-			}
+	for i := 0; i < len(m.Seasons); i++ {
+
+		if err := validate.MinimumInt("seasons"+"."+strconv.Itoa(i), "body", m.Seasons[i], 1, false); err != nil {
 			return err
 		}
+
 	}
 
 	return nil
 }
 
-// ContextValidate validate this search torrents result based on the context it is used
+func (m *SearchTorrentsResult) validateSeeders(formats strfmt.Registry) error {
+
+	if err := validate.Required("seeders", "body", m.Seeders); err != nil {
+		return err
+	}
+
+	if err := validate.MinimumInt("seeders", "body", *m.Seeders, 0, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *SearchTorrentsResult) validateSize(formats strfmt.Registry) error {
+
+	if err := validate.Required("size", "body", m.Size); err != nil {
+		return err
+	}
+
+	if err := validate.MinimumInt("size", "body", *m.Size, 0, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (m *SearchTorrentsResult) validateTitle(formats strfmt.Registry) error {
+
+	if err := validate.Required("title", "body", m.Title); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// ContextValidate validates this search torrents result based on context it is used
 func (m *SearchTorrentsResult) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateMedia(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *SearchTorrentsResult) contextValidateMedia(ctx context.Context, formats strfmt.Registry) error {
-
-	if m.Media != nil {
-		if err := m.Media.ContextValidate(ctx, formats); err != nil {
-			if ve, ok := err.(*errors.Validation); ok {
-				return ve.ValidateName("media")
-			} else if ce, ok := err.(*errors.CompositeError); ok {
-				return ce.ValidateName("media")
-			}
-			return err
-		}
-	}
-
 	return nil
 }
 
@@ -124,353 +148,6 @@ func (m *SearchTorrentsResult) MarshalBinary() ([]byte, error) {
 // UnmarshalBinary interface implementation
 func (m *SearchTorrentsResult) UnmarshalBinary(b []byte) error {
 	var res SearchTorrentsResult
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// SearchTorrentsResultMedia search torrents result media
-//
-// swagger:model SearchTorrentsResultMedia
-type SearchTorrentsResultMedia struct {
-
-	// audio
-	Audio []*SearchTorrentsResultMediaAudioItems0 `json:"audio"`
-
-	// format
-	Format string `json:"format,omitempty"`
-
-	// subtitles
-	Subtitles []*SearchTorrentsResultMediaSubtitlesItems0 `json:"subtitles"`
-
-	// video
-	Video []*SearchTorrentsResultMediaVideoItems0 `json:"video"`
-}
-
-// Validate validates this search torrents result media
-func (m *SearchTorrentsResultMedia) Validate(formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.validateAudio(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateSubtitles(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.validateVideo(formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) validateAudio(formats strfmt.Registry) error {
-	if swag.IsZero(m.Audio) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Audio); i++ {
-		if swag.IsZero(m.Audio[i]) { // not required
-			continue
-		}
-
-		if m.Audio[i] != nil {
-			if err := m.Audio[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "audio" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "audio" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) validateSubtitles(formats strfmt.Registry) error {
-	if swag.IsZero(m.Subtitles) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Subtitles); i++ {
-		if swag.IsZero(m.Subtitles[i]) { // not required
-			continue
-		}
-
-		if m.Subtitles[i] != nil {
-			if err := m.Subtitles[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "subtitles" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "subtitles" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) validateVideo(formats strfmt.Registry) error {
-	if swag.IsZero(m.Video) { // not required
-		return nil
-	}
-
-	for i := 0; i < len(m.Video); i++ {
-		if swag.IsZero(m.Video[i]) { // not required
-			continue
-		}
-
-		if m.Video[i] != nil {
-			if err := m.Video[i].Validate(formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "video" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "video" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// ContextValidate validate this search torrents result media based on the context it is used
-func (m *SearchTorrentsResultMedia) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	var res []error
-
-	if err := m.contextValidateAudio(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateSubtitles(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if err := m.contextValidateVideo(ctx, formats); err != nil {
-		res = append(res, err)
-	}
-
-	if len(res) > 0 {
-		return errors.CompositeValidationError(res...)
-	}
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) contextValidateAudio(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Audio); i++ {
-
-		if m.Audio[i] != nil {
-			if err := m.Audio[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "audio" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "audio" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) contextValidateSubtitles(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Subtitles); i++ {
-
-		if m.Subtitles[i] != nil {
-			if err := m.Subtitles[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "subtitles" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "subtitles" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-func (m *SearchTorrentsResultMedia) contextValidateVideo(ctx context.Context, formats strfmt.Registry) error {
-
-	for i := 0; i < len(m.Video); i++ {
-
-		if m.Video[i] != nil {
-			if err := m.Video[i].ContextValidate(ctx, formats); err != nil {
-				if ve, ok := err.(*errors.Validation); ok {
-					return ve.ValidateName("media" + "." + "video" + "." + strconv.Itoa(i))
-				} else if ce, ok := err.(*errors.CompositeError); ok {
-					return ce.ValidateName("media" + "." + "video" + "." + strconv.Itoa(i))
-				}
-				return err
-			}
-		}
-
-	}
-
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *SearchTorrentsResultMedia) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *SearchTorrentsResultMedia) UnmarshalBinary(b []byte) error {
-	var res SearchTorrentsResultMedia
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// SearchTorrentsResultMediaAudioItems0 search torrents result media audio items0
-//
-// swagger:model SearchTorrentsResultMediaAudioItems0
-type SearchTorrentsResultMediaAudioItems0 struct {
-
-	// codec
-	Codec string `json:"codec,omitempty"`
-
-	// language
-	Language string `json:"language,omitempty"`
-
-	// voice
-	Voice string `json:"voice,omitempty"`
-}
-
-// Validate validates this search torrents result media audio items0
-func (m *SearchTorrentsResultMediaAudioItems0) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this search torrents result media audio items0 based on context it is used
-func (m *SearchTorrentsResultMediaAudioItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaAudioItems0) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaAudioItems0) UnmarshalBinary(b []byte) error {
-	var res SearchTorrentsResultMediaAudioItems0
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// SearchTorrentsResultMediaSubtitlesItems0 search torrents result media subtitles items0
-//
-// swagger:model SearchTorrentsResultMediaSubtitlesItems0
-type SearchTorrentsResultMediaSubtitlesItems0 struct {
-
-	// codec
-	Codec string `json:"codec,omitempty"`
-
-	// language
-	Language string `json:"language,omitempty"`
-}
-
-// Validate validates this search torrents result media subtitles items0
-func (m *SearchTorrentsResultMediaSubtitlesItems0) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this search torrents result media subtitles items0 based on context it is used
-func (m *SearchTorrentsResultMediaSubtitlesItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaSubtitlesItems0) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaSubtitlesItems0) UnmarshalBinary(b []byte) error {
-	var res SearchTorrentsResultMediaSubtitlesItems0
-	if err := swag.ReadJSON(b, &res); err != nil {
-		return err
-	}
-	*m = res
-	return nil
-}
-
-// SearchTorrentsResultMediaVideoItems0 search torrents result media video items0
-//
-// swagger:model SearchTorrentsResultMediaVideoItems0
-type SearchTorrentsResultMediaVideoItems0 struct {
-
-	// aspect ratio
-	AspectRatio string `json:"aspectRatio,omitempty"`
-
-	// codec
-	Codec string `json:"codec,omitempty"`
-
-	// height
-	Height int64 `json:"height,omitempty"`
-
-	// width
-	Width int64 `json:"width,omitempty"`
-}
-
-// Validate validates this search torrents result media video items0
-func (m *SearchTorrentsResultMediaVideoItems0) Validate(formats strfmt.Registry) error {
-	return nil
-}
-
-// ContextValidate validates this search torrents result media video items0 based on context it is used
-func (m *SearchTorrentsResultMediaVideoItems0) ContextValidate(ctx context.Context, formats strfmt.Registry) error {
-	return nil
-}
-
-// MarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaVideoItems0) MarshalBinary() ([]byte, error) {
-	if m == nil {
-		return nil, nil
-	}
-	return swag.WriteJSON(m)
-}
-
-// UnmarshalBinary interface implementation
-func (m *SearchTorrentsResultMediaVideoItems0) UnmarshalBinary(b []byte) error {
-	var res SearchTorrentsResultMediaVideoItems0
 	if err := swag.ReadJSON(b, &res); err != nil {
 		return err
 	}

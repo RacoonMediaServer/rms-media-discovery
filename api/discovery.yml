@@ -365,6 +365,9 @@ definitions:
     type: object
     required:
       - link
+      - title
+      - size
+      - seeders
     properties:
       link:
         type: string
@@ -372,46 +375,17 @@ definitions:
         type: string
       size:
         type: integer
+        minimum: 0
       seeders:
         type: integer
-      media:
-        type: object
-        properties:
-          format:
-            type: string
-          video:
-            type: array
-            items:
-              type: object
-              properties:
-                codec:
-                  type: string
-                width:
-                  type: integer
-                height:
-                  type: integer
-                aspectRatio:
-                  type: string
-          audio:
-            type: array
-            items:
-              type: object
-              properties:
-                codec:
-                  type: string
-                language:
-                  type: string
-                voice:
-                  type: string
-          subtitles:
-            type: array
-            items:
-              type: object
-              properties:
-                codec:
-                  type: string
-                language:
-                  type: string
+        minimum: 0
+
+      seasons:
+        type: array
+        description: Количество сезонов в сериале (если удалось определить)
+        items:
+          type: integer
+          minimum: 1
 
   Account:
     type: object

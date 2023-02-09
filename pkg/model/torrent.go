@@ -15,6 +15,7 @@ type Torrent struct {
 	SizeMB  uint64
 	Seeders uint
 	Media   *media.Info
+	Seasons []uint
 
 	DetailLink string
 	Downloader DownloadFunc

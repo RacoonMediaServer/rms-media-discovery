@@ -555,69 +555,21 @@ func init() {
     "SearchTorrentsResult": {
       "type": "object",
       "required": [
-        "link"
+        "link",
+        "title",
+        "size",
+        "seeders"
       ],
       "properties": {
         "link": {
           "type": "string"
         },
-        "media": {
-          "type": "object",
-          "properties": {
-            "audio": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "codec": {
-                    "type": "string"
-                  },
-                  "language": {
-                    "type": "string"
-                  },
-                  "voice": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "format": {
-              "type": "string"
-            },
-            "subtitles": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "codec": {
-                    "type": "string"
-                  },
-                  "language": {
-                    "type": "string"
-                  }
-                }
-              }
-            },
-            "video": {
-              "type": "array",
-              "items": {
-                "type": "object",
-                "properties": {
-                  "aspectRatio": {
-                    "type": "string"
-                  },
-                  "codec": {
-                    "type": "string"
-                  },
-                  "height": {
-                    "type": "integer"
-                  },
-                  "width": {
-                    "type": "integer"
-                  }
-                }
-              }
-            }
+        "seasons": {
+          "description": "Количество сезонов в сериале (если удалось определить)",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "seeders": {
@@ -1210,114 +1162,33 @@ func init() {
     "SearchTorrentsResult": {
       "type": "object",
       "required": [
-        "link"
+        "link",
+        "title",
+        "size",
+        "seeders"
       ],
       "properties": {
         "link": {
           "type": "string"
         },
-        "media": {
-          "type": "object",
-          "properties": {
-            "audio": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SearchTorrentsResultMediaAudioItems0"
-              }
-            },
-            "format": {
-              "type": "string"
-            },
-            "subtitles": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SearchTorrentsResultMediaSubtitlesItems0"
-              }
-            },
-            "video": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/SearchTorrentsResultMediaVideoItems0"
-              }
-            }
+        "seasons": {
+          "description": "Количество сезонов в сериале (если удалось определить)",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1
           }
         },
         "seeders": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "size": {
-          "type": "integer"
+          "type": "integer",
+          "minimum": 0
         },
         "title": {
           "type": "string"
-        }
-      }
-    },
-    "SearchTorrentsResultMedia": {
-      "type": "object",
-      "properties": {
-        "audio": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SearchTorrentsResultMediaAudioItems0"
-          }
-        },
-        "format": {
-          "type": "string"
-        },
-        "subtitles": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SearchTorrentsResultMediaSubtitlesItems0"
-          }
-        },
-        "video": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/SearchTorrentsResultMediaVideoItems0"
-          }
-        }
-      }
-    },
-    "SearchTorrentsResultMediaAudioItems0": {
-      "type": "object",
-      "properties": {
-        "codec": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        },
-        "voice": {
-          "type": "string"
-        }
-      }
-    },
-    "SearchTorrentsResultMediaSubtitlesItems0": {
-      "type": "object",
-      "properties": {
-        "codec": {
-          "type": "string"
-        },
-        "language": {
-          "type": "string"
-        }
-      }
-    },
-    "SearchTorrentsResultMediaVideoItems0": {
-      "type": "object",
-      "properties": {
-        "aspectRatio": {
-          "type": "string"
-        },
-        "codec": {
-          "type": "string"
-        },
-        "height": {
-          "type": "integer"
-        },
-        "width": {
-          "type": "integer"
         }
       }
     },
