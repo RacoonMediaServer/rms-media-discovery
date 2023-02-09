@@ -12,13 +12,32 @@ import (
 	"net/url"
 )
 
-const domain = "rutor.info"
+const rutorDomain = "rutor.info"
 
 type rutorProvider struct {
 }
 
 func (r rutorProvider) ID() string {
 	return "rutor"
+}
+
+func composeURL(q model.SearchQuery) string {
+	u := "http://" + rutorDomain + "/search/"
+	if q.Type == model.Movies {
+		if q.Year != nil || q.Season != nil {
+			u += "0/0/100/2/" // более релевантная сортировка для наших задач
+		}
+		if q.Year != nil {
+			q.Query += fmt.Sprintf(" %d", *q.Year)
+		}
+		if q.Season != nil {
+			q.Query += fmt.Sprintf(" S%02d", *q.Season)
+		}
+	}
+
+	u += url.PathEscape(q.Query)
+
+	return u
 }
 
 func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
@@ -28,7 +47,7 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 	var result []model.Torrent
 	available := false
 
-	u := fmt.Sprintf("http://%s/search/%s", domain, url.PathEscape(q.Query))
+	u := composeURL(q)
 	err := c.
 		Select(`#index > table > tbody > tr`, r.torrentsParser(&result)).
 		Select(`#logo`, pageChecker(&available)). // проверяем, что видим реально rutor, а не заглушку РКН
@@ -54,7 +73,7 @@ func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent)
 	sel := c.Select("#details > tbody > tr:nth-child(1) > td:nth-child(2)", detailsParser)
 	for i := range torrents {
 		t := &torrents[i]
-		sel.GetAsync("http://"+domain+t.DetailLink, t)
+		sel.GetAsync("http://"+rutorDomain+t.DetailLink, t)
 	}
 
 	c.Wait()
