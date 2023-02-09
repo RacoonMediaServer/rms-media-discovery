@@ -1,7 +1,6 @@
 package rutor
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/scraper"
 	"github.com/gocolly/colly/v2"
@@ -55,7 +54,8 @@ func pageChecker(isOk *bool) scraper.HTMLCallback {
 }
 
 func detailsParser(e *colly.HTMLElement, userData interface{}) {
-	t := userData.(*model.Torrent)
-	parser := heuristic.MediaInfoParser{}
-	t.Media = parser.Parse(e.Text)
+	// TODO: либо убрать, либо парсить содержимое
+	//t := userData.(*model.Torrent)
+	//parser := heuristic.MediaInfoParser{}
+	//t.Media = parser.Parse(e.Text)
 }

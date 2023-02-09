@@ -2,7 +2,6 @@ package model
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 )
 
 // DownloadFunc is a function which can download the torrent
@@ -14,7 +13,6 @@ type Torrent struct {
 	Link    string
 	SizeMB  uint64
 	Seeders uint
-	Media   *media.Info
 	Seasons []uint
 
 	DetailLink string

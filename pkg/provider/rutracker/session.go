@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
@@ -172,9 +171,10 @@ func (s *session) parseDetails(ctx context.Context, torrents []model.Torrent) {
 				return
 			}
 
-			parser := heuristic.MediaInfoParser{}
-			post := p.Document().Find(`.post_body`).First()
-			t.Media = parser.Parse(post.Text())
+			// TODO: либо убрать, либо парсить содержимое
+			//parser := heuristic.MediaInfoParser{}
+			//post := p.Document().Find(`.post_body`).First()
+			//t.Media = parser.Parse(post.Text())
 
 		}(i)
 	}
