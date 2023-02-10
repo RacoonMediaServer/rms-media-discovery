@@ -57,5 +57,5 @@ func detailsParser(e *colly.HTMLElement, userData interface{}) {
 	// TODO: либо убрать, либо парсить содержимое
 	//t := userData.(*model.Torrent)
 	//parser := heuristic.MediaInfoParser{}
-	//t.Media = parser.Parse(e.Text)
+	//t.Media = parser.ParseMediaInfo(e.Text)
 }

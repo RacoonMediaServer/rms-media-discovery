@@ -22,10 +22,10 @@ type Torrent struct {
 type ContentType int
 
 const (
-	Movies ContentType = iota
+	Other ContentType = iota
+	Movies
 	Music
 	Books
-	Other
 )
 
 type SearchQuery struct {

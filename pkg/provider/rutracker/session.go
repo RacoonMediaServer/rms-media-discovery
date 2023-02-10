@@ -174,7 +174,7 @@ func (s *session) parseDetails(ctx context.Context, torrents []model.Torrent) {
 			// TODO: либо убрать, либо парсить содержимое
 			//parser := heuristic.MediaInfoParser{}
 			//post := p.Document().Find(`.post_body`).First()
-			//t.Media = parser.Parse(post.Text())
+			//t.Media = parser.ParseMediaInfo(post.Text())
 
 		}(i)
 	}
