@@ -8,6 +8,7 @@ import (
 	"github.com/antzucaro/matchr"
 	"math"
 	"sort"
+	"strings"
 )
 
 type rankContext struct {
@@ -83,8 +84,9 @@ func (ctx *rankContext) sort(f func(lhs *model.Torrent, rhs *model.Torrent) bool
 
 func getMinDistance(titles []string, q string) int {
 	min := math.MaxInt
+	q = strings.ToLower(q)
 	for _, t := range titles {
-		d := matchr.Levenshtein(t, q)
+		d := matchr.Levenshtein(strings.ToLower(t), q)
 		if d < min {
 			min = d
 		}
@@ -152,6 +154,17 @@ func rank(torrents []model.Torrent, q model.SearchQuery) []model.Torrent {
 			// сортируем, если в раздаче сезонов больше чем запросили
 			sort.add(func(lhs *model.Torrent, rhs *model.Torrent) int {
 				return len(lhs.Info.Seasons) - len(rhs.Info.Seasons)
+			})
+		} else {
+			// трилогии убираем в конец поиска
+			sort.add(func(lhs *model.Torrent, rhs *model.Torrent) int {
+				if !lhs.Info.Trilogy && rhs.Info.Trilogy {
+					return -1
+				}
+				if lhs.Info.Trilogy && !rhs.Info.Trilogy {
+					return 1
+				}
+				return 0
 			})
 		}
 		// сортируем по качеству
