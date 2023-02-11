@@ -62,22 +62,11 @@ SearchTorrentsParams contains all the parameters to send to the API endpoint
 */
 type SearchTorrentsParams struct {
 
-	/* Detailed.
-
-	   Забирать ли детальное описание раздачи
-	*/
-	Detailed *bool
-
 	/* Limit.
 
 	   Ограничение на кол-во результатов
 	*/
 	Limit *int64
-
-	// Orderby.
-	//
-	// Default: "seeders"
-	Orderby *string
 
 	/* Q.
 
@@ -120,21 +109,7 @@ func (o *SearchTorrentsParams) WithDefaults() *SearchTorrentsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *SearchTorrentsParams) SetDefaults() {
-	var (
-		detailedDefault = bool(false)
-
-		orderbyDefault = string("seeders")
-	)
-
-	val := SearchTorrentsParams{
-		Detailed: &detailedDefault,
-		Orderby:  &orderbyDefault,
-	}
-
-	val.timeout = o.timeout
-	val.Context = o.Context
-	val.HTTPClient = o.HTTPClient
-	*o = val
+	// no default values defined for this parameter
 }
 
 // WithTimeout adds the timeout to the search torrents params
@@ -170,17 +145,6 @@ func (o *SearchTorrentsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
 }
 
-// WithDetailed adds the detailed to the search torrents params
-func (o *SearchTorrentsParams) WithDetailed(detailed *bool) *SearchTorrentsParams {
-	o.SetDetailed(detailed)
-	return o
-}
-
-// SetDetailed adds the detailed to the search torrents params
-func (o *SearchTorrentsParams) SetDetailed(detailed *bool) {
-	o.Detailed = detailed
-}
-
 // WithLimit adds the limit to the search torrents params
 func (o *SearchTorrentsParams) WithLimit(limit *int64) *SearchTorrentsParams {
 	o.SetLimit(limit)
@@ -190,17 +154,6 @@ func (o *SearchTorrentsParams) WithLimit(limit *int64) *SearchTorrentsParams {
 // SetLimit adds the limit to the search torrents params
 func (o *SearchTorrentsParams) SetLimit(limit *int64) {
 	o.Limit = limit
-}
-
-// WithOrderby adds the orderby to the search torrents params
-func (o *SearchTorrentsParams) WithOrderby(orderby *string) *SearchTorrentsParams {
-	o.SetOrderby(orderby)
-	return o
-}
-
-// SetOrderby adds the orderby to the search torrents params
-func (o *SearchTorrentsParams) SetOrderby(orderby *string) {
-	o.Orderby = orderby
 }
 
 // WithQ adds the q to the search torrents params
@@ -255,23 +208,6 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 	}
 	var res []error
 
-	if o.Detailed != nil {
-
-		// query param detailed
-		var qrDetailed bool
-
-		if o.Detailed != nil {
-			qrDetailed = *o.Detailed
-		}
-		qDetailed := swag.FormatBool(qrDetailed)
-		if qDetailed != "" {
-
-			if err := r.SetQueryParam("detailed", qDetailed); err != nil {
-				return err
-			}
-		}
-	}
-
 	if o.Limit != nil {
 
 		// query param limit
@@ -284,23 +220,6 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		if qLimit != "" {
 
 			if err := r.SetQueryParam("limit", qLimit); err != nil {
-				return err
-			}
-		}
-	}
-
-	if o.Orderby != nil {
-
-		// query param orderby
-		var qrOrderby string
-
-		if o.Orderby != nil {
-			qrOrderby = *o.Orderby
-		}
-		qOrderby := qrOrderby
-		if qOrderby != "" {
-
-			if err := r.SetQueryParam("orderby", qOrderby); err != nil {
 				return err
 			}
 		}

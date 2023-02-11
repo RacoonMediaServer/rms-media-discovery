@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/2captcha/2captcha-go v1.0.1
 	github.com/PuerkitoBio/goquery v1.5.1
+	github.com/antzucaro/matchr v0.0.0-20221106193745-7bed6ef61ef9
 	github.com/apex/log v1.9.0
 	github.com/didip/tollbooth v4.0.2+incompatible
 	github.com/go-openapi/errors v0.20.3
@@ -25,7 +26,6 @@ require (
 	github.com/ztrue/tracerr v0.3.0
 	go.mongodb.org/mongo-driver v1.11.1
 	golang.org/x/net v0.5.0
-	golang.org/x/text v0.6.0
 )
 
 require (
@@ -33,7 +33,6 @@ require (
 	github.com/antchfx/htmlquery v1.2.3 // indirect
 	github.com/antchfx/xmlquery v1.2.4 // indirect
 	github.com/antchfx/xpath v1.1.8 // indirect
-	github.com/antzucaro/matchr v0.0.0-20221106193745-7bed6ef61ef9 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
@@ -77,6 +76,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/sys v0.4.0 // indirect
+	golang.org/x/text v0.6.0 // indirect
 	golang.org/x/time v0.0.0-20191024005414-555d28b269f0 // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

@@ -15,7 +15,7 @@ import (
 	"net/http"
 )
 
-const version = "1.1.0"
+const version = "1.1.1"
 
 func main() {
 	log.Infof("rms-media-discovery v%s", version)
