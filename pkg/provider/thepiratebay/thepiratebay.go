@@ -42,6 +42,7 @@ func applySearchHints(q *model.SearchQuery) {
 		if q.Season != nil {
 			q.Query += fmt.Sprintf(" S%02d", *q.Season)
 		}
+		q.Query += " rus" // хотим русскую озвучку
 	}
 }
 func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
