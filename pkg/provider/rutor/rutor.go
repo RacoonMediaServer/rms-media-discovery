@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
@@ -59,24 +58,7 @@ func (r rutorProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) 
 		return nil, errors.New("domain is unavailable")
 	}
 
-	model.SortTorrents(result, q.OrderBy)
-	result = utils.Bound(result, q.Limit)
-
-	if q.Detailed {
-		r.parseDetails(c, result)
-	}
 	return result, nil
-}
-
-func (r rutorProvider) parseDetails(c scraper.Scraper, torrents []model.Torrent) {
-	c = c.Clone()
-	sel := c.Select("#details > tbody > tr:nth-child(1) > td:nth-child(2)", detailsParser)
-	for i := range torrents {
-		t := &torrents[i]
-		sel.GetAsync("http://"+rutorDomain+t.DetailLink, t)
-	}
-
-	c.Wait()
 }
 
 func NewProvider() provider.TorrentsProvider {

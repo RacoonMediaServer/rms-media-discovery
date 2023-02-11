@@ -11,7 +11,6 @@ import (
 	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"net/url"
-	"sync"
 	"time"
 )
 
@@ -136,47 +135,5 @@ func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 		torrents = append(torrents, parseTorrent(selection))
 	})
 
-	model.SortTorrents(torrents, q.OrderBy)
-	torrents = utils.Bound(torrents, q.Limit)
-
-	if q.Detailed {
-		s.parseDetails(ctx, torrents)
-	}
-
 	return torrents, nil
-}
-
-func (s *session) parseDetails(ctx context.Context, torrents []model.Torrent) {
-	wg := sync.WaitGroup{}
-	childCtx, cancel := context.WithTimeout(ctx, parseDetailsTimeout)
-	defer cancel()
-
-	for i := range torrents {
-		t := &torrents[i]
-		p, err := s.n.NewPage(s.l, childCtx)
-		if err != nil {
-			s.l.Warnf("Cannot create new page: %s", err)
-			continue
-		}
-
-		wg.Add(1)
-		go func(i int) {
-			defer wg.Done()
-			err = p.Batch(fmt.Sprintf("parse details #%d", i)).
-				Goto("https://rutracker.org/forum/" + t.DetailLink).
-				FetchContent().
-				Error()
-			if err != nil {
-				s.l.Warnf("Cannot parse details: %s", err)
-				return
-			}
-
-			// TODO: либо убрать, либо парсить содержимое
-			//parser := heuristic.MediaInfoParser{}
-			//post := p.Document().Find(`.post_body`).First()
-			//t.Media = parser.ParseMediaInfo(post.Text())
-
-		}(i)
-	}
-	wg.Wait()
 }

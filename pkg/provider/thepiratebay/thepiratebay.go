@@ -75,9 +75,6 @@ func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) (
 	result := []model.Torrent{}
 	p.Document().Find("#st").Each(torrentsParser(&result))
 
-	model.SortTorrents(result, q.OrderBy)
-	result = utils.Bound(result, q.Limit)
-
 	for i := range result {
 		torrent := &result[i]
 		torrent.Downloader = func(ctx context.Context) ([]byte, error) {
