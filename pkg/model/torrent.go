@@ -22,11 +22,9 @@ type Torrent struct {
 }
 
 type SearchQuery struct {
-	Query    string
-	Type     media.ContentType
-	Limit    uint
-	Detailed bool
-	Year     *uint
-	Season   *uint
-	OrderBy  OrderByFunc
+	Query  string
+	Type   media.ContentType
+	Limit  uint
+	Year   *uint
+	Season *uint
 }

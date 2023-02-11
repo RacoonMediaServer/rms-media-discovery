@@ -17,22 +17,11 @@ import (
 )
 
 // NewSearchTorrentsParams creates a new SearchTorrentsParams object
-// with the default values initialized.
+//
+// There are no default values defined in the spec.
 func NewSearchTorrentsParams() SearchTorrentsParams {
 
-	var (
-		// initialize parameters with default values
-
-		detailedDefault = bool(false)
-
-		orderbyDefault = string("seeders")
-	)
-
-	return SearchTorrentsParams{
-		Detailed: &detailedDefault,
-
-		Orderby: &orderbyDefault,
-	}
+	return SearchTorrentsParams{}
 }
 
 // SearchTorrentsParams contains all the bound params for the search torrents operation
@@ -44,21 +33,11 @@ type SearchTorrentsParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
-	/*Забирать ли детальное описание раздачи
-	  In: query
-	  Default: false
-	*/
-	Detailed *bool
 	/*Ограничение на кол-во результатов
 	  Minimum: 1
 	  In: query
 	*/
 	Limit *int64
-	/*
-	  In: query
-	  Default: "seeders"
-	*/
-	Orderby *string
 	/*Искомый запрос
 	  Required: true
 	  Max Length: 128
@@ -93,18 +72,8 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	qs := runtime.Values(r.URL.Query())
 
-	qDetailed, qhkDetailed, _ := qs.GetOK("detailed")
-	if err := o.bindDetailed(qDetailed, qhkDetailed, route.Formats); err != nil {
-		res = append(res, err)
-	}
-
 	qLimit, qhkLimit, _ := qs.GetOK("limit")
 	if err := o.bindLimit(qLimit, qhkLimit, route.Formats); err != nil {
-		res = append(res, err)
-	}
-
-	qOrderby, qhkOrderby, _ := qs.GetOK("orderby")
-	if err := o.bindOrderby(qOrderby, qhkOrderby, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -130,30 +99,6 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
-	return nil
-}
-
-// bindDetailed binds and validates parameter Detailed from query.
-func (o *SearchTorrentsParams) bindDetailed(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: false
-	// AllowEmptyValue: false
-
-	if raw == "" { // empty values pass all other validations
-		// Default values have been previously initialized by NewSearchTorrentsParams()
-		return nil
-	}
-
-	value, err := swag.ConvertBool(raw)
-	if err != nil {
-		return errors.InvalidType("detailed", "query", "bool", raw)
-	}
-	o.Detailed = &value
-
 	return nil
 }
 
@@ -188,39 +133,6 @@ func (o *SearchTorrentsParams) bindLimit(rawData []string, hasKey bool, formats 
 func (o *SearchTorrentsParams) validateLimit(formats strfmt.Registry) error {
 
 	if err := validate.MinimumInt("limit", "query", *o.Limit, 1, false); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// bindOrderby binds and validates parameter Orderby from query.
-func (o *SearchTorrentsParams) bindOrderby(rawData []string, hasKey bool, formats strfmt.Registry) error {
-	var raw string
-	if len(rawData) > 0 {
-		raw = rawData[len(rawData)-1]
-	}
-
-	// Required: false
-	// AllowEmptyValue: false
-
-	if raw == "" { // empty values pass all other validations
-		// Default values have been previously initialized by NewSearchTorrentsParams()
-		return nil
-	}
-	o.Orderby = &raw
-
-	if err := o.validateOrderby(formats); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-// validateOrderby carries on validations for parameter Orderby
-func (o *SearchTorrentsParams) validateOrderby(formats strfmt.Registry) error {
-
-	if err := validate.EnumCase("orderby", "query", *o.Orderby, []interface{}{"seeders", "size", "quality"}, true); err != nil {
 		return err
 	}
 

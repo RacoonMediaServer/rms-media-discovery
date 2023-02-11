@@ -97,12 +97,6 @@ paths:
           description: Ограничение на кол-во результатов
           type: integer
           minimum: 1
-        - name: detailed
-          in: query
-          required: false
-          type: boolean
-          description: Забирать ли детальное описание раздачи
-          default: false
         - name: year
           in: query
           type: integer
@@ -113,14 +107,6 @@ paths:
           type: integer
           minimum: 1
           description: Номер сезона (для сериалов)
-        - name: orderby
-          in: query
-          type: string
-          enum:
-            - "seeders"
-            - "size"
-            - "quality"
-          default: "seeders"
       responses:
         '200':
           description: OK
@@ -379,13 +365,35 @@ definitions:
       seeders:
         type: integer
         minimum: 0
-
       seasons:
         type: array
-        description: Количество сезонов в сериале (если удалось определить)
+        description: Количество сезонов в сериале (если это сериал)
         items:
           type: integer
           minimum: 1
+      quality:
+        type: string
+        description: Качество видео
+        enum:
+          - ""
+          - "480p"
+          - "720p"
+          - "1080p"
+          - "2160p"
+      rip:
+        type: string
+        description: Rip для видео
+      format:
+        type: string
+        description: Формат
+      voice:
+        type: string
+        description: Озвучка
+      subtitles:
+        type: array
+        description: Коды языков, на которых предоставлены субтитры
+        items:
+          type: string
 
   Account:
     type: object

@@ -15,13 +15,11 @@ import (
 
 // SearchTorrentsURL generates an URL for the search torrents operation
 type SearchTorrentsURL struct {
-	Detailed *bool
-	Limit    *int64
-	Orderby  *string
-	Q        string
-	Season   *int64
-	Type     *string
-	Year     *int64
+	Limit  *int64
+	Q      string
+	Season *int64
+	Type   *string
+	Year   *int64
 
 	_basePath string
 	// avoid unkeyed usage
@@ -54,28 +52,12 @@ func (o *SearchTorrentsURL) Build() (*url.URL, error) {
 
 	qs := make(url.Values)
 
-	var detailedQ string
-	if o.Detailed != nil {
-		detailedQ = swag.FormatBool(*o.Detailed)
-	}
-	if detailedQ != "" {
-		qs.Set("detailed", detailedQ)
-	}
-
 	var limitQ string
 	if o.Limit != nil {
 		limitQ = swag.FormatInt64(*o.Limit)
 	}
 	if limitQ != "" {
 		qs.Set("limit", limitQ)
-	}
-
-	var orderbyQ string
-	if o.Orderby != nil {
-		orderbyQ = *o.Orderby
-	}
-	if orderbyQ != "" {
-		qs.Set("orderby", orderbyQ)
 	}
 
 	qQ := o.Q

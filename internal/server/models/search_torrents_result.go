@@ -7,6 +7,7 @@ package models
 
 import (
 	"context"
+	"encoding/json"
 	"strconv"
 
 	"github.com/go-openapi/errors"
@@ -20,11 +21,21 @@ import (
 // swagger:model SearchTorrentsResult
 type SearchTorrentsResult struct {
 
+	// Формат
+	Format string `json:"format,omitempty"`
+
 	// link
 	// Required: true
 	Link *string `json:"link"`
 
-	// Количество сезонов в сериале (если удалось определить)
+	// Качество видео
+	// Enum: [ 480p 720p 1080p 2160p]
+	Quality string `json:"quality,omitempty"`
+
+	// Rip для видео
+	Rip string `json:"rip,omitempty"`
+
+	// Количество сезонов в сериале (если это сериал)
 	Seasons []int64 `json:"seasons"`
 
 	// seeders
@@ -37,9 +48,15 @@ type SearchTorrentsResult struct {
 	// Minimum: 0
 	Size *int64 `json:"size"`
 
+	// Коды языков, на которых предоставлены субтитры
+	Subtitles []string `json:"subtitles"`
+
 	// title
 	// Required: true
 	Title *string `json:"title"`
+
+	// Озвучка
+	Voice string `json:"voice,omitempty"`
 }
 
 // Validate validates this search torrents result
@@ -47,6 +64,10 @@ func (m *SearchTorrentsResult) Validate(formats strfmt.Registry) error {
 	var res []error
 
 	if err := m.validateLink(formats); err != nil {
+		res = append(res, err)
+	}
+
+	if err := m.validateQuality(formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -75,6 +96,57 @@ func (m *SearchTorrentsResult) Validate(formats strfmt.Registry) error {
 func (m *SearchTorrentsResult) validateLink(formats strfmt.Registry) error {
 
 	if err := validate.Required("link", "body", m.Link); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var searchTorrentsResultTypeQualityPropEnum []interface{}
+
+func init() {
+	var res []string
+	if err := json.Unmarshal([]byte(`["","480p","720p","1080p","2160p"]`), &res); err != nil {
+		panic(err)
+	}
+	for _, v := range res {
+		searchTorrentsResultTypeQualityPropEnum = append(searchTorrentsResultTypeQualityPropEnum, v)
+	}
+}
+
+const (
+
+	// SearchTorrentsResultQualityEmpty captures enum value ""
+	SearchTorrentsResultQualityEmpty string = ""
+
+	// SearchTorrentsResultQualityNr480p captures enum value "480p"
+	SearchTorrentsResultQualityNr480p string = "480p"
+
+	// SearchTorrentsResultQualityNr720p captures enum value "720p"
+	SearchTorrentsResultQualityNr720p string = "720p"
+
+	// SearchTorrentsResultQualityNr1080p captures enum value "1080p"
+	SearchTorrentsResultQualityNr1080p string = "1080p"
+
+	// SearchTorrentsResultQualityNr2160p captures enum value "2160p"
+	SearchTorrentsResultQualityNr2160p string = "2160p"
+)
+
+// prop value enum
+func (m *SearchTorrentsResult) validateQualityEnum(path, location string, value string) error {
+	if err := validate.EnumCase(path, location, value, searchTorrentsResultTypeQualityPropEnum, true); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *SearchTorrentsResult) validateQuality(formats strfmt.Registry) error {
+	if swag.IsZero(m.Quality) { // not required
+		return nil
+	}
+
+	// value enum
+	if err := m.validateQualityEnum("quality", "body", m.Quality); err != nil {
 		return err
 	}
 

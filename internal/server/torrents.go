@@ -12,7 +12,7 @@ import (
 	"io"
 )
 
-func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
+func convertTorrent(t *model.Torrent, contentType media.ContentType) *models.SearchTorrentsResult {
 	seeders := int64(t.Seeders)
 	size := int64(t.SizeMB)
 
@@ -23,8 +23,16 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 		Title:   &t.Title,
 	}
 
-	for _, s := range t.Info.Seasons {
-		result.Seasons = append(result.Seasons, int64(s))
+	result.Format = t.Info.Format
+
+	if contentType == media.Movies {
+		for _, s := range t.Info.Seasons {
+			result.Seasons = append(result.Seasons, int64(s))
+		}
+		result.Rip = t.Info.Rip
+		result.Voice = t.Info.Voice
+		result.Subtitles = t.Info.Subtitles
+		result.Quality = t.Info.Quality.String()
 	}
 
 	return result
@@ -32,12 +40,8 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 
 func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQuery {
 	var limit uint
-	var detailed bool
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
-	}
-	if params.Detailed != nil {
-		detailed = *params.Detailed
 	}
 
 	hint := media.Other
@@ -55,11 +59,9 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 	var year uint
 	var season uint
 	q := model.SearchQuery{
-		Query:    params.Q,
-		Type:     hint,
-		Limit:    limit,
-		Detailed: detailed,
-		OrderBy:  model.OrderBySeeders,
+		Query: params.Q,
+		Type:  hint,
+		Limit: limit,
 	}
 
 	if hint == media.Movies {
@@ -74,20 +76,14 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 		}
 	}
 
-	if params.Orderby != nil {
-		switch *params.Orderby {
-		case "size":
-			q.OrderBy = model.OrderBySize
-		}
-	}
-
 	return q
 }
 func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "searchTorrents").WithField("key", key.Token).WithField("q", params.Q)
 	l.Debug("Request")
 
-	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), searchQueryFromParams(&params))
+	q := searchQueryFromParams(&params)
+	mov, err := s.Torrents.Search(params.HTTPRequest.Context(), q)
 	if err != nil {
 		l.Errorf("Request failed: %s", err)
 		return torrents.NewSearchTorrentsInternalServerError()
@@ -96,7 +92,7 @@ func (s *Server) searchTorrents(params torrents.SearchTorrentsParams, key *model
 
 	payload := torrents.SearchTorrentsOKBody{Results: []*models.SearchTorrentsResult{}}
 	for i := range mov {
-		payload.Results = append(payload.Results, convertTorrent(&mov[i]))
+		payload.Results = append(payload.Results, convertTorrent(&mov[i], q.Type))
 	}
 
 	return torrents.NewSearchTorrentsOK().WithPayload(&payload)
