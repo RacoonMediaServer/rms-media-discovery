@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 )
 
 // DownloadFunc is a function which can download the torrent
@@ -13,24 +15,15 @@ type Torrent struct {
 	Link    string
 	SizeMB  uint64
 	Seeders uint
-	Seasons []uint
+	Info    heuristic.Info
 
 	DetailLink string
 	Downloader DownloadFunc
 }
 
-type ContentType int
-
-const (
-	Other ContentType = iota
-	Movies
-	Music
-	Books
-)
-
 type SearchQuery struct {
 	Query    string
-	Type     ContentType
+	Type     media.ContentType
 	Limit    uint
 	Detailed bool
 	Year     *uint

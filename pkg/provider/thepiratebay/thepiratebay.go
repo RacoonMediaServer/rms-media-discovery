@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
@@ -16,13 +17,13 @@ type tpbProvider struct {
 	l *log.Entry
 }
 
-func getFilter(hint model.ContentType) string {
+func getFilter(hint media.ContentType) string {
 	switch hint {
-	case model.Movies:
+	case media.Movies:
 		return "video=on"
-	case model.Music:
+	case media.Music:
 		return "audio=on"
-	case model.Books:
+	case media.Books:
 		return "other=on"
 	default:
 		return "all=on"
@@ -34,7 +35,7 @@ func (t *tpbProvider) ID() string {
 }
 func applySearchHints(q *model.SearchQuery) {
 	// применяем дополнительные параметры поиска так, как это лучше всего будет работать на конкретном трекере
-	if q.Type == model.Movies {
+	if q.Type == media.Movies {
 		if q.Year != nil {
 			q.Query += fmt.Sprintf(" %d", *q.Year)
 		}

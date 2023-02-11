@@ -2,7 +2,6 @@ package heuristic
 
 import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"regexp"
 	"sort"
 	"strconv"
@@ -317,7 +316,7 @@ func parseFormat(ctx *parseContext) {
 
 func guessType(ctx *parseContext) {
 	if len(ctx.seasons) != 0 || ctx.info.Rip != "" || ctx.info.Quality != media.QualityUnd || ctx.info.Format != "" {
-		ctx.info.Type = model.Movies
+		ctx.info.Type = media.Movies
 		return
 	}
 }

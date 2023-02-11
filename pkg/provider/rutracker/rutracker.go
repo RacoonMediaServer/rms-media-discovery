@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
@@ -41,7 +42,7 @@ func (r *ruTrackerProvider) ID() string {
 
 func applySearchHints(q *model.SearchQuery) {
 	// применяем дополнительные параметры поиска так, как это лучше всего будет работать на конкретном трекере
-	if q.Type == model.Movies {
+	if q.Type == media.Movies {
 		if q.Year != nil {
 			q.Query += fmt.Sprintf(" %d", *q.Year)
 		}

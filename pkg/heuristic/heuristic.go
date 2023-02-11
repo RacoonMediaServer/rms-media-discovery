@@ -2,7 +2,6 @@ package heuristic
 
 import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 // Info contains all recognized information about the torrent
@@ -26,7 +25,7 @@ type Info struct {
 	Rip string
 
 	// Type represents possible type of torrent's content
-	Type model.ContentType
+	Type media.ContentType
 
 	// Format means media container
 	Format string

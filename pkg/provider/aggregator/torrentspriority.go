@@ -2,7 +2,6 @@ package aggregator
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"sync"
@@ -53,6 +52,5 @@ func (a torrentsPriorityAggregator) SearchTorrents(ctx context.Context, q model.
 		return []model.Torrent{}, lastErr
 	}
 
-	model.SortTorrents(total, q.OrderBy)
-	return utils.Bound(total, q.Limit), nil
+	return total, nil
 }

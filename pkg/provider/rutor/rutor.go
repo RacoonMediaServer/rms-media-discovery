@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
@@ -22,7 +23,7 @@ func (r rutorProvider) ID() string {
 
 func composeURL(q model.SearchQuery) string {
 	u := "http://" + rutorDomain + "/search/"
-	if q.Type == model.Movies {
+	if q.Type == media.Movies {
 		if q.Year != nil || q.Season != nil {
 			u += "0/0/100/2/" // более релевантная сортировка для наших задач
 		}

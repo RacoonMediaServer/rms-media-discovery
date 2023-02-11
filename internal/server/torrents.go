@@ -6,6 +6,7 @@ import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
 	torrents2 "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/go-openapi/runtime/middleware"
 	"io"
@@ -22,7 +23,7 @@ func convertTorrent(t *model.Torrent) *models.SearchTorrentsResult {
 		Title:   &t.Title,
 	}
 
-	for _, s := range t.Seasons {
+	for _, s := range t.Info.Seasons {
 		result.Seasons = append(result.Seasons, int64(s))
 	}
 
@@ -39,15 +40,15 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 		detailed = *params.Detailed
 	}
 
-	hint := model.Other
+	hint := media.Other
 	if params.Type != nil {
 		switch *params.Type {
 		case "movies":
-			hint = model.Movies
+			hint = media.Movies
 		case "music":
-			hint = model.Music
+			hint = media.Music
 		case "books":
-			hint = model.Books
+			hint = media.Books
 		}
 	}
 
@@ -61,7 +62,7 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 		OrderBy:  model.OrderBySeeders,
 	}
 
-	if hint == model.Movies {
+	if hint == media.Movies {
 		if params.Year != nil {
 			year = uint(*params.Year)
 			q.Year = &year
