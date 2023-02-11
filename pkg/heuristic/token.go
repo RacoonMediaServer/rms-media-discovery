@@ -70,7 +70,6 @@ func (t tokenList) Remove(i int) tokenList {
 func (t *token) Clear() {
 	t.Text = ""
 	t.SeqStart = false
-	t.InBraces = false
 }
 
 func (t tokenList) RemoveIf(m match) tokenList {

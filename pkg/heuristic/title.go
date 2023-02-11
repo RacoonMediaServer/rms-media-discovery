@@ -6,13 +6,16 @@ import (
 	"regexp"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type parseContext struct {
-	tokens  tokenList
-	remove  []bool
-	info    Info
-	seasons map[uint]struct{}
+	title     string
+	tokens    tokenList
+	remove    []bool
+	info      Info
+	seasons   map[uint]struct{}
+	subtitles map[string]struct{}
 }
 
 var (
@@ -28,9 +31,11 @@ func ParseTitle(title string) Info {
 	tokens := parse(title)
 
 	ctx := parseContext{
-		tokens:  tokens,
-		remove:  make([]bool, len(tokens)),
-		seasons: make(map[uint]struct{}),
+		title:     title,
+		tokens:    tokens,
+		remove:    make([]bool, len(tokens)),
+		seasons:   make(map[uint]struct{}),
+		subtitles: make(map[string]struct{}),
 	}
 
 	// парсим случаи, когда в тексте есть 'S01' или 'S01' 'S02' или 'S01-12'
@@ -56,6 +61,12 @@ func ParseTitle(title string) Info {
 
 	// mkv, avi, mp4...
 	parseFormat(&ctx)
+
+	// пробуем распознать языки субтитров
+	parseSubtitles(&ctx)
+
+	// озвучку пробуем вытащить
+	parseVoice(&ctx)
 
 	// исходя из распарсенного - пытаемся определить тип контента
 	guessType(&ctx)
@@ -211,6 +222,13 @@ func makeResult(ctx *parseContext) {
 	sort.Slice(ctx.info.Seasons, func(i, j int) bool {
 		return ctx.info.Seasons[i] < ctx.info.Seasons[j]
 	})
+	for k, _ := range ctx.subtitles {
+		ctx.info.Subtitles = append(ctx.info.Subtitles, k)
+	}
+	sort.Slice(ctx.info.Subtitles, func(i, j int) bool {
+		return ctx.info.Subtitles[i] < ctx.info.Subtitles[j]
+	})
+	ctx.info.Voice = strings.TrimSpace(ctx.info.Voice)
 }
 
 func parseQuality(ctx *parseContext) {
@@ -253,9 +271,6 @@ func parseTrilogy(ctx *parseContext) {
 	}
 
 	ctx.info.Trilogy = true
-	for _, i := range pos {
-		ctx.remove[i] = true
-	}
 }
 
 func parseRip(ctx *parseContext) {
@@ -359,9 +374,67 @@ func parseTitles(ctx *parseContext) {
 			ctx.info.Titles = append(ctx.info.Titles, result.String())
 			result = nil
 		}
+		if t.Text == "трилогия" || t.Text == "trilogy" {
+			continue
+		}
 		result.Push(t)
 	}
 	if len(result) != 0 {
 		ctx.info.Titles = append(ctx.info.Titles, result.String())
+	}
+}
+
+func parseSubtitles(ctx *parseContext) {
+	m := wordMatch{Word: "sub"}
+	pos := ctx.tokens.Find(m)
+	if pos < 0 {
+		return
+	}
+
+	ctx.remove[pos] = true
+	for i := pos + 1; i < len(ctx.tokens); i++ {
+		content := ctx.tokens[i].Text
+		code := ""
+		switch content {
+		case "rus":
+			fallthrough
+		case "ru":
+			code = "ru"
+		case "eng":
+			fallthrough
+		case "en":
+			code = "en"
+		}
+		if code != "" {
+			ctx.subtitles[code] = struct{}{}
+		}
+		ctx.remove[i] = true
+	}
+}
+
+func parseVoice(ctx *parseContext) {
+	m := &orMatch{
+		Matches: []match{
+			&wordMatch{"dub"},
+			&wordMatch{"mvo"},
+			&wordMatch{"dvo"},
+			&wordMatch{"avo"},
+			&wordMatch{"vo"},
+		},
+	}
+	pos := ctx.tokens.Find(m)
+	if pos > -1 {
+		for i := pos; i < len(ctx.tokens); i++ {
+			if !ctx.remove[i] {
+				ctx.remove[i] = true
+				ctx.info.Voice += ctx.tokens[i].String() + " "
+			}
+		}
+		return
+	}
+	// на rutor.info озвучка записывается через вертикальную черту в конце строки
+	pos = strings.LastIndex(ctx.title, "|")
+	if pos > -1 {
+		ctx.info.Voice = strings.TrimSpace(ctx.title[pos+1:])
 	}
 }
