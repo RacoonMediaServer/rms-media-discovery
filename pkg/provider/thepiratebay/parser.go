@@ -39,7 +39,7 @@ func torrentsParser(results *[]model.Torrent) func(int, *goquery.Selection) {
 			t.Link = dl
 		}
 
-		if t.Link != "" && t.Title != "No results returned" {
+		if t.IsValid() && t.Title != "No results returned" {
 			*results = append(*results, t)
 		}
 	}

@@ -34,14 +34,14 @@ func (r rutorProvider) torrentsParser(result *[]model.Torrent) scraper.HTMLCallb
 		size := parseTorrentSize(e.Text)
 		seeds, _ := strconv.ParseUint(e.ChildText("td > span.green"), 10, 32)
 
-		if downloadLink != "" {
-			t := model.Torrent{
-				Title:      title,
-				SizeMB:     size,
-				Seeders:    uint(seeds),
-				DetailLink: scrapLink,
-				Downloader: r.newDownloadLink(downloadLink),
-			}
+		t := model.Torrent{
+			Title:      title,
+			SizeMB:     size,
+			Seeders:    uint(seeds),
+			DetailLink: scrapLink,
+			Downloader: r.newDownloadLink(downloadLink),
+		}
+		if t.IsValid() {
 			*result = append(*result, t)
 		}
 	}
