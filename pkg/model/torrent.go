@@ -21,6 +21,10 @@ type Torrent struct {
 	Downloader DownloadFunc
 }
 
+func (t Torrent) IsValid() bool {
+	return t.Link != "" && t.Title != ""
+}
+
 type SearchQuery struct {
 	Query  string
 	Type   media.ContentType

@@ -83,6 +83,7 @@ func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) (
 			return []byte(torrent.Link), nil
 		}
 	}
+	l.Debugf("Got %d results", len(result))
 
 	return result, nil
 }

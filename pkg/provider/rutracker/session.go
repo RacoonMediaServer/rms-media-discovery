@@ -132,7 +132,10 @@ func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 
 	doc := p.Document()
 	doc.Find(`#tor-tbl > tbody > tr`).Each(func(i int, selection *goquery.Selection) {
-		torrents = append(torrents, parseTorrent(selection))
+		t := parseTorrent(selection)
+		if t.IsValid() {
+			torrents = append(torrents, t)
+		}
 	})
 
 	return torrents, nil

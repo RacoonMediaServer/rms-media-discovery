@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
@@ -53,6 +54,7 @@ func applySearchHints(q *model.SearchQuery) {
 }
 
 func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+	l := utils.LogFromContext(ctx, r.ID())
 	applySearchHints(&q)
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
@@ -82,6 +84,7 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQu
 			t.Downloader = r.newDownloader(t.Link, cookies)
 		}
 
+		l.Debugf("Got %d results", len(result))
 		return result, err
 	}
 }
