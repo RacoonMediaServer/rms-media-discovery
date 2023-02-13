@@ -118,6 +118,7 @@ func (s *session) search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 	if err != nil {
 		return []model.Torrent{}, fmt.Errorf("cannot create browser page: %w", err)
 	}
+	defer p.Close()
 	torrents := make([]model.Torrent, 0, q.Limit)
 
 	u := "https://rutracker.org/forum/tracker.php?nm=" + url.QueryEscape(q.Query)
