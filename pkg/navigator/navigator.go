@@ -21,6 +21,7 @@ var (
 type navigator struct {
 	ctx      playwright.BrowserContext
 	dumpPath string
+	id       string
 }
 
 type Navigator interface {
@@ -50,17 +51,15 @@ func Initialize() error {
 	return nil
 }
 
-func New(dumpPath ...string) (Navigator, error) {
-	dp := settings.DefaultDumpLocation
-	if len(dumpPath) > 0 {
-		dp = path.Join(dp, dumpPath[0])
-	}
+func New(id string) (Navigator, error) {
+	dp := path.Join(settings.DefaultDumpLocation, id)
+
 	ctx, err := browser.NewContext(playwright.BrowserNewContextOptions{Locale: playwright.String("ru-RU")})
 	if err != nil {
 		return nil, err
 	}
 
-	return &navigator{ctx: ctx, dumpPath: dp}, nil
+	return &navigator{ctx: ctx, dumpPath: dp, id: id}, nil
 }
 
 func (n *navigator) NewPage(log *log.Entry, ctx context.Context) (Page, error) {
@@ -75,6 +74,7 @@ func (n *navigator) NewPage(log *log.Entry, ctx context.Context) (Page, error) {
 		page:     p,
 		log:      log,
 		dumpPath: n.dumpPath,
+		id:       n.id,
 	}
 
 	p.SetDefaultTimeout(defaultTimeout)

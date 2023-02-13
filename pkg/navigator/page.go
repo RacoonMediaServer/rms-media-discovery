@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"fmt"
+	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/PuerkitoBio/goquery"
 	"github.com/apex/log"
 	"github.com/playwright-community/playwright-go"
+	"github.com/prometheus/client_golang/prometheus"
 	uuid "github.com/satori/go.uuid"
 	"os"
 	"path"
@@ -22,6 +25,7 @@ type page struct {
 	batch    string
 	dumpPath string
 	doc      *goquery.Document
+	id       string
 }
 
 type Page interface {
@@ -69,7 +73,15 @@ func (p *page) Goto(url string) Page {
 func (p *page) goTo(url string) {
 
 	p.log.Debugf("%s: navigating to '%s'...", p.batch, url)
-	_, err := p.page.Goto(url)
+	timer := prometheus.NewTimer(requester.OutgoingRequestsMetric.WithLabelValues(p.id))
+	resp, err := p.page.Goto(url)
+	defer func() {
+		timer.ObserveDuration()
+		if resp != nil {
+			requester.OutgoingRequestsCounter.WithLabelValues(fmt.Sprintf("%d", resp.Status()), p.id).Inc()
+		}
+	}()
+
 	select {
 	case p.ch <- err:
 	case <-p.ctx.Done():
