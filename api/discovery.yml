@@ -107,6 +107,11 @@ paths:
           type: integer
           minimum: 1
           description: Номер сезона (для сериалов)
+        - name: strong
+          in: query
+          type: boolean
+          default: false
+          description: Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса
       responses:
         '200':
           description: OK

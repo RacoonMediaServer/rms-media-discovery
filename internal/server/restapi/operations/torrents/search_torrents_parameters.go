@@ -17,11 +17,18 @@ import (
 )
 
 // NewSearchTorrentsParams creates a new SearchTorrentsParams object
-//
-// There are no default values defined in the spec.
+// with the default values initialized.
 func NewSearchTorrentsParams() SearchTorrentsParams {
 
-	return SearchTorrentsParams{}
+	var (
+		// initialize parameters with default values
+
+		strongDefault = bool(false)
+	)
+
+	return SearchTorrentsParams{
+		Strong: &strongDefault,
+	}
 }
 
 // SearchTorrentsParams contains all the bound params for the search torrents operation
@@ -50,6 +57,11 @@ type SearchTorrentsParams struct {
 	  In: query
 	*/
 	Season *int64
+	/*Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса
+	  In: query
+	  Default: false
+	*/
+	Strong *bool
 	/*Подсказка, какого типа торренты искать
 	  In: query
 	*/
@@ -84,6 +96,11 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	qSeason, qhkSeason, _ := qs.GetOK("season")
 	if err := o.bindSeason(qSeason, qhkSeason, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qStrong, qhkStrong, _ := qs.GetOK("strong")
+	if err := o.bindStrong(qStrong, qhkStrong, route.Formats); err != nil {
 		res = append(res, err)
 	}
 
@@ -211,6 +228,30 @@ func (o *SearchTorrentsParams) validateSeason(formats strfmt.Registry) error {
 	if err := validate.MinimumInt("season", "query", *o.Season, 1, false); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+// bindStrong binds and validates parameter Strong from query.
+func (o *SearchTorrentsParams) bindStrong(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchTorrentsParams()
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("strong", "query", "bool", raw)
+	}
+	o.Strong = &value
 
 	return nil
 }

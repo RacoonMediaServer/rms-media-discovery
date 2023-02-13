@@ -432,6 +432,13 @@ func init() {
             "description": "Номер сезона (для сериалов)",
             "name": "season",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
+            "name": "strong",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1030,6 +1037,13 @@ func init() {
             "type": "integer",
             "description": "Номер сезона (для сериалов)",
             "name": "season",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
+            "name": "strong",
             "in": "query"
           }
         ],

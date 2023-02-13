@@ -31,4 +31,5 @@ type SearchQuery struct {
 	Limit  uint
 	Year   *uint
 	Season *uint
+	Strong bool
 }

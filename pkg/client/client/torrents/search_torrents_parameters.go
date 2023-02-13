@@ -80,6 +80,12 @@ type SearchTorrentsParams struct {
 	*/
 	Season *int64
 
+	/* Strong.
+
+	   Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса
+	*/
+	Strong *bool
+
 	/* Type.
 
 	   Подсказка, какого типа торренты искать
@@ -109,7 +115,18 @@ func (o *SearchTorrentsParams) WithDefaults() *SearchTorrentsParams {
 //
 // All values with no default are reset to their zero value.
 func (o *SearchTorrentsParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		strongDefault = bool(false)
+	)
+
+	val := SearchTorrentsParams{
+		Strong: &strongDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the search torrents params
@@ -176,6 +193,17 @@ func (o *SearchTorrentsParams) WithSeason(season *int64) *SearchTorrentsParams {
 // SetSeason adds the season to the search torrents params
 func (o *SearchTorrentsParams) SetSeason(season *int64) {
 	o.Season = season
+}
+
+// WithStrong adds the strong to the search torrents params
+func (o *SearchTorrentsParams) WithStrong(strong *bool) *SearchTorrentsParams {
+	o.SetStrong(strong)
+	return o
+}
+
+// SetStrong adds the strong to the search torrents params
+func (o *SearchTorrentsParams) SetStrong(strong *bool) {
+	o.Strong = strong
 }
 
 // WithType adds the typeVar to the search torrents params
@@ -247,6 +275,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		if qSeason != "" {
 
 			if err := r.SetQueryParam("season", qSeason); err != nil {
+				return err
+			}
+		}
+	}
+
+	if o.Strong != nil {
+
+		// query param strong
+		var qrStrong bool
+
+		if o.Strong != nil {
+			qrStrong = *o.Strong
+		}
+		qStrong := swag.FormatBool(qrStrong)
+		if qStrong != "" {
+
+			if err := r.SetQueryParam("strong", qStrong); err != nil {
 				return err
 			}
 		}

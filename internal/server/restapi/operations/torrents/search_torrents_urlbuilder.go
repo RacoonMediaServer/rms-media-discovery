@@ -18,6 +18,7 @@ type SearchTorrentsURL struct {
 	Limit  *int64
 	Q      string
 	Season *int64
+	Strong *bool
 	Type   *string
 	Year   *int64
 
@@ -71,6 +72,14 @@ func (o *SearchTorrentsURL) Build() (*url.URL, error) {
 	}
 	if seasonQ != "" {
 		qs.Set("season", seasonQ)
+	}
+
+	var strongQ string
+	if o.Strong != nil {
+		strongQ = swag.FormatBool(*o.Strong)
+	}
+	if strongQ != "" {
+		qs.Set("strong", strongQ)
 	}
 
 	var typeVarQ string

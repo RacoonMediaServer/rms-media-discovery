@@ -48,7 +48,7 @@ func (ctx *rankContext) makeResult() []model.Torrent {
 	for cur := ctx.results.Front(); cur != nil; cur = cur.Next() {
 		results = append(results, ctx.torrents[cur.Value.(int)])
 	}
-	if len(results) < int(ctx.q.Limit) {
+	if len(results) < int(ctx.q.Limit) && !ctx.q.Strong {
 		// разбавим раздачу не очень релевантными результатами
 		canAppend := int(ctx.q.Limit) - len(results)
 		for cur := ctx.trash.Front(); cur != nil && canAppend != 0; cur, canAppend = cur.Next(), canAppend-1 {
@@ -122,10 +122,16 @@ func rank(torrents []model.Torrent, q model.SearchQuery) []model.Torrent {
 	ctx := newRankContext(torrents, &q)
 	sort := sortChain{}
 
-	// в любом случае задаем сортировку результатов по степени удаленности от поискового запроса в первую очередь
-	sort.add(func(lhs *model.Torrent, rhs *model.Torrent) int {
-		return getMinDistance(lhs.Info.Titles, q.Query) - getMinDistance(rhs.Info.Titles, q.Query)
-	})
+	if q.Strong {
+		ctx.filter(func(t *model.Torrent) bool {
+			return getMinDistance(t.Info.Titles, q.Query) != 0
+		})
+	} else {
+		// в любом случае задаем сортировку результатов по степени удаленности от поискового запроса в первую очередь
+		sort.add(func(lhs *model.Torrent, rhs *model.Torrent) int {
+			return getMinDistance(lhs.Info.Titles, q.Query) - getMinDistance(rhs.Info.Titles, q.Query)
+		})
+	}
 
 	// фильтруем раздачи, у которых нету сидов - они все равно бесполезны
 	ctx.filter(func(t *model.Torrent) bool {

@@ -43,6 +43,10 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
 	}
+	var strong bool
+	if params.Strong != nil {
+		strong = *params.Strong
+	}
 
 	hint := media.Other
 	if params.Type != nil {
@@ -59,9 +63,10 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 	var year uint
 	var season uint
 	q := model.SearchQuery{
-		Query: params.Q,
-		Type:  hint,
-		Limit: limit,
+		Query:  params.Q,
+		Type:   hint,
+		Limit:  limit,
+		Strong: strong,
 	}
 
 	if hint == media.Movies {
