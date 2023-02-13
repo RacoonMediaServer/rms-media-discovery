@@ -140,6 +140,21 @@ func TestParseTitle(t *testing.T) {
 				Subtitles: nil,
 			},
 		},
+		{
+			Title: "Гильдия / The Guild (Джейн Селле Морган, Грег Бенсон) [2 сезона] [22 серии] [2007, ситком, WEBRip] Sub",
+			Expected: Info{
+				Titles:    []string{"Гильдия", "The Guild"},
+				Seasons:   []uint{1, 2},
+				Year:      2007,
+				Quality:   0,
+				Trilogy:   false,
+				Rip:       "webrip",
+				Type:      media.Movies,
+				Format:    "",
+				Voice:     "",
+				Subtitles: nil,
+			},
+		},
 	}
 
 	for i, c := range testCases {

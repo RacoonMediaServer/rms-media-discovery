@@ -44,6 +44,9 @@ func ParseTitle(title string) Info {
 	if !parseSeasons(&ctx) {
 		// парсим случаи, когда сезон указан отдельно (сезон 1, 1 сезон, season 1, 1-5 сезон etc)
 		parseSeason(&ctx)
+
+		// случай, когда пишут 2 сезона, 5 сезонов
+		parseShortSeason(&ctx)
 	}
 
 	// вытаскиваем год (если диапазон, то только первую часть)
@@ -213,6 +216,32 @@ func parseSeason(ctx *parseContext) {
 			}
 		}
 	}
+}
+
+func parseShortSeason(ctx *parseContext) {
+	var m match
+	m = &orMatch{
+		Matches: []match{
+			&wordMatch{Word: "сезона"},
+			&wordMatch{Word: "сезонов"},
+		},
+	}
+	pos := ctx.tokens.Find(m)
+	if pos < 0 || pos == 0 {
+		return
+	}
+
+	tok := ctx.tokens[pos-1]
+	m = &regexMatch{Exp: seasonNumberRegex}
+	if !m.Match(tok) {
+		return
+	}
+	count := mustParseUint(tok.Text)
+	for i := uint(1); i <= count; i++ {
+		ctx.seasons[i] = struct{}{}
+	}
+	ctx.remove[pos] = true
+	ctx.remove[pos-1] = true
 }
 
 func parseYear(ctx *parseContext) {
