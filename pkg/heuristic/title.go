@@ -42,7 +42,7 @@ func ParseTitle(title string) Info {
 
 	// парсим случай перечисления сезонов (сезоны 1-3)
 	if !parseSeasons(&ctx) {
-		// парсим случаи, когда сезон указан отдельно (сезон 1, 1 сезон, season 1, etc)
+		// парсим случаи, когда сезон указан отдельно (сезон 1, 1 сезон, season 1, 1-5 сезон etc)
 		parseSeason(&ctx)
 	}
 
@@ -194,10 +194,21 @@ func parseSeason(ctx *parseContext) {
 			ctx.remove[pos] = true
 			ctx.remove[found] = true
 
-			end, ok := guessRangeEnd(ctx, found+1, begin)
-			if ok {
-				for i := begin + 1; i <= end; i++ {
-					ctx.seasons[i] = struct{}{}
+			if found > pos {
+				end, ok := guessRangeEnd(ctx, found+1, begin)
+				if ok {
+					for i := begin + 1; i <= end; i++ {
+						ctx.seasons[i] = struct{}{}
+					}
+				}
+			} else if found > 0 && m.Match(ctx.tokens[found-1]) {
+				end := begin
+				begin = mustParseUint(ctx.tokens[found-1].Text)
+				if begin < end {
+					for i := begin; i < end; i++ {
+						ctx.seasons[i] = struct{}{}
+					}
+					ctx.remove[found-1] = true
 				}
 			}
 		}

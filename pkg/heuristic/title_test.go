@@ -2,7 +2,6 @@ package heuristic
 
 import (
 	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -22,7 +21,7 @@ func TestParseTitle(t *testing.T) {
 				Quality: media.Quality1080p,
 				Trilogy: false,
 				Rip:     "bdrip",
-				Type:    model.Movies,
+				Type:    media.Movies,
 				Format:  "",
 				Voice:   "Кубик в кубе",
 			},
@@ -36,7 +35,7 @@ func TestParseTitle(t *testing.T) {
 				Quality: 0,
 				Trilogy: false,
 				Rip:     "webrip",
-				Type:    model.Movies,
+				Type:    media.Movies,
 				Format:  "",
 				Voice:   "Good People",
 			},
@@ -50,7 +49,7 @@ func TestParseTitle(t *testing.T) {
 				Quality: 0,
 				Trilogy: false,
 				Rip:     "webrip",
-				Type:    model.Movies,
+				Type:    media.Movies,
 				Format:  "",
 				Voice:   "Mvo Lostfilm Original Rus Eng",
 			},
@@ -64,7 +63,7 @@ func TestParseTitle(t *testing.T) {
 				Quality:   media.Quality1080p,
 				Trilogy:   false,
 				Rip:       "webrip",
-				Type:      model.Movies,
+				Type:      media.Movies,
 				Format:    "",
 				Voice:     "Mvo Hdrezka Studio Ozz Lostfilm Ukr Ozz Original",
 				Subtitles: []string{"en", "ru"},
@@ -79,7 +78,7 @@ func TestParseTitle(t *testing.T) {
 				Quality: media.Quality720p,
 				Trilogy: false,
 				Rip:     "webrip",
-				Type:    model.Movies,
+				Type:    media.Movies,
 				Format:  "",
 			},
 		},
@@ -92,7 +91,7 @@ func TestParseTitle(t *testing.T) {
 				Quality: 0,
 				Trilogy: false,
 				Rip:     "",
-				Type:    model.Movies,
+				Type:    media.Movies,
 				Format:  "",
 			},
 		},
@@ -105,10 +104,25 @@ func TestParseTitle(t *testing.T) {
 				Quality:   0,
 				Trilogy:   true,
 				Rip:       "",
-				Type:      model.Other,
+				Type:      media.Other,
 				Format:    "",
 				Voice:     "Mvo Dvo Гланц Королёва Turkf Avo Cdv Гаврилов Живов Кашкин Пучков vo Есарев 1 1",
 				Subtitles: []string{"en", "ru"},
+			},
+		},
+		{
+			Title: "Теория Большого Взрыва / The Big Bang Theory [1-5 сезон] (Марк Сендровски, Джеймс Берроуз) [2007-2011, Комедия, HDTVRip] [MP4, 640x] (Кураж-Бамбей)",
+			Expected: Info{
+				Titles:    []string{"Теория Большого Взрыва", "The Big Bang Theory"},
+				Seasons:   []uint{1, 2, 3, 4, 5},
+				Year:      2007,
+				Quality:   0,
+				Trilogy:   false,
+				Rip:       "hdtvrip",
+				Type:      media.Movies,
+				Format:    "mp4",
+				Voice:     "",
+				Subtitles: nil,
 			},
 		},
 	}
