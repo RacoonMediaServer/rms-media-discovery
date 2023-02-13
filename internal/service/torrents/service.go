@@ -32,7 +32,7 @@ type service struct {
 
 func New(access model.AccessProvider) Service {
 	return &service{
-		provider: aggregator.NewTorrentProvider(aggregator.FastPolicy, []provider.TorrentsProvider{
+		provider: aggregator.NewTorrentProvider(aggregator.PriorityPolicy, []provider.TorrentsProvider{
 			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
 			rutor.NewProvider(),
 			thepiratebay.New(),
