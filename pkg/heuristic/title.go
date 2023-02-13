@@ -190,7 +190,7 @@ func parseSeason(ctx *parseContext) {
 
 		if found > -1 {
 			begin := mustParseUint(ctx.tokens[found].Text)
-			ctx.info.Seasons = append(ctx.info.Seasons, begin)
+			ctx.seasons[begin] = struct{}{}
 			ctx.remove[pos] = true
 			ctx.remove[found] = true
 
