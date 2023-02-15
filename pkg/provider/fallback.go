@@ -2,7 +2,7 @@ package provider
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 type fallbackProvider struct {

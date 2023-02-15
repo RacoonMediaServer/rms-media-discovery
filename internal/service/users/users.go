@@ -3,7 +3,7 @@ package users
 import (
 	"fmt"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/model"
 )
 
 func (s *service) CheckAccess(token string) (valid bool, admin bool) {

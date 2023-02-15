@@ -1,8 +1,8 @@
 package thepiratebay
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/PuerkitoBio/goquery"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"regexp"
 	"strconv"
 )

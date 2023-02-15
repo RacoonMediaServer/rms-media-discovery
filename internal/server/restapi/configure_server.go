@@ -10,12 +10,12 @@ import (
 	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
 )
 
 //go:generate swagger generate server --target ../../server --name Server --spec ../../../api/discovery.yml --principal models.Principal --exclude-main

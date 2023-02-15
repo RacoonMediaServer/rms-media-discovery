@@ -4,9 +4,9 @@ import (
 	"errors"
 	"net/http"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
-	usersrv "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
+	usersrv "github.com/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/go-openapi/runtime/middleware"
 )
 

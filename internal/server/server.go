@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"net/http"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/movies"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/users"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/apex/log"
 	"github.com/go-openapi/loads"
 )

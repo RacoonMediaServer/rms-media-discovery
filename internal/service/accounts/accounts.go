@@ -3,7 +3,7 @@ package accounts
 import (
 	"errors"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 func (s *service) GetAccounts() (result []model.Account, err error) {

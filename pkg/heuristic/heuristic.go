@@ -1,7 +1,7 @@
 package heuristic
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
 )
 
 // Info contains all recognized information about the torrent

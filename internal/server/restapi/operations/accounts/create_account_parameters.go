@@ -13,7 +13,7 @@ import (
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/validate"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
 )
 
 // NewCreateAccountParams creates a new CreateAccountParams object

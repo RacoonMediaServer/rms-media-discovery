@@ -8,8 +8,8 @@ import (
 	context "context"
 	reflect "reflect"
 
-	model "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	provider "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	model "github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	provider "github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	gomock "github.com/golang/mock/gomock"
 )
 

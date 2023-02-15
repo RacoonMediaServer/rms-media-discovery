@@ -1,7 +1,7 @@
 package accounts
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {

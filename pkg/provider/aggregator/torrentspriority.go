@@ -2,8 +2,8 @@ package aggregator
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"sync"
 )
 

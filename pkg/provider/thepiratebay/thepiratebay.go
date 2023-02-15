@@ -3,11 +3,11 @@ package thepiratebay
 import (
 	"context"
 	"fmt"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/apex/log"
 	"net/url"
 )

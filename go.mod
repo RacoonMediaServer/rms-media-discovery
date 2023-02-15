@@ -1,4 +1,4 @@
-module git.rms.local/RacoonMediaServer/rms-media-discovery
+module github.com/RacoonMediaServer/rms-media-discovery
 
 go 1.19
 

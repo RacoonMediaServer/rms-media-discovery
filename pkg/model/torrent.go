@@ -2,8 +2,8 @@ package model
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
 )
 
 // DownloadFunc is a function which can download the torrent

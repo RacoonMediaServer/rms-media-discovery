@@ -24,7 +24,7 @@ import (
 	flags "github.com/jessevdk/go-flags"
 	"golang.org/x/net/netutil"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
 )
 
 const (

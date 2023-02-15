@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/go-openapi/runtime/middleware"
 )
 

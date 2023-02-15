@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"sync"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/db"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/model"
 	"github.com/apex/log"
 	uuid "github.com/satori/go.uuid"
 )

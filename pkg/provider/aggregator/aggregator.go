@@ -1,7 +1,7 @@
 package aggregator
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 )
 
 // Policy определяет политику аггрегации результатов

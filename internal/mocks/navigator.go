@@ -9,7 +9,7 @@ import (
 	http "net/http"
 	reflect "reflect"
 
-	navigator "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
+	navigator "github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	log "github.com/apex/log"
 	gomock "github.com/golang/mock/gomock"
 )

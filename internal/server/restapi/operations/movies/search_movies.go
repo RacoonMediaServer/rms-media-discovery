@@ -16,7 +16,7 @@ import (
 	"github.com/go-openapi/swag"
 	"github.com/go-openapi/validate"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
 )
 
 // SearchMoviesHandlerFunc turns a function with the right signature into a search movies handler

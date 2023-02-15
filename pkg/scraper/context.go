@@ -2,7 +2,7 @@ package scraper
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/requester"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/gocolly/colly/v2"
 	"net/http"
 )

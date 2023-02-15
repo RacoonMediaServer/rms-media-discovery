@@ -10,10 +10,10 @@ import (
 	httptransport "github.com/go-openapi/runtime/client"
 	"github.com/go-openapi/strfmt"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/accounts"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/movies"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/torrents"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/client/client/users"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/accounts"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/users"
 )
 
 // Default client HTTP client.

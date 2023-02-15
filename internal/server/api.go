@@ -3,12 +3,12 @@ package server
 import (
 	"net/http"
 
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
 	"github.com/go-openapi/errors"
 )
 

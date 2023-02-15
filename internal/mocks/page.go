@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	navigator "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	goquery "github.com/PuerkitoBio/goquery"
+	navigator "github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	gomock "github.com/golang/mock/gomock"
 )
 

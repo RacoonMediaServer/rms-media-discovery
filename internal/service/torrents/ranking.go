@@ -2,9 +2,9 @@ package torrents
 
 import (
 	"container/list"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/antzucaro/matchr"
 	"math"
 	"sort"

@@ -1,8 +1,8 @@
 package rutor
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/scraper"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/scraper"
 	"github.com/gocolly/colly/v2"
 	"regexp"
 	"strconv"

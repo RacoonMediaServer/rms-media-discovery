@@ -9,7 +9,7 @@ import (
 	http "net/http"
 	reflect "reflect"
 
-	scraper "git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/scraper"
+	scraper "github.com/RacoonMediaServer/rms-media-discovery/pkg/scraper"
 	gomock "github.com/golang/mock/gomock"
 )
 

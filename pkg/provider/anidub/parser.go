@@ -1,7 +1,7 @@
 package anidub
 
 import (
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/scraper"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/scraper"
 	"github.com/gocolly/colly/v2"
 )
 

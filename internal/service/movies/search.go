@@ -2,8 +2,8 @@ package movies
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 const maxResults uint = 10

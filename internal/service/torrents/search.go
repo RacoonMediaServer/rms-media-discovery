@@ -2,8 +2,8 @@ package torrents
 
 import (
 	"context"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
 const maxResultsLimit uint = 40

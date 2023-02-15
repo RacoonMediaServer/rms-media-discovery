@@ -3,11 +3,11 @@ package server
 import (
 	"bytes"
 	"errors"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/models"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
-	torrents2 "git.rms.local/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/media"
-	"git.rms.local/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
+	torrents2 "github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/go-openapi/runtime/middleware"
 	"io"
 )
