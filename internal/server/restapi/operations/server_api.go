@@ -23,7 +23,6 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
 )
 
 // NewServerAPI creates a new Server instance
@@ -52,23 +51,14 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		AccountsCreateAccountHandler: accounts.CreateAccountHandlerFunc(func(params accounts.CreateAccountParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation accounts.CreateAccount has not yet been implemented")
 		}),
-		UsersCreateUserHandler: users.CreateUserHandlerFunc(func(params users.CreateUserParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation users.CreateUser has not yet been implemented")
-		}),
 		AccountsDeleteAccountHandler: accounts.DeleteAccountHandlerFunc(func(params accounts.DeleteAccountParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation accounts.DeleteAccount has not yet been implemented")
-		}),
-		UsersDeleteUserHandler: users.DeleteUserHandlerFunc(func(params users.DeleteUserParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation users.DeleteUser has not yet been implemented")
 		}),
 		TorrentsDownloadTorrentHandler: torrents.DownloadTorrentHandlerFunc(func(params torrents.DownloadTorrentParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation torrents.DownloadTorrent has not yet been implemented")
 		}),
 		AccountsGetAccountsHandler: accounts.GetAccountsHandlerFunc(func(params accounts.GetAccountsParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation accounts.GetAccounts has not yet been implemented")
-		}),
-		UsersGetUsersHandler: users.GetUsersHandlerFunc(func(params users.GetUsersParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation users.GetUsers has not yet been implemented")
 		}),
 		MoviesSearchMoviesHandler: movies.SearchMoviesHandlerFunc(func(params movies.SearchMoviesParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation movies.SearchMovies has not yet been implemented")
@@ -131,18 +121,12 @@ type ServerAPI struct {
 
 	// AccountsCreateAccountHandler sets the operation handler for the create account operation
 	AccountsCreateAccountHandler accounts.CreateAccountHandler
-	// UsersCreateUserHandler sets the operation handler for the create user operation
-	UsersCreateUserHandler users.CreateUserHandler
 	// AccountsDeleteAccountHandler sets the operation handler for the delete account operation
 	AccountsDeleteAccountHandler accounts.DeleteAccountHandler
-	// UsersDeleteUserHandler sets the operation handler for the delete user operation
-	UsersDeleteUserHandler users.DeleteUserHandler
 	// TorrentsDownloadTorrentHandler sets the operation handler for the download torrent operation
 	TorrentsDownloadTorrentHandler torrents.DownloadTorrentHandler
 	// AccountsGetAccountsHandler sets the operation handler for the get accounts operation
 	AccountsGetAccountsHandler accounts.GetAccountsHandler
-	// UsersGetUsersHandler sets the operation handler for the get users operation
-	UsersGetUsersHandler users.GetUsersHandler
 	// MoviesSearchMoviesHandler sets the operation handler for the search movies operation
 	MoviesSearchMoviesHandler movies.SearchMoviesHandler
 	// TorrentsSearchTorrentsHandler sets the operation handler for the search torrents operation
@@ -234,23 +218,14 @@ func (o *ServerAPI) Validate() error {
 	if o.AccountsCreateAccountHandler == nil {
 		unregistered = append(unregistered, "accounts.CreateAccountHandler")
 	}
-	if o.UsersCreateUserHandler == nil {
-		unregistered = append(unregistered, "users.CreateUserHandler")
-	}
 	if o.AccountsDeleteAccountHandler == nil {
 		unregistered = append(unregistered, "accounts.DeleteAccountHandler")
-	}
-	if o.UsersDeleteUserHandler == nil {
-		unregistered = append(unregistered, "users.DeleteUserHandler")
 	}
 	if o.TorrentsDownloadTorrentHandler == nil {
 		unregistered = append(unregistered, "torrents.DownloadTorrentHandler")
 	}
 	if o.AccountsGetAccountsHandler == nil {
 		unregistered = append(unregistered, "accounts.GetAccountsHandler")
-	}
-	if o.UsersGetUsersHandler == nil {
-		unregistered = append(unregistered, "users.GetUsersHandler")
 	}
 	if o.MoviesSearchMoviesHandler == nil {
 		unregistered = append(unregistered, "movies.SearchMoviesHandler")
@@ -363,18 +338,10 @@ func (o *ServerAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/admin/accounts"] = accounts.NewCreateAccount(o.context, o.AccountsCreateAccountHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
-	o.handlers["POST"]["/admin/users"] = users.NewCreateUser(o.context, o.UsersCreateUserHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
 	o.handlers["DELETE"]["/admin/accounts/{id}"] = accounts.NewDeleteAccount(o.context, o.AccountsDeleteAccountHandler)
-	if o.handlers["DELETE"] == nil {
-		o.handlers["DELETE"] = make(map[string]http.Handler)
-	}
-	o.handlers["DELETE"]["/admin/users/{id}"] = users.NewDeleteUser(o.context, o.UsersDeleteUserHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -383,10 +350,6 @@ func (o *ServerAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/admin/accounts"] = accounts.NewGetAccounts(o.context, o.AccountsGetAccountsHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
-	o.handlers["GET"]["/admin/users"] = users.NewGetUsers(o.context, o.UsersGetUsersHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

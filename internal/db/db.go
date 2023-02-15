@@ -10,7 +10,6 @@ import (
 )
 
 type Database interface {
-	UserDatabase
 	AccountDatabase
 }
 
@@ -18,7 +17,6 @@ type database struct {
 	cli      *mongo.Client
 	db       *mongo.Database
 	accounts *mongo.Collection
-	users    *mongo.Collection
 }
 
 const databaseTimeout = 40 * time.Second
@@ -41,6 +39,5 @@ func Connect(uri string) (Database, error) {
 		cli:      cli,
 		db:       cli.Database(databaseName),
 		accounts: cli.Database(databaseName).Collection("accounts"),
-		users:    cli.Database(databaseName).Collection("users"),
 	}, nil
 }

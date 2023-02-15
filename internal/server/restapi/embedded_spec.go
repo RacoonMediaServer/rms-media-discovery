@@ -141,145 +141,6 @@ func init() {
         }
       }
     },
-    "/admin/users": {
-      "get": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Получить список пользователей и информацию по ним",
-        "operationId": "getUsers",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "required": [
-                "results"
-              ],
-              "properties": {
-                "results": {
-                  "type": "array",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                      "id": {
-                        "type": "string"
-                      },
-                      "info": {
-                        "type": "string"
-                      },
-                      "isAdmin": {
-                        "type": "boolean"
-                      },
-                      "lastRequestTime": {
-                        "type": "integer"
-                      },
-                      "reqPerDay": {
-                        "type": "number"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Создать новый ключ пользователя",
-        "operationId": "createUser",
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "required": [
-                "info"
-              ],
-              "properties": {
-                "info": {
-                  "type": "string"
-                },
-                "isAdmin": {
-                  "type": "boolean",
-                  "default": false
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "required": [
-                "id"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
-    "/admin/users/{id}": {
-      "delete": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Удалить ключ пользователя",
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Ключ пользователя",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Ключ не найден"
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
     "/movies/search": {
       "get": {
         "security": [
@@ -605,7 +466,7 @@ func init() {
     "principal": {
       "type": "object",
       "properties": {
-        "admin": {
+        "canManageAccounts": {
           "type": "boolean"
         },
         "token": {
@@ -629,10 +490,6 @@ func init() {
     {
       "description": "Торренты",
       "name": "torrents"
-    },
-    {
-      "description": "Администрирование пользователей",
-      "name": "users"
     },
     {
       "description": "Администрирование аккаунтов",
@@ -764,128 +621,6 @@ func init() {
         }
       }
     },
-    "/admin/users": {
-      "get": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Получить список пользователей и информацию по ним",
-        "operationId": "getUsers",
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "required": [
-                "results"
-              ],
-              "properties": {
-                "results": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/definitions/ResultsItems0"
-                  }
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      },
-      "post": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Создать новый ключ пользователя",
-        "operationId": "createUser",
-        "parameters": [
-          {
-            "name": "user",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "required": [
-                "info"
-              ],
-              "properties": {
-                "info": {
-                  "type": "string"
-                },
-                "isAdmin": {
-                  "type": "boolean",
-                  "default": false
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "schema": {
-              "type": "object",
-              "required": [
-                "id"
-              ],
-              "properties": {
-                "id": {
-                  "type": "string"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
-    "/admin/users/{id}": {
-      "delete": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "tags": [
-          "users"
-        ],
-        "summary": "Удалить ключ пользователя",
-        "operationId": "deleteUser",
-        "parameters": [
-          {
-            "type": "string",
-            "description": "Ключ пользователя",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Ключ не найден"
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
     "/movies/search": {
       "get": {
         "security": [
@@ -1101,26 +836,6 @@ func init() {
         }
       }
     },
-    "ResultsItems0": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "info": {
-          "type": "string"
-        },
-        "isAdmin": {
-          "type": "boolean"
-        },
-        "lastRequestTime": {
-          "type": "integer"
-        },
-        "reqPerDay": {
-          "type": "number"
-        }
-      }
-    },
     "SearchMoviesResult": {
       "type": "object",
       "required": [
@@ -1233,7 +948,7 @@ func init() {
     "principal": {
       "type": "object",
       "properties": {
-        "admin": {
+        "canManageAccounts": {
           "type": "boolean"
         },
         "token": {
@@ -1257,10 +972,6 @@ func init() {
     {
       "description": "Торренты",
       "name": "torrents"
-    },
-    {
-      "description": "Администрирование пользователей",
-      "name": "users"
     },
     {
       "description": "Администрирование аккаунтов",

@@ -20,8 +20,6 @@ tags:
     description: Фильмы/сериалы
   - name: torrents
     description: Торренты
-  - name: users
-    description: Администрирование пользователей
   - name: accounts
     description: Администрирование аккаунтов
 
@@ -155,95 +153,6 @@ paths:
         '404':
           description: Неверный хеш ссылки
 
-        '500':
-          description: Ошибка на стороне сервера
-      security:
-        - key: [ ]
-
-  /admin/users:
-    get:
-      tags:
-        - users
-      summary: Получить список пользователей и информацию по ним
-      operationId: getUsers
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-            required:
-              - results
-            properties:
-              results:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                    info:
-                      type: string
-                    isAdmin:
-                      type: boolean
-                    lastRequestTime:
-                      type: integer
-                    reqPerDay:
-                      type: number
-        '500':
-          description: Ошибка на стороне сервера
-      security:
-        - key: [ ]
-
-    post:
-      tags:
-        - users
-      summary: Создать новый ключ пользователя
-      operationId: createUser
-      parameters:
-        - name: user
-          in: body
-          schema:
-            type: object
-            required:
-              - info
-            properties:
-              info:
-                type: string
-              isAdmin:
-                type: boolean
-                default: false
-      responses:
-        '200':
-          description: OK
-          schema:
-            type: object
-            required:
-              - id
-            properties:
-              id:
-                type: string
-        '500':
-          description: Ошибка на стороне сервера
-      security:
-        - key: [ ]
-
-  /admin/users/{id}:
-    delete:
-      tags:
-        - users
-      summary: Удалить ключ пользователя
-      operationId: deleteUser
-      parameters:
-        - name: id
-          in: path
-          description: Ключ пользователя
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-        '404':
-          description: Ключ не найден
         '500':
           description: Ошибка на стороне сервера
       security:
@@ -424,5 +333,5 @@ definitions:
     properties:
       token:
         type: string
-      admin:
+      canManageAccounts:
         type: boolean

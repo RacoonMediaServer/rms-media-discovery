@@ -14,7 +14,7 @@ import (
 func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "getAccounts").WithField("key", key.Token)
 	l.Debug("Request")
-	if !key.Admin {
+	if !key.CanManageAccounts {
 		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
@@ -47,7 +47,7 @@ func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Prin
 func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "createAccount").WithField("key", key.Token).WithField("account", *params.Account)
 	l.Debug("Request")
-	if !key.Admin {
+	if !key.CanManageAccounts {
 		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}
@@ -82,7 +82,7 @@ func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.
 func (s *Server) deleteAccount(params accounts.DeleteAccountParams, key *models.Principal) middleware.Responder {
 	l := s.log.WithField("req", "deleteAccount").WithField("key", key.Token).WithField("id", params.ID)
 	l.Debug("Request")
-	if !key.Admin {
+	if !key.CanManageAccounts {
 		l.Warn("Forbidden. Required admin privileges")
 		return middleware.Error(http.StatusForbidden, "Forbidden")
 	}

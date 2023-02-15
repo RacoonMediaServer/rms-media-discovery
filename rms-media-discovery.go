@@ -7,11 +7,12 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
+	"github.com/RacoonMediaServer/rms-packages/pkg/service/servicemgr"
 	"github.com/apex/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go-micro.dev/v4"
 	"net/http"
 )
 
@@ -41,15 +42,13 @@ func main() {
 	}
 	log.Info("Connected to MongoDB")
 
+	service := micro.NewService(micro.Name("rms-media-discovery"))
+
 	srv := server.Server{}
-	srv.Users = users.New(db)
+	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
 	srv.Accounts = accounts.New(db)
 	srv.Movies = movies.New(srv.Accounts)
 	srv.Torrents = torrents.New(srv.Accounts)
-
-	if err := srv.Users.Initialize(); err != nil {
-		log.Fatalf("Initialize users service failed: %+s", err)
-	}
 
 	if err := srv.Accounts.Initialize(); err != nil {
 		log.Fatalf("Initialize accounts service failed: %+s", err)

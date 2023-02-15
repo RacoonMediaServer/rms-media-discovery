@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 	"net/http"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
@@ -9,7 +10,6 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/users"
 	"github.com/apex/log"
 	"github.com/go-openapi/loads"
 )
@@ -20,7 +20,7 @@ type Server struct {
 
 	Movies   movies.Service
 	Torrents torrents.Service
-	Users    users.Service
+	Users    rms_users.RmsUsersService
 	Accounts accounts.Service
 }
 

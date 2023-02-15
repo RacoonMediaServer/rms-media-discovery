@@ -1,6 +1,8 @@
 package server
 
 import (
+	"context"
+	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 	"net/http"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
@@ -8,7 +10,6 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/users"
 	"github.com/go-openapi/errors"
 )
 
@@ -17,20 +18,29 @@ func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.TorrentsSearchTorrentsHandler = torrents.SearchTorrentsHandlerFunc(s.searchTorrents)
 	api.TorrentsDownloadTorrentHandler = torrents.DownloadTorrentHandlerFunc(s.downloadTorrent)
 
-	api.UsersGetUsersHandler = users.GetUsersHandlerFunc(s.getUsers)
-	api.UsersCreateUserHandler = users.CreateUserHandlerFunc(s.createUser)
-	api.UsersDeleteUserHandler = users.DeleteUserHandlerFunc(s.deleteUser)
-
 	api.AccountsGetAccountsHandler = accounts.GetAccountsHandlerFunc(s.getAccounts)
 	api.AccountsCreateAccountHandler = accounts.CreateAccountHandlerFunc(s.createAccount)
 	api.AccountsDeleteAccountHandler = accounts.DeleteAccountHandlerFunc(s.deleteAccount)
 
 	api.KeyAuth = func(token string) (*models.Principal, error) {
-		valid, admin := s.Users.CheckAccess(token)
-		if !valid {
-			s.log.Warnf("Invalid user key: %s", token)
+		resp, err := s.Users.GetPermissions(context.Background(), &rms_users.GetPermissionsRequest{Token: token})
+		if err != nil {
+			s.log.Errorf("Cannot retrieve permissions: %s", err)
 			return nil, errors.New(http.StatusForbidden, "Forbidden")
 		}
-		return &models.Principal{Token: token, Admin: admin}, nil
+		searchAllowed := false
+		manageAllowed := false
+		for _, p := range resp.Perms {
+			switch p {
+			case rms_users.Permissions_Search:
+				searchAllowed = true
+			case rms_users.Permissions_AccountManagement:
+				manageAllowed = true
+			}
+		}
+		if !searchAllowed {
+			return nil, errors.New(http.StatusForbidden, "Forbidden")
+		}
+		return &models.Principal{Token: token, CanManageAccounts: manageAllowed}, nil
 	}
 }
