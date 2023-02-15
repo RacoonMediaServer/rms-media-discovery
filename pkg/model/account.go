@@ -8,9 +8,11 @@ import (
 )
 
 type Account struct {
-	Id          string `bson:"_id,omitempty"`
-	Credentials map[string]string
-	Limit       uint
+	Id       string `gorm:"primaryKey"`
+	Token    string
+	Login    string
+	Password string
+	Limit    uint
 }
 
 func (a *Account) Service() string {

@@ -1,12 +1,10 @@
 package db
 
 import (
-	"context"
-	"fmt"
-	"time"
-
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/RacoonMediaServer/rms-packages/pkg/configuration"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 type Database interface {
@@ -14,30 +12,18 @@ type Database interface {
 }
 
 type database struct {
-	cli      *mongo.Client
-	db       *mongo.Database
-	accounts *mongo.Collection
+	conn *gorm.DB
 }
 
-const databaseTimeout = 40 * time.Second
-const databaseName = "rms-media-discovery"
-
-func Connect(uri string) (Database, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
-	defer cancel()
-
-	cli, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
+func Connect(config configuration.Database) (Database, error) {
+	db, err := gorm.Open(postgres.Open(config.GetConnectionString()))
 	if err != nil {
-		return nil, fmt.Errorf("connect to db failed: %w", err)
+		return nil, err
 	}
 
-	if err = cli.Ping(ctx, nil); err != nil {
-		return nil, fmt.Errorf("connect to db failed: %w", err)
+	if err = db.AutoMigrate(&model.Account{}); err != nil {
+		return nil, err
 	}
 
-	return &database{
-		cli:      cli,
-		db:       cli.Database(databaseName),
-		accounts: cli.Database(databaseName).Collection("accounts"),
-	}, nil
+	return &database{conn: db}, nil
 }

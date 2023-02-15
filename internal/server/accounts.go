@@ -33,9 +33,9 @@ func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Prin
 			ID:       acc.Id,
 			Limit:    int64(acc.Limit),
 			Service:  &service,
-			Login:    acc.Credentials["login"],
-			Password: acc.Credentials["password"],
-			Token:    acc.Credentials["token"],
+			Login:    acc.Login,
+			Password: acc.Password,
+			Token:    acc.Token,
 		})
 	}
 
@@ -57,18 +57,17 @@ func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.
 	}
 
 	acc.GenerateId(*params.Account.Service)
-	acc.Credentials = map[string]string{}
 
 	if len(params.Account.Token) != 0 {
-		acc.Credentials["token"] = params.Account.Token
+		acc.Token = params.Account.Token
 	}
 
 	if len(params.Account.Login) != 0 {
-		acc.Credentials["login"] = params.Account.Login
+		acc.Login = params.Account.Login
 	}
 
 	if len(params.Account.Password) != 0 {
-		acc.Credentials["password"] = params.Account.Password
+		acc.Password = params.Account.Password
 	}
 
 	if err := s.Accounts.CreateAccount(acc); err != nil {

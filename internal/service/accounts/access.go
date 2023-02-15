@@ -18,20 +18,18 @@ func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {
 		return model.Credentials{}, ErrNotFound
 	}
 
-	login, ok := acc.Credentials["login"]
-	if !ok {
+	if acc.Login == "" {
 		return model.Credentials{}, ErrNotFound
 	}
 
-	password, ok := acc.Credentials["password"]
-	if !ok {
+	if acc.Password == "" {
 		return model.Credentials{}, ErrNotFound
 	}
 
 	return model.Credentials{
 		AccountId: acc.Id,
-		Login:     login,
-		Password:  password,
+		Login:     acc.Login,
+		Password:  acc.Password,
 	}, nil
 }
 
@@ -49,14 +47,13 @@ func (s *service) GetApiKey(serviceId string) (model.ApiKey, error) {
 		return model.ApiKey{}, ErrNotFound
 	}
 
-	token, ok := acc.Credentials["token"]
-	if !ok {
+	if acc.Token == "" {
 		return model.ApiKey{}, ErrNotFound
 	}
 
 	return model.ApiKey{
 		AccountId: acc.Id,
-		Key:       token,
+		Key:       acc.Token,
 	}, nil
 }
 

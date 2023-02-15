@@ -1,7 +1,7 @@
 package main
 
 import (
-	"flag"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
@@ -12,41 +12,64 @@ import (
 	"github.com/RacoonMediaServer/rms-packages/pkg/service/servicemgr"
 	"github.com/apex/log"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/urfave/cli/v2"
 	"go-micro.dev/v4"
 	"net/http"
 )
 
-const version = "1.1.8"
+var Version = "0.0.0"
 
 func main() {
-	log.Infof("rms-media-discovery v%s", version)
-	host := flag.String("host", "127.0.0.1", "Server IP address")
-	port := flag.Int("port", 8080, "Server port")
-	dbString := flag.String("db", "mongodb://localhost:27017", "MongoDB connection string")
-	verbose := flag.Bool("verbose", false, "Verbose mode")
-	flag.Parse()
+	log.Infof("rms-media-discovery v%s", Version)
+	defer log.Info("DONE.")
+
+	useDebug := false
+
+	service := micro.NewService(
+		micro.Name("rms-media-discovery"),
+		micro.Version(Version),
+		micro.Flags(
+			&cli.BoolFlag{
+				Name:        "verbose",
+				Aliases:     []string{"debug"},
+				Usage:       "debug log level",
+				Value:       false,
+				Destination: &useDebug,
+			},
+		),
+	)
+
+	service.Init(
+		micro.Action(func(context *cli.Context) error {
+			configFile := "/etc/rms/rms-media-discovery.json"
+			if context.IsSet("config") {
+				configFile = context.String("config")
+			}
+			return config.Load(configFile)
+		}),
+	)
+
+	if useDebug {
+		log.SetLevel(log.DebugLevel)
+		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
+	}
 
 	log.Info("Headless browser engine initializing...")
 	if err := navigator.Initialize(); err != nil {
 		log.Fatalf("Failed: %s", err)
 	}
 
-	if *verbose {
-		log.SetLevel(log.DebugLevel)
-		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
-	}
+	cfg := config.Config()
 
-	db, err := db.Connect(*dbString)
+	database, err := db.Connect(cfg.Database)
 	if err != nil {
 		log.Fatalf("Connect to database failed: %s", err)
 	}
 	log.Info("Connected to MongoDB")
 
-	service := micro.NewService(micro.Name("rms-media-discovery"))
-
 	srv := server.Server{}
 	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
-	srv.Accounts = accounts.New(db)
+	srv.Accounts = accounts.New(database)
 	srv.Movies = movies.New(srv.Accounts)
 	srv.Torrents = torrents.New(srv.Accounts)
 
@@ -61,7 +84,7 @@ func main() {
 		}
 	}()
 
-	if err := srv.ListenAndServer(*host, *port); err != nil {
+	if err := srv.ListenAndServer(cfg.Http.Host, cfg.Http.Port); err != nil {
 		log.Fatalf("Cannot start web server: %+s", err)
 	}
 

@@ -1,10 +1,7 @@
 package db
 
 import (
-	"context"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
-
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 type AccountDatabase interface {
@@ -14,40 +11,18 @@ type AccountDatabase interface {
 }
 
 func (d *database) LoadAccounts() (result []model.Account, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
-	defer cancel()
-
-	cur, err := d.accounts.Find(ctx, bson.D{})
-	if err != nil {
-		return
-	}
-	for cur.Next(ctx) {
-		user := model.Account{}
-		if err = cur.Decode(&user); err != nil {
-			return
-		}
-		result = append(result, user)
+	result = make([]model.Account, 0)
+	if err = d.conn.Find(&result).Error; err != nil {
+		return nil, err
 	}
 
 	return
 }
 
-func (d *database) CreateAccount(user model.Account) error {
-	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
-	defer cancel()
-
-	_, err := d.accounts.InsertOne(ctx, user)
-	return err
+func (d *database) CreateAccount(acc model.Account) error {
+	return d.conn.Create(acc).Error
 }
 
 func (d *database) DeleteAccount(id string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), databaseTimeout)
-	defer cancel()
-
-	_, err := d.accounts.DeleteOne(ctx, bson.D{{"_id", id}})
-	if err != nil {
-		return err
-	}
-
-	return err
+	return d.conn.Model(&model.Account{}).Unscoped().Delete(&model.Account{Id: id}).Error
 }
