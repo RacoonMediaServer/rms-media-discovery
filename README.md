@@ -2,13 +2,12 @@
 
 This is a backend-service, which provide ability of searching and downloading movies/TV series/music via torrent
 trackers for free. Is uses a set of providers (external systems), which contents searched
-information. `rms-media-service` could be described as web-crawler application.
+information. `rms-media-discovery` could be described as web-crawler application.
 
 ## Capabilities
 
 * searching information about movies and TV series;
 * searching torrent files for downloading media on different torrent trackers;
-* service user management;
 * external systems accounts management;
 * Prometheus monitoring.
 
@@ -56,19 +55,17 @@ At the first run of service, admin key will be generated automatically. You can 
 ./rms-media-discovery [-host host] [-port port] [-db db] [-verbose] [-help]
 ```
 
-| Flag           | Default Value               | Description               |
-|----------------|-----------------------------|---------------------------|
-| `-db string`   | `mongodb://localhost:27017` | MongoDB connection string |
-| `-host string` | `127.0.0.1`                 | Server IP address         |
-| `-port int`    | `8080`                      | Server port               |
-| `-verbose`     |                             | Verbose mode              |
-| `-help`        |                             | Show help                 |
+| Flag             | Default Value                       | Description               |
+|------------------|-------------------------------------|---------------------------|
+| `-config string` | `/etc/rms/rms-media-discovery.json` | Path to config            |
+| `-verbose`       |                                     | Verbose mode              |
+| `-help`          |                                     | Show help                 |
 
 ### Docker
 
 ```bash
 docker build -t rms-media-discovery .
-docker run -p 8080:8080 -e RMS_DATABASE=mongodb://192.168.1.19:27017 rms-media-discovery 
+docker run -p 8080:8080 rms-media-discovery 
 ```
 
 ## Accounts management
