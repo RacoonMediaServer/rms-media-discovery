@@ -17,8 +17,8 @@ import (
 // swagger:model principal
 type Principal struct {
 
-	// admin
-	Admin bool `json:"admin,omitempty"`
+	// can manage accounts
+	CanManageAccounts bool `json:"canManageAccounts,omitempty"`
 
 	// token
 	Token string `json:"token,omitempty"`

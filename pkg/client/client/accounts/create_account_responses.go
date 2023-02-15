@@ -87,11 +87,11 @@ func (o *CreateAccountOK) Code() int {
 }
 
 func (o *CreateAccountOK) Error() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /accounts][%d] createAccountOK  %+v", 200, o.Payload)
 }
 
 func (o *CreateAccountOK) String() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[POST /accounts][%d] createAccountOK  %+v", 200, o.Payload)
 }
 
 func (o *CreateAccountOK) GetPayload() *CreateAccountOKBody {
@@ -154,11 +154,11 @@ func (o *CreateAccountInternalServerError) Code() int {
 }
 
 func (o *CreateAccountInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError ", 500)
+	return fmt.Sprintf("[POST /accounts][%d] createAccountInternalServerError ", 500)
 }
 
 func (o *CreateAccountInternalServerError) String() string {
-	return fmt.Sprintf("[POST /admin/accounts][%d] createAccountInternalServerError ", 500)
+	return fmt.Sprintf("[POST /accounts][%d] createAccountInternalServerError ", 500)
 }
 
 func (o *CreateAccountInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

@@ -50,7 +50,7 @@ func (a *Client) CreateAccount(params *CreateAccountParams, authInfo runtime.Cli
 	op := &runtime.ClientOperation{
 		ID:                 "createAccount",
 		Method:             "POST",
-		PathPattern:        "/admin/accounts",
+		PathPattern:        "/accounts",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -89,7 +89,7 @@ func (a *Client) DeleteAccount(params *DeleteAccountParams, authInfo runtime.Cli
 	op := &runtime.ClientOperation{
 		ID:                 "deleteAccount",
 		Method:             "DELETE",
-		PathPattern:        "/admin/accounts/{id}",
+		PathPattern:        "/accounts/{id}",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
@@ -128,7 +128,7 @@ func (a *Client) GetAccounts(params *GetAccountsParams, authInfo runtime.ClientA
 	op := &runtime.ClientOperation{
 		ID:                 "getAccounts",
 		Method:             "GET",
-		PathPattern:        "/admin/accounts",
+		PathPattern:        "/accounts",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},

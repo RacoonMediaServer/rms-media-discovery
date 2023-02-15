@@ -90,11 +90,11 @@ func (o *GetAccountsOK) Code() int {
 }
 
 func (o *GetAccountsOK) Error() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK  %+v", 200, o.Payload)
 }
 
 func (o *GetAccountsOK) String() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK  %+v", 200, o.Payload)
 }
 
 func (o *GetAccountsOK) GetPayload() *GetAccountsOKBody {
@@ -157,11 +157,11 @@ func (o *GetAccountsInternalServerError) Code() int {
 }
 
 func (o *GetAccountsInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError ", 500)
 }
 
 func (o *GetAccountsInternalServerError) String() string {
-	return fmt.Sprintf("[GET /admin/accounts][%d] getAccountsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError ", 500)
 }
 
 func (o *GetAccountsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
