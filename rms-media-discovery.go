@@ -20,7 +20,7 @@ import (
 var Version = "0.0.0"
 
 func main() {
-	log.Infof("rms-media-discovery v%s", Version)
+	log.Infof("rms-media-discovery %s", Version)
 	defer log.Info("DONE.")
 
 	useDebug := false

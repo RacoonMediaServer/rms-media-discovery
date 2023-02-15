@@ -10,25 +10,19 @@ import (
 )
 
 var imdb1 = model.Account{
-	Id: "imdb.1",
-	Credentials: map[string]string{
-		"token": "t1",
-	},
+	Id:    "imdb.1",
+	Token: "t1",
 }
 
 var imdb2 = model.Account{
-	Id: "imdb.2",
-	Credentials: map[string]string{
-		"token": "t2",
-	},
+	Id:    "imdb.2",
+	Token: "t2",
 }
 
 var myapi1 = model.Account{
-	Id: "myapi.1",
-	Credentials: map[string]string{
-		"login":    "user",
-		"password": "pwd",
-	},
+	Id:       "myapi.1",
+	Login:    "user",
+	Password: "pwd",
 }
 
 func checkInitialAccounts(t *testing.T, s Service) {
