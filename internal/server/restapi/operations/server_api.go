@@ -337,11 +337,11 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/admin/accounts"] = accounts.NewCreateAccount(o.context, o.AccountsCreateAccountHandler)
+	o.handlers["POST"]["/accounts"] = accounts.NewCreateAccount(o.context, o.AccountsCreateAccountHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
 	}
-	o.handlers["DELETE"]["/admin/accounts/{id}"] = accounts.NewDeleteAccount(o.context, o.AccountsDeleteAccountHandler)
+	o.handlers["DELETE"]["/accounts/{id}"] = accounts.NewDeleteAccount(o.context, o.AccountsDeleteAccountHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
@@ -349,7 +349,7 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/admin/accounts"] = accounts.NewGetAccounts(o.context, o.AccountsGetAccountsHandler)
+	o.handlers["GET"]["/accounts"] = accounts.NewGetAccounts(o.context, o.AccountsGetAccountsHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

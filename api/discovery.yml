@@ -158,7 +158,7 @@ paths:
       security:
         - key: [ ]
 
-  /admin/accounts:
+  /accounts:
     get:
       tags:
         - accounts
@@ -206,7 +206,7 @@ paths:
       security:
         - key: [ ]
 
-  /admin/accounts/{id}:
+  /accounts/{id}:
     delete:
       tags:
         - accounts

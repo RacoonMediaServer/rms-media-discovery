@@ -35,7 +35,7 @@ func (o *GetAccountsURL) SetBasePath(bp string) {
 func (o *GetAccountsURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/admin/accounts"
+	var _path = "/accounts"
 
 	_basePath := o._basePath
 	_result.Path = golangswaggerpaths.Join(_basePath, _path)

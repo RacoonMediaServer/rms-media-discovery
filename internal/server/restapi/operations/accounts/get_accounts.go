@@ -38,7 +38,7 @@ func NewGetAccounts(ctx *middleware.Context, handler GetAccountsHandler) *GetAcc
 }
 
 /*
-	GetAccounts swagger:route GET /admin/accounts accounts getAccounts
+	GetAccounts swagger:route GET /accounts accounts getAccounts
 
 Получить список список акканутов и токенов к внешним системам
 */

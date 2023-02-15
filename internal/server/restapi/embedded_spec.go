@@ -31,7 +31,7 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
-    "/admin/accounts": {
+    "/accounts": {
       "get": {
         "security": [
           {
@@ -107,7 +107,7 @@ func init() {
         }
       }
     },
-    "/admin/accounts/{id}": {
+    "/accounts/{id}": {
       "delete": {
         "security": [
           {
@@ -511,7 +511,7 @@ func init() {
     "version": "1.0.0"
   },
   "paths": {
-    "/admin/accounts": {
+    "/accounts": {
       "get": {
         "security": [
           {
@@ -587,7 +587,7 @@ func init() {
         }
       }
     },
-    "/admin/accounts/{id}": {
+    "/accounts/{id}": {
       "delete": {
         "security": [
           {

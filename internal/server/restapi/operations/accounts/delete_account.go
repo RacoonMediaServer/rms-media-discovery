@@ -32,7 +32,7 @@ func NewDeleteAccount(ctx *middleware.Context, handler DeleteAccountHandler) *De
 }
 
 /*
-	DeleteAccount swagger:route DELETE /admin/accounts/{id} accounts deleteAccount
+	DeleteAccount swagger:route DELETE /accounts/{id} accounts deleteAccount
 
 Удалить аккаунт
 */

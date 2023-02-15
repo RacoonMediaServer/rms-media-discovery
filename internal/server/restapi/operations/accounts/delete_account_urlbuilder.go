@@ -40,7 +40,7 @@ func (o *DeleteAccountURL) SetBasePath(bp string) {
 func (o *DeleteAccountURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/admin/accounts/{id}"
+	var _path = "/accounts/{id}"
 
 	id := o.ID
 	if id != "" {
