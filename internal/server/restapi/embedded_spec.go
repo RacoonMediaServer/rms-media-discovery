@@ -28,8 +28,9 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.0.0"
+    "version": "1.3.0"
   },
+  "host": "136.244.108.126",
   "paths": {
     "/accounts": {
       "get": {
@@ -508,8 +509,9 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.0.0"
+    "version": "1.3.0"
   },
+  "host": "136.244.108.126",
   "paths": {
     "/accounts": {
       "get": {
