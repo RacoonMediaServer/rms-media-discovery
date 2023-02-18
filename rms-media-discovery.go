@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server"
@@ -65,7 +66,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Connect to database failed: %s", err)
 	}
-	log.Info("Connected to MongoDB")
+	log.Info("Connected to database")
 
 	srv := server.Server{}
 	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
@@ -79,7 +80,7 @@ func main() {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		if err := http.ListenAndServe(":2112", nil); err != nil {
+		if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Monitoring.Host, cfg.Monitoring.Port), nil); err != nil {
 			log.Fatalf("Cannot bind monitoring endpoint: %s", err)
 		}
 	}()

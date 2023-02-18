@@ -8,10 +8,17 @@ type HTTP struct {
 	Port int
 }
 
+// Monitoring settings
+type Monitoring struct {
+	Host string
+	Port int
+}
+
 // Configuration represents entire service configuration
 type Configuration struct {
-	Database configuration.Database
-	Http     HTTP
+	Database   configuration.Database
+	Http       HTTP
+	Monitoring Monitoring
 }
 
 var config Configuration

@@ -9,5 +9,9 @@
   "http": {
     "host": "localhost",
     "port": 8080
+  },
+  "monitoring": {
+    "host": "localhost",
+    "port": 2112
   }
 }
