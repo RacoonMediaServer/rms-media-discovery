@@ -10,7 +10,7 @@
     "host": "localhost",
     "port": 8080
   },
-  "monitoring": {
+  "monitor": {
     "host": "localhost",
     "port": 2112
   }

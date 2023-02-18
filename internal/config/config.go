@@ -2,23 +2,11 @@ package config
 
 import "github.com/RacoonMediaServer/rms-packages/pkg/configuration"
 
-// HTTP is settings of web server
-type HTTP struct {
-	Host string
-	Port int
-}
-
-// Monitoring settings
-type Monitoring struct {
-	Host string
-	Port int
-}
-
 // Configuration represents entire service configuration
 type Configuration struct {
-	Database   configuration.Database
-	Http       HTTP
-	Monitoring Monitoring
+	Database configuration.Database
+	Http     configuration.Http
+	Monitor  configuration.Monitor
 }
 
 var config Configuration

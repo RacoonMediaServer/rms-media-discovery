@@ -80,7 +80,7 @@ func main() {
 
 	go func() {
 		http.Handle("/metrics", promhttp.Handler())
-		if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Monitoring.Host, cfg.Monitoring.Port), nil); err != nil {
+		if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Monitor.Host, cfg.Monitor.Port), nil); err != nil {
 			log.Fatalf("Cannot bind monitoring endpoint: %s", err)
 		}
 	}()
