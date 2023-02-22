@@ -3,6 +3,7 @@ package torrents
 import (
 	"container/list"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/antzucaro/matchr"
@@ -84,7 +85,7 @@ func (ctx *rankContext) sort(f func(lhs *model.Torrent, rhs *model.Torrent) bool
 
 func getMinDistance(titles []string, q string) int {
 	min := math.MaxInt
-	q = strings.ToLower(q)
+	q = heuristic.Normalize(q)
 	for _, t := range titles {
 		d := matchr.Levenshtein(strings.ToLower(t), q)
 		if d < min {
