@@ -64,6 +64,32 @@ paths:
       security:
         - key: [ ]
 
+  /movies/{id}:
+    get:
+      tags:
+        - movies
+      summary: Получение информации о фильме или сериала
+      description: Получение информации о фильме или сериале
+      operationId: getMovieInfo
+      parameters:
+        - name: id
+          in: path
+          description: ID фильма/сериала
+          required: true
+          type: string
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: "#/definitions/SearchMoviesResult"
+        '404':
+          description: Фильм не найден
+        '500':
+          description: Ошибка на стороне сервера
+      security:
+        - key: [ ]
+
   /torrents/search:
     get:
       tags:

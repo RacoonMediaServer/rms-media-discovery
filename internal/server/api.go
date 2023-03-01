@@ -15,6 +15,8 @@ import (
 
 func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.MoviesSearchMoviesHandler = movies.SearchMoviesHandlerFunc(s.searchMovies)
+	api.MoviesGetMovieInfoHandler = movies.GetMovieInfoHandlerFunc(s.getMovieInfo)
+
 	api.TorrentsSearchTorrentsHandler = torrents.SearchTorrentsHandlerFunc(s.searchTorrents)
 	api.TorrentsDownloadTorrentHandler = torrents.DownloadTorrentHandlerFunc(s.downloadTorrent)
 

@@ -10,6 +10,7 @@ import (
 
 type Service interface {
 	Search(ctx context.Context, query string, limit uint) ([]model.Movie, error)
+	Get(ctx context.Context, id string) (*model.Movie, error)
 }
 
 type service struct {

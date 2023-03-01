@@ -62,6 +62,39 @@ type getResponse struct {
 	}
 }
 
+func convertInfo(id string, info *getResponse) model.Movie {
+	m := model.Movie{
+		ID:          id,
+		Title:       info.Title,
+		Description: info.Plot,
+		Poster:      info.Image,
+		Seasons:     uint(len(info.TvSeriesInfo.Seasons)),
+	}
+
+	if info.PlotLocal != "" {
+		m.Description = info.PlotLocal
+	}
+
+	rating, _ := strconv.ParseFloat(info.ImDbRating, 32)
+	m.Rating = float32(rating)
+
+	year, err := strconv.ParseUint(info.Year, 10, 16)
+	if err == nil {
+		m.Year = uint(year)
+	}
+
+	for _, genre := range info.GenreList {
+		m.Genres = append(m.Genres, genre.Value)
+	}
+
+	m.Type = model.MovieType_Movie
+	if info.Type == "TVSeries" {
+		m.Type = model.MovieType_TvSeries
+	}
+
+	return m
+}
+
 func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &imdbProvider{
 		access: access,
@@ -72,7 +105,6 @@ func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 }
 
 func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
-
 	l := utils.LogFromContext(ctx, "imdb")
 	l.Info("Searching...")
 	list, err := p.search(l, ctx, query)
@@ -88,36 +120,7 @@ func (p *imdbProvider) SearchMovies(ctx context.Context, query string, limit uin
 			l.Errorf("Retrieve info about '%s' failed: %s", item.Title, err)
 			continue
 		}
-		m := model.Movie{
-			ID:          item.Id,
-			Title:       info.Title,
-			Description: info.Plot,
-			Poster:      info.Image,
-			Seasons:     uint(len(info.TvSeriesInfo.Seasons)),
-		}
-
-		if info.PlotLocal != "" {
-			m.Description = info.PlotLocal
-		}
-
-		rating, _ := strconv.ParseFloat(info.ImDbRating, 32)
-		m.Rating = float32(rating)
-
-		year, err := strconv.ParseUint(info.Year, 10, 16)
-		if err == nil {
-			m.Year = uint(year)
-		}
-
-		for _, genre := range info.GenreList {
-			m.Genres = append(m.Genres, genre.Value)
-		}
-
-		m.Type = model.MovieType_Movie
-		if info.Type == "TVSeries" {
-			m.Type = model.MovieType_TvSeries
-		}
-
-		movies = append(movies, m)
+		movies = append(movies, convertInfo(item.Id, info))
 		if len(movies) >= int(limit) {
 			break
 		}
@@ -203,6 +206,17 @@ func (p *imdbProvider) get(l *log.Entry, ctx context.Context, id string) (*getRe
 		result := resp.(*getResponse)
 		return result, nil
 	}
+}
+
+func (p *imdbProvider) GetMovieInfo(ctx context.Context, id string) (*model.Movie, error) {
+	l := utils.LogFromContext(ctx, "imdb")
+	info, err := p.get(l, ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	m := convertInfo(id, info)
+	return &m, nil
+
 }
 
 func (p *imdbProvider) ID() string {

@@ -13,6 +13,7 @@ type Provider interface {
 type MovieInfoProvider interface {
 	Provider
 	SearchMovies(ctx context.Context, query string, limit uint) ([]model.Movie, error)
+	GetMovieInfo(ctx context.Context, id string) (*model.Movie, error)
 }
 
 // TorrentsProvider интерфейс сущностей, которые умеют искать по торрентами

@@ -61,6 +61,29 @@ type getResponse struct {
 	}
 }
 
+func convertInfo(id string, info *getResponse) model.Movie {
+	m := model.Movie{
+		ID:          id,
+		Title:       info.Name,
+		Description: info.Description,
+		Poster:      info.Poster.Url,
+		Seasons:     uint(len(info.SeasonsInfo)),
+		Rating:      info.Rating.Imdb,
+		Year:        info.Year,
+	}
+
+	for _, genre := range info.Genres {
+		m.Genres = append(m.Genres, genre.Name)
+	}
+
+	m.Type = model.MovieType_Movie
+	if info.Type == "tv-series" {
+		m.Type = model.MovieType_TvSeries
+	}
+
+	return m
+}
+
 func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &kinopoiskProvider{
 		access: access,
@@ -89,26 +112,7 @@ func (p *kinopoiskProvider) SearchMovies(ctx context.Context, query string, limi
 			l.Errorf("Retrieve info about '%s' failed: %s", item.Name, err)
 			continue
 		}
-		m := model.Movie{
-			ID:          item.ExternalID.Imdb,
-			Title:       info.Name,
-			Description: info.Description,
-			Poster:      info.Poster.Url,
-			Seasons:     uint(len(info.SeasonsInfo)),
-			Rating:      info.Rating.Imdb,
-			Year:        info.Year,
-		}
-
-		for _, genre := range info.Genres {
-			m.Genres = append(m.Genres, genre.Name)
-		}
-
-		m.Type = model.MovieType_Movie
-		if info.Type == "tv-series" {
-			m.Type = model.MovieType_TvSeries
-		}
-
-		movies = append(movies, m)
+		movies = append(movies, convertInfo(item.ExternalID.Imdb, info))
 		if len(movies) >= int(limit) {
 			break
 		}
@@ -180,4 +184,13 @@ func (p *kinopoiskProvider) get(ctx context.Context, id string) (*getResponse, e
 		result := resp.(*getResponse)
 		return result, nil
 	}
+}
+
+func (p *kinopoiskProvider) GetMovieInfo(ctx context.Context, id string) (*model.Movie, error) {
+	info, err := p.get(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+	m := convertInfo(id, info)
+	return &m, nil
 }

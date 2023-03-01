@@ -9,6 +9,17 @@ type fallbackProvider struct {
 	providers []MovieInfoProvider
 }
 
+func (f fallbackProvider) GetMovieInfo(ctx context.Context, id string) (result *model.Movie, err error) {
+	for _, p := range f.providers {
+		result, err = p.GetMovieInfo(ctx, id)
+		if err == nil && result.Title != "" {
+			return
+		}
+	}
+
+	return
+}
+
 func (f fallbackProvider) ID() string {
 	if len(f.providers) == 0 {
 		return ""

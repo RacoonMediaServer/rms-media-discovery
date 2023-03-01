@@ -60,6 +60,9 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		AccountsGetAccountsHandler: accounts.GetAccountsHandlerFunc(func(params accounts.GetAccountsParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation accounts.GetAccounts has not yet been implemented")
 		}),
+		MoviesGetMovieInfoHandler: movies.GetMovieInfoHandlerFunc(func(params movies.GetMovieInfoParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation movies.GetMovieInfo has not yet been implemented")
+		}),
 		MoviesSearchMoviesHandler: movies.SearchMoviesHandlerFunc(func(params movies.SearchMoviesParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation movies.SearchMovies has not yet been implemented")
 		}),
@@ -127,6 +130,8 @@ type ServerAPI struct {
 	TorrentsDownloadTorrentHandler torrents.DownloadTorrentHandler
 	// AccountsGetAccountsHandler sets the operation handler for the get accounts operation
 	AccountsGetAccountsHandler accounts.GetAccountsHandler
+	// MoviesGetMovieInfoHandler sets the operation handler for the get movie info operation
+	MoviesGetMovieInfoHandler movies.GetMovieInfoHandler
 	// MoviesSearchMoviesHandler sets the operation handler for the search movies operation
 	MoviesSearchMoviesHandler movies.SearchMoviesHandler
 	// TorrentsSearchTorrentsHandler sets the operation handler for the search torrents operation
@@ -226,6 +231,9 @@ func (o *ServerAPI) Validate() error {
 	}
 	if o.AccountsGetAccountsHandler == nil {
 		unregistered = append(unregistered, "accounts.GetAccountsHandler")
+	}
+	if o.MoviesGetMovieInfoHandler == nil {
+		unregistered = append(unregistered, "movies.GetMovieInfoHandler")
 	}
 	if o.MoviesSearchMoviesHandler == nil {
 		unregistered = append(unregistered, "movies.SearchMoviesHandler")
@@ -350,6 +358,10 @@ func (o *ServerAPI) initHandlerCache() {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
 	o.handlers["GET"]["/accounts"] = accounts.NewGetAccounts(o.context, o.AccountsGetAccountsHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/movies/{id}"] = movies.NewGetMovieInfo(o.context, o.MoviesGetMovieInfoHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

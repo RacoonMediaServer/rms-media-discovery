@@ -49,3 +49,20 @@ func (s *Server) searchMovies(params movies.SearchMoviesParams, key *models.Prin
 
 	return movies.NewSearchMoviesOK().WithPayload(&payload)
 }
+
+func (s *Server) getMovieInfo(params movies.GetMovieInfoParams, key *models.Principal) middleware.Responder {
+	l := s.log.WithField("key", key.Token).WithField("req", "getMovieInfo").WithField("id", params.ID)
+	l.Debug("Request")
+
+	result, err := s.Movies.Get(context.WithValue(params.HTTPRequest.Context(), "log", l), params.ID)
+	if err != nil {
+		l.Errorf("Request failed: %s", err)
+		return movies.NewGetMovieInfoNotFound()
+	}
+
+	if result == nil {
+		return movies.NewGetMovieInfoNotFound()
+	}
+
+	return movies.NewGetMovieInfoOK().WithPayload(convertSearchMoviesResult(result))
+}

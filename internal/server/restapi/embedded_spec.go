@@ -197,6 +197,44 @@ func init() {
         }
       }
     },
+    "/movies/{id}": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Получение информации о фильме или сериале",
+        "tags": [
+          "movies"
+        ],
+        "summary": "Получение информации о фильме или сериала",
+        "operationId": "getMovieInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID фильма/сериала",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SearchMoviesResult"
+            }
+          },
+          "404": {
+            "description": "Фильм не найден"
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -671,6 +709,44 @@ func init() {
                 }
               }
             }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/movies/{id}": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Получение информации о фильме или сериале",
+        "tags": [
+          "movies"
+        ],
+        "summary": "Получение информации о фильме или сериала",
+        "operationId": "getMovieInfo",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "ID фильма/сериала",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/SearchMoviesResult"
+            }
+          },
+          "404": {
+            "description": "Фильм не найден"
           },
           "500": {
             "description": "Ошибка на стороне сервера"
