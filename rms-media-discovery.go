@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server"
@@ -15,7 +17,6 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v2"
 	"go-micro.dev/v4"
-	"net/http"
 )
 
 var Version = "0.0.0"
@@ -23,6 +24,11 @@ var Version = "0.0.0"
 func main() {
 	log.Infof("rms-media-discovery %s", Version)
 	defer log.Info("DONE.")
+
+	log.Info("Headless browser engine initializing...")
+	if err := navigator.Initialize(); err != nil {
+		log.Fatalf("Failed: %s", err)
+	}
 
 	useDebug := false
 
@@ -53,11 +59,6 @@ func main() {
 	if useDebug {
 		log.SetLevel(log.DebugLevel)
 		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
-	}
-
-	log.Info("Headless browser engine initializing...")
-	if err := navigator.Initialize(); err != nil {
-		log.Fatalf("Failed: %s", err)
 	}
 
 	cfg := config.Config()
