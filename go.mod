@@ -21,11 +21,11 @@ require (
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/playwright-community/playwright-go v0.2000.1
 	github.com/prometheus/client_golang v1.14.0
+	github.com/ryanbradynd05/go-tmdb v0.0.0-20230108222638-2a68dc6ff40c
 	github.com/satori/go.uuid v1.2.0
 	github.com/stretchr/testify v1.8.1
 	github.com/teris-io/shortid v0.0.0-20220617161101-71ec9f2aa569
 	github.com/urfave/cli/v2 v2.3.0
-	github.com/ztrue/tracerr v0.3.0
 	go-micro.dev/v4 v4.9.0
 	golang.org/x/net v0.5.0
 	gorm.io/driver/postgres v1.4.7
@@ -80,6 +80,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
+	github.com/kylelemons/go-gypsy v1.0.0 // indirect
 	github.com/logrusorgru/aurora v0.0.0-20181002194514-a7b3b318ed4e // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/matttproud/golang_protobuf_extensions v1.0.1 // indirect
@@ -102,6 +103,7 @@ require (
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
+	github.com/ztrue/tracerr v0.3.0 // indirect
 	go.mongodb.org/mongo-driver v1.11.1 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect
@@ -118,3 +120,5 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/ryanbradynd05/go-tmdb v0.0.0-20230108222638-2a68dc6ff40c => github.com/racoon-devel/go-tmdb v1.0.1

@@ -19,7 +19,7 @@ type kinopoiskProvider struct {
 }
 
 const (
-	kinopoiskEndpoint = "https://api.kinopoisk.dev/movie"
+	kinopoiskEndpoint = "https://api.kinopoisk.dev/v1.3/movie"
 )
 
 var (
@@ -84,7 +84,7 @@ func convertInfo(id string, info *getResponse) model.Movie {
 	return m
 }
 
-func NewKinopoiskProvider(access model.AccessProvider) provider.MovieInfoProvider {
+func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &kinopoiskProvider{
 		access: access,
 		p:      pipeline.Open(pipeline.Settings{Id: "kinopoisk"}),
