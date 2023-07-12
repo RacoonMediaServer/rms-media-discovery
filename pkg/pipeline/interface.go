@@ -1,6 +1,9 @@
 package pipeline
 
-import "context"
+import (
+	"context"
+	"golang.org/x/time/rate"
+)
 
 type Handler func() (interface{}, error)
 
@@ -9,7 +12,8 @@ type Pipeline interface {
 }
 
 type Settings struct {
-	Id string
+	Id    string
+	Limit *rate.Limiter
 }
 
 func Open(settings Settings) Pipeline {

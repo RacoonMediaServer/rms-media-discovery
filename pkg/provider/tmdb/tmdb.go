@@ -10,10 +10,13 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/ryanbradynd05/go-tmdb"
+	"golang.org/x/time/rate"
 	"strconv"
 	"strings"
 	"time"
 )
+
+const requestsPerSecond = 40
 
 type tmdbProvider struct {
 	access model.AccessProvider
@@ -158,9 +161,13 @@ func parseYear(text string) uint {
 }
 
 func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
+	settings := pipeline.Settings{
+		Id:    "tmdb",
+		Limit: rate.NewLimiter(1, requestsPerSecond),
+	}
 	p := &tmdbProvider{
 		access: access,
-		p:      pipeline.Open(pipeline.Settings{Id: "tmdb"}),
+		p:      pipeline.Open(settings),
 	}
 	p.r = requester.New(p)
 	return p

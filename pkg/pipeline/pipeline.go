@@ -2,6 +2,7 @@ package pipeline
 
 import (
 	"context"
+	"golang.org/x/time/rate"
 	"sync"
 )
 
@@ -31,6 +32,9 @@ func newPipeline(settings Settings) *pipeline {
 	p := &pipeline{
 		settings: settings,
 		ch:       make(chan *task),
+	}
+	if p.settings.Limit == nil {
+		p.settings.Limit = rate.NewLimiter(rate.Inf, 1)
 	}
 
 	p.wg.Add(1)
@@ -74,6 +78,7 @@ func (p *pipeline) process() {
 			return
 		}
 
+		_ = p.settings.Limit.Wait(context.Background())
 		data, err := t.h()
 		t.ch <- callResult{data: data, err: err}
 		close(t.ch)
