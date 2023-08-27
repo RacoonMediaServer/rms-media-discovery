@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/music"
 	"net/http"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
@@ -73,6 +74,7 @@ func main() {
 	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
 	srv.Accounts = accounts.New(database)
 	srv.Movies = movies.New(srv.Accounts)
+	srv.Music = music.New()
 	srv.Torrents = torrents.New(srv.Accounts)
 
 	if err := srv.Accounts.Initialize(); err != nil {
