@@ -28,6 +28,7 @@ require (
 	github.com/urfave/cli/v2 v2.3.0
 	go-micro.dev/v4 v4.9.0
 	golang.org/x/net v0.5.0
+	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	gorm.io/driver/postgres v1.4.7
 	gorm.io/gorm v1.24.5
 )
@@ -77,7 +78,6 @@ require (
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/jmcvetta/napping v3.2.0+incompatible // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kennygrant/sanitize v1.2.4 // indirect
 	github.com/kevinburke/ssh_config v0.0.0-20201106050909-4977a11b4351 // indirect
@@ -102,7 +102,6 @@ require (
 	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
 	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
-	github.com/stayradiated/deezer v0.0.0-20171225235312-1356c000c367 // indirect
 	github.com/temoto/robotstxt v1.1.1 // indirect
 	github.com/xanzy/ssh-agent v0.3.0 // indirect
 	github.com/ztrue/tracerr v0.3.0 // indirect
@@ -113,7 +112,6 @@ require (
 	golang.org/x/sync v0.0.0-20220923202941-7f9b1623fab7 // indirect
 	golang.org/x/sys v0.4.0 // indirect
 	golang.org/x/text v0.6.0 // indirect
-	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba // indirect
 	google.golang.org/appengine v1.6.6 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect

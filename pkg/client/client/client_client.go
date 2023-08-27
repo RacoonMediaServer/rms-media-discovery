@@ -12,6 +12,7 @@ import (
 
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/music"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/client/client/torrents"
 )
 
@@ -59,6 +60,7 @@ func New(transport runtime.ClientTransport, formats strfmt.Registry) *Client {
 	cli.Transport = transport
 	cli.Accounts = accounts.New(transport, formats)
 	cli.Movies = movies.New(transport, formats)
+	cli.Music = music.New(transport, formats)
 	cli.Torrents = torrents.New(transport, formats)
 	return cli
 }
@@ -108,6 +110,8 @@ type Client struct {
 
 	Movies movies.ClientService
 
+	Music music.ClientService
+
 	Torrents torrents.ClientService
 
 	Transport runtime.ClientTransport
@@ -118,5 +122,6 @@ func (c *Client) SetTransport(transport runtime.ClientTransport) {
 	c.Transport = transport
 	c.Accounts.SetTransport(transport)
 	c.Movies.SetTransport(transport)
+	c.Music.SetTransport(transport)
 	c.Torrents.SetTransport(transport)
 }

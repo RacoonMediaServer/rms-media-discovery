@@ -41,7 +41,7 @@ func (o *SearchTorrentsReader) ReadResponse(response runtime.ClientResponse, con
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("response status code does not match any response statuses defined for this endpoint in the swagger spec", response, response.Code())
+		return nil, runtime.NewAPIError("[GET /torrents/search] searchTorrents", response, response.Code())
 	}
 }
 
@@ -240,6 +240,11 @@ func (o *SearchTorrentsOKBody) contextValidateResults(ctx context.Context, forma
 	for i := 0; i < len(o.Results); i++ {
 
 		if o.Results[i] != nil {
+
+			if swag.IsZero(o.Results[i]) { // not required
+				return nil
+			}
+
 			if err := o.Results[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("searchTorrentsOK" + "." + "results" + "." + strconv.Itoa(i))
