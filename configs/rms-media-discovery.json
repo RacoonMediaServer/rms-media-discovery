@@ -3,12 +3,12 @@
     "host": "localhost",
     "port": 5432,
     "user": "rms",
-    "password": "qweasd123",
+    "password": "rms",
     "database": "rms"
   },
   "http": {
     "host": "localhost",
-    "port": 8091
+    "port": 8080
   },
   "monitor": {
     "host": "localhost",
