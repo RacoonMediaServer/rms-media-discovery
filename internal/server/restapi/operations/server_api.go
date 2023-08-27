@@ -22,6 +22,7 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/music"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/torrents"
 )
 
@@ -65,6 +66,9 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		}),
 		MoviesSearchMoviesHandler: movies.SearchMoviesHandlerFunc(func(params movies.SearchMoviesParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation movies.SearchMovies has not yet been implemented")
+		}),
+		MusicSearchMusicHandler: music.SearchMusicHandlerFunc(func(params music.SearchMusicParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation music.SearchMusic has not yet been implemented")
 		}),
 		TorrentsSearchTorrentsHandler: torrents.SearchTorrentsHandlerFunc(func(params torrents.SearchTorrentsParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation torrents.SearchTorrents has not yet been implemented")
@@ -134,6 +138,8 @@ type ServerAPI struct {
 	MoviesGetMovieInfoHandler movies.GetMovieInfoHandler
 	// MoviesSearchMoviesHandler sets the operation handler for the search movies operation
 	MoviesSearchMoviesHandler movies.SearchMoviesHandler
+	// MusicSearchMusicHandler sets the operation handler for the search music operation
+	MusicSearchMusicHandler music.SearchMusicHandler
 	// TorrentsSearchTorrentsHandler sets the operation handler for the search torrents operation
 	TorrentsSearchTorrentsHandler torrents.SearchTorrentsHandler
 
@@ -237,6 +243,9 @@ func (o *ServerAPI) Validate() error {
 	}
 	if o.MoviesSearchMoviesHandler == nil {
 		unregistered = append(unregistered, "movies.SearchMoviesHandler")
+	}
+	if o.MusicSearchMusicHandler == nil {
+		unregistered = append(unregistered, "music.SearchMusicHandler")
 	}
 	if o.TorrentsSearchTorrentsHandler == nil {
 		unregistered = append(unregistered, "torrents.SearchTorrentsHandler")
@@ -369,6 +378,10 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
+	o.handlers["GET"]["/music/search"] = music.NewSearchMusic(o.context, o.MusicSearchMusicHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
 	o.handlers["GET"]["/torrents/search"] = torrents.NewSearchTorrents(o.context, o.TorrentsSearchTorrentsHandler)
 }
 
@@ -411,6 +424,6 @@ func (o *ServerAPI) AddMiddlewareFor(method, path string, builder middleware.Bui
 	}
 	o.Init()
 	if h, ok := o.handlers[um][path]; ok {
-		o.handlers[method][path] = builder(h)
+		o.handlers[um][path] = builder(h)
 	}
 }

@@ -235,6 +235,61 @@ func init() {
         }
       }
     },
+    "/music/search": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Поиск исполнителей, альбомов, треков",
+        "tags": [
+          "music"
+        ],
+        "summary": "Поиск музыки",
+        "operationId": "searchMusic",
+        "parameters": [
+          {
+            "maxLength": 128,
+            "minLength": 2,
+            "type": "string",
+            "description": "Искомый запрос",
+            "name": "q",
+            "in": "query",
+            "required": true
+          },
+          {
+            "minimum": 1,
+            "type": "integer",
+            "description": "Ограничение на кол-во результатов",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "results"
+              ],
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SearchMusicResult"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -441,6 +496,50 @@ func init() {
         }
       }
     },
+    "SearchMusicResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "title"
+      ],
+      "properties": {
+        "album": {
+          "type": "string"
+        },
+        "albumsCount": {
+          "type": "integer"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "genres": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "picture": {
+          "type": "string"
+        },
+        "releaseYear": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "tracksCount": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "artist",
+            "album",
+            "track"
+          ]
+        }
+      }
+    },
     "SearchTorrentsResult": {
       "type": "object",
       "required": [
@@ -525,6 +624,10 @@ func init() {
     {
       "description": "Фильмы/сериалы",
       "name": "movies"
+    },
+    {
+      "description": "Музыка",
+      "name": "music"
     },
     {
       "description": "Торренты",
@@ -754,6 +857,61 @@ func init() {
         }
       }
     },
+    "/music/search": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Поиск исполнителей, альбомов, треков",
+        "tags": [
+          "music"
+        ],
+        "summary": "Поиск музыки",
+        "operationId": "searchMusic",
+        "parameters": [
+          {
+            "maxLength": 128,
+            "minLength": 2,
+            "type": "string",
+            "description": "Искомый запрос",
+            "name": "q",
+            "in": "query",
+            "required": true
+          },
+          {
+            "minimum": 1,
+            "type": "integer",
+            "description": "Ограничение на кол-во результатов",
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "results"
+              ],
+              "properties": {
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SearchMusicResult"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -960,6 +1118,50 @@ func init() {
         }
       }
     },
+    "SearchMusicResult": {
+      "type": "object",
+      "required": [
+        "type",
+        "title"
+      ],
+      "properties": {
+        "album": {
+          "type": "string"
+        },
+        "albumsCount": {
+          "type": "integer"
+        },
+        "artist": {
+          "type": "string"
+        },
+        "genres": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "picture": {
+          "type": "string"
+        },
+        "releaseYear": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        },
+        "tracksCount": {
+          "type": "integer"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "artist",
+            "album",
+            "track"
+          ]
+        }
+      }
+    },
     "SearchTorrentsResult": {
       "type": "object",
       "required": [
@@ -1046,6 +1248,10 @@ func init() {
     {
       "description": "Фильмы/сериалы",
       "name": "movies"
+    },
+    {
+      "description": "Музыка",
+      "name": "music"
     },
     {
       "description": "Торренты",

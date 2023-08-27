@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/music"
 	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 	"net/http"
 
@@ -16,6 +17,8 @@ import (
 func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.MoviesSearchMoviesHandler = movies.SearchMoviesHandlerFunc(s.searchMovies)
 	api.MoviesGetMovieInfoHandler = movies.GetMovieInfoHandlerFunc(s.getMovieInfo)
+
+	api.MusicSearchMusicHandler = music.SearchMusicHandlerFunc(s.searchMusic)
 
 	api.TorrentsSearchTorrentsHandler = torrents.SearchTorrentsHandlerFunc(s.searchTorrents)
 	api.TorrentsDownloadTorrentHandler = torrents.DownloadTorrentHandlerFunc(s.downloadTorrent)

@@ -148,6 +148,11 @@ func (o *SearchTorrentsOKBody) contextValidateResults(ctx context.Context, forma
 	for i := 0; i < len(o.Results); i++ {
 
 		if o.Results[i] != nil {
+
+			if swag.IsZero(o.Results[i]) { // not required
+				return nil
+			}
+
 			if err := o.Results[i].ContextValidate(ctx, formats); err != nil {
 				if ve, ok := err.(*errors.Validation); ok {
 					return ve.ValidateName("searchTorrentsOK" + "." + "results" + "." + strconv.Itoa(i))

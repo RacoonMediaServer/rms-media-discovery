@@ -22,6 +22,12 @@ type TorrentsProvider interface {
 	SearchTorrents(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
 }
 
+// MusicInfoProvider - интерфейс поиска информации о музыке
+type MusicInfoProvider interface {
+	Provider
+	SearchMusic(ctx context.Context, query string, limit uint) ([]model.Music, error)
+}
+
 // Captcha настройки капчи для распознования
 type Captcha struct {
 	Url           string

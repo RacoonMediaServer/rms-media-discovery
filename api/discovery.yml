@@ -18,6 +18,8 @@ securityDefinitions:
 tags:
   - name: movies
     description: Фильмы/сериалы
+  - name: music
+    description: Музыка
   - name: torrents
     description: Торренты
   - name: accounts
@@ -85,6 +87,46 @@ paths:
             $ref: "#/definitions/SearchMoviesResult"
         '404':
           description: Фильм не найден
+        '500':
+          description: Ошибка на стороне сервера
+      security:
+        - key: [ ]
+
+  /music/search:
+    get:
+      tags:
+        - music
+      summary: Поиск музыки
+      description: Поиск исполнителей, альбомов, треков
+      operationId: searchMusic
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: Искомый запрос
+          type: string
+          minLength: 2
+          maxLength: 128
+        - name: limit
+          in: query
+          required: false
+          description: Ограничение на кол-во результатов
+          type: integer
+          minimum: 1
+
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required:
+              - results
+            properties:
+              results:
+                type: array
+                items:
+                  $ref: "#/definitions/SearchMusicResult"
+
         '500':
           description: Ошибка на стороне сервера
       security:
@@ -286,6 +328,37 @@ definitions:
           - film
       seasons:
         type: integer
+
+  SearchMusicResult:
+    type: object
+    required:
+      - type
+      - title
+    properties:
+      type:
+        type: string
+        enum:
+          - artist
+          - album
+          - track
+      title:
+        type: string
+      picture:
+        type: string
+      albumsCount:
+        type: integer
+      releaseYear:
+        type: integer
+      genres:
+        type: array
+        items:
+          type: string
+      tracksCount:
+        type: integer
+      artist:
+        type: string
+      album:
+        type: string
 
   SearchTorrentsResult:
     type: object

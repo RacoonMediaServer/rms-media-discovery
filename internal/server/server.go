@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/music"
 	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 	"net/http"
 
@@ -19,6 +20,7 @@ type Server struct {
 	log *log.Entry
 
 	Movies   movies.Service
+	Music    music.Service
 	Torrents torrents.Service
 	Users    rms_users.RmsUsersService
 	Accounts accounts.Service
