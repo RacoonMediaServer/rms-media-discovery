@@ -62,6 +62,12 @@ SearchTorrentsParams contains all the parameters to send to the API endpoint
 */
 type SearchTorrentsParams struct {
 
+	/* Discography.
+
+	   Скачать всю дискогорафию исполнителя (для музыки)
+	*/
+	Discography *bool
+
 	/* Limit.
 
 	   Ограничение на кол-во результатов
@@ -116,11 +122,14 @@ func (o *SearchTorrentsParams) WithDefaults() *SearchTorrentsParams {
 // All values with no default are reset to their zero value.
 func (o *SearchTorrentsParams) SetDefaults() {
 	var (
+		discographyDefault = bool(false)
+
 		strongDefault = bool(false)
 	)
 
 	val := SearchTorrentsParams{
-		Strong: &strongDefault,
+		Discography: &discographyDefault,
+		Strong:      &strongDefault,
 	}
 
 	val.timeout = o.timeout
@@ -160,6 +169,17 @@ func (o *SearchTorrentsParams) WithHTTPClient(client *http.Client) *SearchTorren
 // SetHTTPClient adds the HTTPClient to the search torrents params
 func (o *SearchTorrentsParams) SetHTTPClient(client *http.Client) {
 	o.HTTPClient = client
+}
+
+// WithDiscography adds the discography to the search torrents params
+func (o *SearchTorrentsParams) WithDiscography(discography *bool) *SearchTorrentsParams {
+	o.SetDiscography(discography)
+	return o
+}
+
+// SetDiscography adds the discography to the search torrents params
+func (o *SearchTorrentsParams) SetDiscography(discography *bool) {
+	o.Discography = discography
 }
 
 // WithLimit adds the limit to the search torrents params
@@ -235,6 +255,23 @@ func (o *SearchTorrentsParams) WriteToRequest(r runtime.ClientRequest, reg strfm
 		return err
 	}
 	var res []error
+
+	if o.Discography != nil {
+
+		// query param discography
+		var qrDiscography bool
+
+		if o.Discography != nil {
+			qrDiscography = *o.Discography
+		}
+		qDiscography := swag.FormatBool(qrDiscography)
+		if qDiscography != "" {
+
+			if err := r.SetQueryParam("discography", qDiscography); err != nil {
+				return err
+			}
+		}
+	}
 
 	if o.Limit != nil {
 

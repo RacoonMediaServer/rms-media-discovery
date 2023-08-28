@@ -178,6 +178,12 @@ paths:
           type: boolean
           default: false
           description: Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса
+        - name: discography
+          in: query
+          type: boolean
+          default: false
+          description: Скачать всю дискогорафию исполнителя (для музыки)
+
       responses:
         '200':
           description: OK

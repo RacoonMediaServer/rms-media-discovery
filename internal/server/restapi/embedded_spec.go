@@ -394,6 +394,13 @@ func init() {
             "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
             "name": "strong",
             "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Скачать всю дискогорафию исполнителя (для музыки)",
+            "name": "discography",
+            "in": "query"
           }
         ],
         "responses": {
@@ -1015,6 +1022,13 @@ func init() {
             "default": false,
             "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
             "name": "strong",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "default": false,
+            "description": "Скачать всю дискогорафию исполнителя (для музыки)",
+            "name": "discography",
             "in": "query"
           }
         ],

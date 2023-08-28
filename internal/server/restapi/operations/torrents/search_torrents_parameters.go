@@ -23,10 +23,14 @@ func NewSearchTorrentsParams() SearchTorrentsParams {
 	var (
 		// initialize parameters with default values
 
+		discographyDefault = bool(false)
+
 		strongDefault = bool(false)
 	)
 
 	return SearchTorrentsParams{
+		Discography: &discographyDefault,
+
 		Strong: &strongDefault,
 	}
 }
@@ -40,6 +44,11 @@ type SearchTorrentsParams struct {
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
 
+	/*Скачать всю дискогорафию исполнителя (для музыки)
+	  In: query
+	  Default: false
+	*/
+	Discography *bool
 	/*Ограничение на кол-во результатов
 	  Minimum: 1
 	  In: query
@@ -84,6 +93,11 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 
 	qs := runtime.Values(r.URL.Query())
 
+	qDiscography, qhkDiscography, _ := qs.GetOK("discography")
+	if err := o.bindDiscography(qDiscography, qhkDiscography, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	qLimit, qhkLimit, _ := qs.GetOK("limit")
 	if err := o.bindLimit(qLimit, qhkLimit, route.Formats); err != nil {
 		res = append(res, err)
@@ -116,6 +130,30 @@ func (o *SearchTorrentsParams) BindRequest(r *http.Request, route *middleware.Ma
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
+	return nil
+}
+
+// bindDiscography binds and validates parameter Discography from query.
+func (o *SearchTorrentsParams) bindDiscography(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchTorrentsParams()
+		return nil
+	}
+
+	value, err := swag.ConvertBool(raw)
+	if err != nil {
+		return errors.InvalidType("discography", "query", "bool", raw)
+	}
+	o.Discography = &value
+
 	return nil
 }
 
