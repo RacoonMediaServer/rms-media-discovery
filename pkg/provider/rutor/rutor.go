@@ -35,6 +35,9 @@ func composeURL(q model.SearchQuery) string {
 			q.Query += fmt.Sprintf(" S%02d", *q.Season)
 		}
 	}
+	if q.Type == media.Music && q.Discography {
+		q.Query += " дискография"
+	}
 
 	u += url.PathEscape(q.Query)
 

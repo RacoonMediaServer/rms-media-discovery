@@ -9,12 +9,14 @@ import (
 )
 
 type parseContext struct {
-	title     string
-	tokens    tokenList
-	remove    []bool
-	info      Info
-	seasons   map[uint]struct{}
-	subtitles map[string]struct{}
+	title      string
+	tokens     tokenList
+	remove     []bool
+	info       Info
+	seasons    map[uint]struct{}
+	subtitles  map[string]struct{}
+	formatType media.ContentType
+	codecType  media.ContentType
 }
 
 var (
@@ -63,6 +65,9 @@ func ParseTitle(title string) Info {
 
 	// mkv, avi, mp4...
 	parseFormat(&ctx)
+
+	// h264, aac...
+	parseCodec(&ctx)
 
 	// пробуем распознать языки субтитров
 	parseSubtitles(&ctx)
@@ -338,12 +343,34 @@ func parseRip(ctx *parseContext) {
 }
 
 func parseFormat(ctx *parseContext) {
-	m := &orMatch{
-		Matches: []match{
-			&wordMatch{"mkv"},
-			&wordMatch{"mp4"},
-			&wordMatch{"avi"},
-		},
+	formats := map[string]media.ContentType{
+		"mkv":  media.Movies,
+		"mp4":  media.Movies,
+		"webm": media.Movies,
+		"avi":  media.Movies,
+		"mpg":  media.Movies,
+		"wmv":  media.Movies,
+		"ogm":  media.Movies,
+		"flv":  media.Movies,
+		"mp3":  media.Music,
+		"m4a":  media.Music,
+		"flac": media.Music,
+		"alac": media.Music,
+		"ogg":  media.Music,
+		"mka":  media.Music,
+		"opus": media.Music,
+	}
+	m := &orMatch{}
+
+	for format, t := range formats {
+		if t == media.Movies {
+			m.Matches = append(m.Matches, &wordMatch{format})
+		}
+	}
+	for format, t := range formats {
+		if t == media.Music {
+			m.Matches = append(m.Matches, &wordMatch{format})
+		}
 	}
 
 	pos := ctx.tokens.Find(m)
@@ -352,11 +379,72 @@ func parseFormat(ctx *parseContext) {
 	}
 	ctx.remove[pos] = true
 	ctx.info.Format = ctx.tokens[pos].Text
+	ctx.formatType = formats[ctx.info.Format]
+}
+
+func parseCodec(ctx *parseContext) {
+	codecs := map[string]media.ContentType{
+		"x264":   media.Movies,
+		"h264":   media.Movies,
+		"264":    media.Movies,
+		"265":    media.Movies,
+		"h265":   media.Movies,
+		"hevc":   media.Movies,
+		"avc":    media.Movies,
+		"av1":    media.Movies,
+		"vc1":    media.Movies,
+		"vp8":    media.Movies,
+		"vp9":    media.Movies,
+		"mpeg":   media.Movies,
+		"mpegts": media.Movies,
+		"mp3":    media.Music,
+		"flac":   media.Music,
+		"alac":   media.Music,
+		"aac":    media.Music,
+		"ac3":    media.Music,
+		"ogg":    media.Music,
+	}
+	m := &orMatch{}
+
+	for format, t := range codecs {
+		if t == media.Movies {
+			m.Matches = append(m.Matches, &wordMatch{format})
+		}
+	}
+	for format, t := range codecs {
+		if t == media.Music {
+			m.Matches = append(m.Matches, &wordMatch{format})
+		}
+	}
+
+	pos := ctx.tokens.Find(m)
+	if pos < 0 {
+		return
+	}
+	ctx.remove[pos] = true
+	ctx.info.Codec = ctx.tokens[pos].Text
+	ctx.codecType = codecs[ctx.info.Format]
 }
 
 func guessType(ctx *parseContext) {
-	if len(ctx.seasons) != 0 || ctx.info.Rip != "" || ctx.info.Quality != media.QualityUnd || ctx.info.Format != "" {
+	if len(ctx.seasons) != 0 || ctx.info.Rip != "" || ctx.info.Quality != media.QualityUnd || ctx.formatType == media.Movies || ctx.codecType == media.Movies {
 		ctx.info.Type = media.Movies
+		return
+	}
+
+	discography := &orMatch{
+		Matches: []match{
+			&wordMatch{"дискография"},
+			&wordMatch{"discography"},
+		},
+	}
+	if ctx.tokens.Find(discography) >= 0 {
+		ctx.info.Type = media.Music
+		return
+	}
+
+	if ctx.formatType == media.Music || ctx.codecType == media.Music {
+		ctx.info.Type = media.Music
 		return
 	}
 }

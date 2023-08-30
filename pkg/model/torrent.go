@@ -26,10 +26,11 @@ func (t Torrent) IsValid() bool {
 }
 
 type SearchQuery struct {
-	Query  string
-	Type   media.ContentType
-	Limit  uint
-	Year   *uint
-	Season *uint
-	Strong bool
+	Query       string
+	Type        media.ContentType
+	Limit       uint
+	Year        *uint
+	Season      *uint
+	Strong      bool
+	Discography bool
 }

@@ -51,6 +51,9 @@ func applySearchHints(q *model.SearchQuery) {
 			q.Query += fmt.Sprintf(" сезон %d", *q.Season)
 		}
 	}
+	if q.Type == media.Music && q.Discography {
+		q.Query += " дискография"
+	}
 }
 
 func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {

@@ -30,6 +30,9 @@ type Info struct {
 	// Format means media container
 	Format string
 
+	// Codec
+	Codec string
+
 	// Voice contains info about voice acting (not parsed totally at all, just caught)
 	Voice string
 

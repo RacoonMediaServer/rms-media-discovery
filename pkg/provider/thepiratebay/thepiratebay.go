@@ -44,6 +44,9 @@ func applySearchHints(q *model.SearchQuery) {
 		}
 		q.Query += " rus" // хотим русскую озвучку
 	}
+	if q.Type == media.Music && q.Discography {
+		q.Query += " discography"
+	}
 }
 func (t *tpbProvider) SearchTorrents(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	applySearchHints(&q)

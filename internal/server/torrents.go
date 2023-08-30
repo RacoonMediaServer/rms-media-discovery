@@ -69,7 +69,8 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 		Strong: strong,
 	}
 
-	if hint == media.Movies {
+	switch hint {
+	case media.Movies:
 		if params.Year != nil {
 			year = uint(*params.Year)
 			q.Year = &year
@@ -79,6 +80,11 @@ func searchQueryFromParams(params *torrents.SearchTorrentsParams) model.SearchQu
 			season = uint(*params.Season)
 			q.Season = &season
 		}
+	case media.Music:
+		if params.Discography != nil {
+			q.Discography = *params.Discography
+		}
+	default:
 	}
 
 	return q
