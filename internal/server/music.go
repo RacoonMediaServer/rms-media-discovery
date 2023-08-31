@@ -12,6 +12,22 @@ func toPointer[T any](s T) *T {
 	return &s
 }
 
+func convertSearchType(val *string) model.MusicSearchType {
+	if val == nil {
+		return model.SearchAny
+	}
+	switch *val {
+	case "artist":
+		return model.SearchArtist
+	case "album":
+		return model.SearchAlbum
+	case "track":
+		return model.SearchTrack
+	default:
+		return model.SearchAny
+	}
+}
+
 func convertSearchMusicResult(m model.Music) *models.SearchMusicResult {
 	result := models.SearchMusicResult{
 		Title: toPointer(m.Title()),
@@ -50,7 +66,8 @@ func (s *Server) searchMusic(params music.SearchMusicParams, key *models.Princip
 	if params.Limit != nil {
 		limit = uint(*params.Limit)
 	}
-	result, err := s.Music.Search(context.WithValue(params.HTTPRequest.Context(), "log", l), params.Q, limit)
+	searchType := convertSearchType(params.Type)
+	result, err := s.Music.Search(context.WithValue(params.HTTPRequest.Context(), "log", l), params.Q, limit, searchType)
 	if err != nil {
 		l.Errorf("Request failed: %s", err)
 		return music.NewSearchMusicInternalServerError()

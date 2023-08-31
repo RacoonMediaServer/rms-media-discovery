@@ -14,19 +14,19 @@ type service struct {
 
 const maxResults = 10
 
-func (s service) Search(ctx context.Context, query string, limit uint) ([]model.Music, error) {
+func (s service) Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error) {
 	if limit > maxResults || limit == 0 {
 		limit = maxResults
 	}
 
-	result, err := s.mainProvider.SearchMusic(ctx, query, limit)
+	result, err := s.mainProvider.SearchMusic(ctx, query, limit, searchType)
 
 	result = utils.Bound(result, limit)
 	return result, err
 }
 
 type Service interface {
-	Search(ctx context.Context, query string, limit uint) ([]model.Music, error)
+	Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error)
 }
 
 func New() Service {

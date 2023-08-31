@@ -17,6 +17,7 @@ import (
 type SearchMusicURL struct {
 	Limit *int64
 	Q     string
+	Type  *string
 
 	_basePath string
 	// avoid unkeyed usage
@@ -60,6 +61,14 @@ func (o *SearchMusicURL) Build() (*url.URL, error) {
 	qQ := o.Q
 	if qQ != "" {
 		qs.Set("q", qQ)
+	}
+
+	var typeVarQ string
+	if o.Type != nil {
+		typeVarQ = *o.Type
+	}
+	if typeVarQ != "" {
+		qs.Set("type", typeVarQ)
 	}
 
 	_result.RawQuery = qs.Encode()

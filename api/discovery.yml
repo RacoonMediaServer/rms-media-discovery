@@ -113,7 +113,16 @@ paths:
           description: Ограничение на кол-во результатов
           type: integer
           minimum: 1
-
+        - name: type
+          in: query
+          type: string
+          required: false
+          default: "any"
+          enum:
+            - any
+            - artist
+            - album
+            - track
       responses:
         '200':
           description: OK

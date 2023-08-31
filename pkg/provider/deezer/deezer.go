@@ -25,31 +25,40 @@ func (d deezerProvider) ID() string {
 	return "deezer"
 }
 
-func (d deezerProvider) SearchMusic(ctx context.Context, query string, limit uint) ([]model.Music, error) {
+func (d deezerProvider) SearchMusic(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error) {
 	l := utils.LogFromContext(ctx, "deezer")
-	artists := getArtistsResponse{}
-	err := d.r.Get(ctx, fmt.Sprintf("%s/search/artist?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &artists)
-	if err != nil {
-		l.Errorf("Search artists failed: %s", err)
-		return nil, err
-	}
-	result := artists.convert()
+	var result []model.Music
+	var err error
 
-	albums := &getAlbumsResponse{}
-	err = d.r.Get(ctx, fmt.Sprintf("%s/search/album?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &albums)
-	if err != nil {
-		l.Errorf("Search albums failed: %s", err)
-		return nil, err
+	if searchType == model.SearchAny || searchType == model.SearchArtist {
+		artists := getArtistsResponse{}
+		err = d.r.Get(ctx, fmt.Sprintf("%s/search/artist?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &artists)
+		if err != nil {
+			l.Errorf("Search artists failed: %s", err)
+			return nil, err
+		}
+		result = append(result, artists.convert()...)
 	}
-	result = append(result, albums.convert()...)
 
-	tracks := &searchTrackResponse{}
-	err = d.r.Get(ctx, fmt.Sprintf("%s/search/track?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &tracks)
-	if err != nil {
-		l.Errorf("Search tracks failed: %s", err)
-		return nil, err
+	if searchType == model.SearchAny || searchType == model.SearchAlbum {
+		albums := &getAlbumsResponse{}
+		err = d.r.Get(ctx, fmt.Sprintf("%s/search/album?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &albums)
+		if err != nil {
+			l.Errorf("Search albums failed: %s", err)
+			return nil, err
+		}
+		result = append(result, albums.convert()...)
 	}
-	result = append(result, tracks.convert()...)
+
+	if searchType == model.SearchAny || searchType == model.SearchTrack {
+		tracks := &searchTrackResponse{}
+		err = d.r.Get(ctx, fmt.Sprintf("%s/search/track?q=%s&limit=%d", deezerEndpoint, url.PathEscape(query), limit), &tracks)
+		if err != nil {
+			l.Errorf("Search tracks failed: %s", err)
+			return nil, err
+		}
+		result = append(result, tracks.convert()...)
+	}
 
 	target := strings.ToLower(query)
 	filtered := make([]model.Music, 0, len(result))

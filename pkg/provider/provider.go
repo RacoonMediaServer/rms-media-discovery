@@ -25,7 +25,7 @@ type TorrentsProvider interface {
 // MusicInfoProvider - интерфейс поиска информации о музыке
 type MusicInfoProvider interface {
 	Provider
-	SearchMusic(ctx context.Context, query string, limit uint) ([]model.Music, error)
+	SearchMusic(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error)
 }
 
 // Captcha настройки капчи для распознования

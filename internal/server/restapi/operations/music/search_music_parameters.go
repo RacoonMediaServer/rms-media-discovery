@@ -17,11 +17,18 @@ import (
 )
 
 // NewSearchMusicParams creates a new SearchMusicParams object
-//
-// There are no default values defined in the spec.
+// with the default values initialized.
 func NewSearchMusicParams() SearchMusicParams {
 
-	return SearchMusicParams{}
+	var (
+		// initialize parameters with default values
+
+		typeVarDefault = string("any")
+	)
+
+	return SearchMusicParams{
+		Type: &typeVarDefault,
+	}
 }
 
 // SearchMusicParams contains all the bound params for the search music operation
@@ -45,6 +52,11 @@ type SearchMusicParams struct {
 	  In: query
 	*/
 	Q string
+	/*
+	  In: query
+	  Default: "any"
+	*/
+	Type *string
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -65,6 +77,11 @@ func (o *SearchMusicParams) BindRequest(r *http.Request, route *middleware.Match
 
 	qQ, qhkQ, _ := qs.GetOK("q")
 	if err := o.bindQ(qQ, qhkQ, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
+	qType, qhkType, _ := qs.GetOK("type")
+	if err := o.bindType(qType, qhkType, route.Formats); err != nil {
 		res = append(res, err)
 	}
 	if len(res) > 0 {
@@ -143,6 +160,39 @@ func (o *SearchMusicParams) validateQ(formats strfmt.Registry) error {
 	}
 
 	if err := validate.MaxLength("q", "query", o.Q, 128); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// bindType binds and validates parameter Type from query.
+func (o *SearchMusicParams) bindType(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: false
+	// AllowEmptyValue: false
+
+	if raw == "" { // empty values pass all other validations
+		// Default values have been previously initialized by NewSearchMusicParams()
+		return nil
+	}
+	o.Type = &raw
+
+	if err := o.validateType(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateType carries on validations for parameter Type
+func (o *SearchMusicParams) validateType(formats strfmt.Registry) error {
+
+	if err := validate.EnumCase("type", "query", *o.Type, []interface{}{"any", "artist", "album", "track"}, true); err != nil {
 		return err
 	}
 

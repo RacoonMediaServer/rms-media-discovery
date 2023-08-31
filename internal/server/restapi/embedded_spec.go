@@ -264,6 +264,18 @@ func init() {
             "description": "Ограничение на кол-во результатов",
             "name": "limit",
             "in": "query"
+          },
+          {
+            "enum": [
+              "any",
+              "artist",
+              "album",
+              "track"
+            ],
+            "type": "string",
+            "default": "any",
+            "name": "type",
+            "in": "query"
           }
         ],
         "responses": {
@@ -892,6 +904,18 @@ func init() {
             "type": "integer",
             "description": "Ограничение на кол-во результатов",
             "name": "limit",
+            "in": "query"
+          },
+          {
+            "enum": [
+              "any",
+              "artist",
+              "album",
+              "track"
+            ],
+            "type": "string",
+            "default": "any",
+            "name": "type",
             "in": "query"
           }
         ],

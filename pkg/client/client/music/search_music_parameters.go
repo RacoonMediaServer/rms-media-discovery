@@ -74,6 +74,11 @@ type SearchMusicParams struct {
 	*/
 	Q string
 
+	// Type.
+	//
+	// Default: "any"
+	Type *string
+
 	timeout    time.Duration
 	Context    context.Context
 	HTTPClient *http.Client
@@ -91,7 +96,18 @@ func (o *SearchMusicParams) WithDefaults() *SearchMusicParams {
 //
 // All values with no default are reset to their zero value.
 func (o *SearchMusicParams) SetDefaults() {
-	// no default values defined for this parameter
+	var (
+		typeVarDefault = string("any")
+	)
+
+	val := SearchMusicParams{
+		Type: &typeVarDefault,
+	}
+
+	val.timeout = o.timeout
+	val.Context = o.Context
+	val.HTTPClient = o.HTTPClient
+	*o = val
 }
 
 // WithTimeout adds the timeout to the search music params
@@ -149,6 +165,17 @@ func (o *SearchMusicParams) SetQ(q string) {
 	o.Q = q
 }
 
+// WithType adds the typeVar to the search music params
+func (o *SearchMusicParams) WithType(typeVar *string) *SearchMusicParams {
+	o.SetType(typeVar)
+	return o
+}
+
+// SetType adds the type to the search music params
+func (o *SearchMusicParams) SetType(typeVar *string) {
+	o.Type = typeVar
+}
+
 // WriteToRequest writes these params to a swagger request
 func (o *SearchMusicParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.Registry) error {
 
@@ -181,6 +208,23 @@ func (o *SearchMusicParams) WriteToRequest(r runtime.ClientRequest, reg strfmt.R
 
 		if err := r.SetQueryParam("q", qQ); err != nil {
 			return err
+		}
+	}
+
+	if o.Type != nil {
+
+		// query param type
+		var qrType string
+
+		if o.Type != nil {
+			qrType = *o.Type
+		}
+		qType := qrType
+		if qType != "" {
+
+			if err := r.SetQueryParam("type", qType); err != nil {
+				return err
+			}
 		}
 	}
 
