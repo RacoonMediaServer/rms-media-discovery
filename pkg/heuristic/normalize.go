@@ -8,3 +8,8 @@ func Normalize(text string) string {
 	result := tokens.String()
 	return strings.ToLower(result)
 }
+
+func NormalizeWithoutBraces(text string) string {
+	tokens := parse(text)
+	return tokens.StringWithoutBraces()
+}

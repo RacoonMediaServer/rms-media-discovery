@@ -102,3 +102,16 @@ func (t tokenList) String() string {
 	}
 	return s
 }
+
+func (t tokenList) StringWithoutBraces() string {
+	s := ""
+	for i := range t {
+		if !t[i].InBraces {
+			s += t[i].Text + " "
+		}
+	}
+	if len(s) != 0 {
+		s = s[:len(s)-1]
+	}
+	return s
+}
