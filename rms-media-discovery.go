@@ -57,12 +57,12 @@ func main() {
 		}),
 	)
 
-	if useDebug {
+	cfg := config.Config()
+
+	if useDebug || cfg.Debug.Verbose {
 		log.SetLevel(log.DebugLevel)
 		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
 	}
-
-	cfg := config.Config()
 
 	database, err := db.Connect(cfg.Database)
 	if err != nil {
@@ -81,12 +81,14 @@ func main() {
 		log.Fatalf("Initialize accounts service failed: %+s", err)
 	}
 
-	go func() {
-		http.Handle("/metrics", promhttp.Handler())
-		if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Monitor.Host, cfg.Monitor.Port), nil); err != nil {
-			log.Fatalf("Cannot bind monitoring endpoint: %s", err)
-		}
-	}()
+	if cfg.Debug.Monitor.Enabled {
+		go func() {
+			http.Handle("/metrics", promhttp.Handler())
+			if err := http.ListenAndServe(fmt.Sprintf("%s:%d", cfg.Debug.Monitor.Host, cfg.Debug.Monitor.Port), nil); err != nil {
+				log.Fatalf("Cannot bind monitoring endpoint: %s", err)
+			}
+		}()
+	}
 
 	if err := srv.ListenAndServer(cfg.Http.Host, cfg.Http.Port); err != nil {
 		log.Fatalf("Cannot start web server: %+s", err)

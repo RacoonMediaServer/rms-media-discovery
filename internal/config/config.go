@@ -6,7 +6,7 @@ import "github.com/RacoonMediaServer/rms-packages/pkg/configuration"
 type Configuration struct {
 	Database configuration.Database
 	Http     configuration.Http
-	Monitor  configuration.Monitor
+	Debug    configuration.Debug
 }
 
 var config Configuration
