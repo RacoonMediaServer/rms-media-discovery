@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-const defaultTimeout float64 = 4000.0 * 10
+const defaultTimeout float64 = 6000.0 * 10
 
 var (
 	initialized bool
