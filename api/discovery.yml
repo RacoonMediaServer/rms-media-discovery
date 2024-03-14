@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.3.0
+  version: 1.3.1
   title: Media Discovery API
   description: API for Racoon Media Server Project
 host: 136.244.108.126
@@ -236,6 +236,131 @@ paths:
         '404':
           description: Неверный хеш ссылки
 
+        '500':
+          description: Ошибка на стороне сервера
+      security:
+        - key: [ ]
+
+  /torrents/search:run:
+    post:
+      tags:
+        - torrents
+      summary: Старт задачи поиска раздач
+      description: LRO поиск раздач на торрент-трекерах
+      operationId: searchTorrentsAsync
+      parameters:
+        - name: searchParameters
+          in: body
+          schema:
+            type: object
+            required:
+              - q
+            properties:
+              q:
+                type: string
+                description: Искомый запрос
+                minLength: 2
+                maxLength: 128
+              type:
+                description: Подсказка, какого типа торренты искать
+                type: string
+                enum:
+                  - movies
+                  - music
+                  - books
+                  - others
+              limit:
+                description: Ограничение на кол-во результатов
+                type: integer
+                minimum: 1
+              year:
+                type: integer
+                minimum: 1900
+                description: Год выхода (для фильмов и сериалов)
+              season:
+                type: integer
+                minimum: 1
+                description: Номер сезона (для сериалов)
+              strong:
+                  type: boolean
+                  default: false
+                  description: Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса
+              discography:
+                  type: boolean
+                  default: false
+                  description: Скачать всю дискогорафию исполнителя (для музыки)
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                description: ID задачи поиска
+              pollIntervalMs:
+                description: Рекомендуемый интервал поллинга
+                type: integer
+        '500':
+          description: Ошибка на стороне сервера
+      security:
+        - key: [ ]
+
+  /torrents/search/{id}:status:
+    get:
+      tags:
+        - torrents
+      summary: Узнать статус задачи поиска
+      description: Запросить статус и результаты задачи поиска
+      operationId: getSearchTorrentsStatus
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum:
+                  - "working"
+                  - "ready"
+                  - "error"
+              results:
+                type: array
+                items:
+                  $ref: "#/definitions/SearchTorrentsResult"
+              error:
+                type: string
+        '404':
+          description: Задача поиска не найдена
+        '500':
+          description: Ошибка на стороне сервера
+      security:
+        - key: [ ]
+
+  /torrent/search/{id}:cancel:
+    post:
+      tags:
+        - torrents
+      summary: Отменить задачу
+      description: Отмена и удаление задачи поиска
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+        '404':
+          description: Задача поиска не найдена
         '500':
           description: Ошибка на стороне сервера
       security:
