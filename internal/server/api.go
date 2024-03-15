@@ -21,6 +21,9 @@ func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.MusicSearchMusicHandler = music.SearchMusicHandlerFunc(s.searchMusic)
 
 	api.TorrentsSearchTorrentsHandler = torrents.SearchTorrentsHandlerFunc(s.searchTorrents)
+	api.TorrentsSearchTorrentsAsyncHandler = torrents.SearchTorrentsAsyncHandlerFunc(s.searchTorrentsAsync)
+	api.TorrentsSearchTorrentsAsyncStatusHandler = torrents.SearchTorrentsAsyncStatusHandlerFunc(s.searchTorrentsAsyncStatus)
+	api.TorrentsSearchTorrentsAsyncCancelHandler = torrents.SearchTorrentsAsyncCancelHandlerFunc(s.searchTorrentsAsyncCancel)
 	api.TorrentsDownloadTorrentHandler = torrents.DownloadTorrentHandlerFunc(s.downloadTorrent)
 
 	api.AccountsGetAccountsHandler = accounts.GetAccountsHandlerFunc(s.getAccounts)

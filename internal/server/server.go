@@ -46,6 +46,7 @@ func (s *Server) ListenAndServer(host string, port int) error {
 		// middleware для для тяжелых запросов
 		api.AddMiddlewareFor("GET", "/movies/search", getSearchMiddleware("movies"))
 		api.AddMiddlewareFor("GET", "/torrents/search", getSearchMiddleware("torrents"))
+		api.AddMiddlewareFor("POST", "/torrents/search:run", getSearchMiddleware("torrents"))
 
 		// устанавливаем свой логгер
 		api.Logger = func(content string, i ...interface{}) {

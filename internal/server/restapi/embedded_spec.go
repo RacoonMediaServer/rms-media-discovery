@@ -314,6 +314,7 @@ func init() {
           "torrents"
         ],
         "summary": "Отменить задачу",
+        "operationId": "searchTorrentsAsyncCancel",
         "parameters": [
           {
             "type": "string",
@@ -484,7 +485,7 @@ func init() {
           "torrents"
         ],
         "summary": "Узнать статус задачи поиска",
-        "operationId": "getSearchTorrentsStatus",
+        "operationId": "searchTorrentsAsyncStatus",
         "parameters": [
           {
             "type": "string",
@@ -1138,6 +1139,7 @@ func init() {
           "torrents"
         ],
         "summary": "Отменить задачу",
+        "operationId": "searchTorrentsAsyncCancel",
         "parameters": [
           {
             "type": "string",
@@ -1308,7 +1310,7 @@ func init() {
           "torrents"
         ],
         "summary": "Узнать статус задачи поиска",
-        "operationId": "getSearchTorrentsStatus",
+        "operationId": "searchTorrentsAsyncStatus",
         "parameters": [
           {
             "type": "string",

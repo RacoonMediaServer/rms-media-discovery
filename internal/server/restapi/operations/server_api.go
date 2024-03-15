@@ -49,9 +49,6 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		BinProducer:  runtime.ByteStreamProducer(),
 		JSONProducer: runtime.JSONProducer(),
 
-		TorrentsPostTorrentSearchIDCancelHandler: torrents.PostTorrentSearchIDCancelHandlerFunc(func(params torrents.PostTorrentSearchIDCancelParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation torrents.PostTorrentSearchIDCancel has not yet been implemented")
-		}),
 		AccountsCreateAccountHandler: accounts.CreateAccountHandlerFunc(func(params accounts.CreateAccountParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation accounts.CreateAccount has not yet been implemented")
 		}),
@@ -67,9 +64,6 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		MoviesGetMovieInfoHandler: movies.GetMovieInfoHandlerFunc(func(params movies.GetMovieInfoParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation movies.GetMovieInfo has not yet been implemented")
 		}),
-		TorrentsGetSearchTorrentsStatusHandler: torrents.GetSearchTorrentsStatusHandlerFunc(func(params torrents.GetSearchTorrentsStatusParams, principal *models.Principal) middleware.Responder {
-			return middleware.NotImplemented("operation torrents.GetSearchTorrentsStatus has not yet been implemented")
-		}),
 		MoviesSearchMoviesHandler: movies.SearchMoviesHandlerFunc(func(params movies.SearchMoviesParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation movies.SearchMovies has not yet been implemented")
 		}),
@@ -81,6 +75,12 @@ func NewServerAPI(spec *loads.Document) *ServerAPI {
 		}),
 		TorrentsSearchTorrentsAsyncHandler: torrents.SearchTorrentsAsyncHandlerFunc(func(params torrents.SearchTorrentsAsyncParams, principal *models.Principal) middleware.Responder {
 			return middleware.NotImplemented("operation torrents.SearchTorrentsAsync has not yet been implemented")
+		}),
+		TorrentsSearchTorrentsAsyncCancelHandler: torrents.SearchTorrentsAsyncCancelHandlerFunc(func(params torrents.SearchTorrentsAsyncCancelParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation torrents.SearchTorrentsAsyncCancel has not yet been implemented")
+		}),
+		TorrentsSearchTorrentsAsyncStatusHandler: torrents.SearchTorrentsAsyncStatusHandlerFunc(func(params torrents.SearchTorrentsAsyncStatusParams, principal *models.Principal) middleware.Responder {
+			return middleware.NotImplemented("operation torrents.SearchTorrentsAsyncStatus has not yet been implemented")
 		}),
 
 		// Applies when the "x-token" header is set
@@ -135,8 +135,6 @@ type ServerAPI struct {
 	// APIAuthorizer provides access control (ACL/RBAC/ABAC) by providing access to the request and authenticated principal
 	APIAuthorizer runtime.Authorizer
 
-	// TorrentsPostTorrentSearchIDCancelHandler sets the operation handler for the post torrent search ID cancel operation
-	TorrentsPostTorrentSearchIDCancelHandler torrents.PostTorrentSearchIDCancelHandler
 	// AccountsCreateAccountHandler sets the operation handler for the create account operation
 	AccountsCreateAccountHandler accounts.CreateAccountHandler
 	// AccountsDeleteAccountHandler sets the operation handler for the delete account operation
@@ -147,8 +145,6 @@ type ServerAPI struct {
 	AccountsGetAccountsHandler accounts.GetAccountsHandler
 	// MoviesGetMovieInfoHandler sets the operation handler for the get movie info operation
 	MoviesGetMovieInfoHandler movies.GetMovieInfoHandler
-	// TorrentsGetSearchTorrentsStatusHandler sets the operation handler for the get search torrents status operation
-	TorrentsGetSearchTorrentsStatusHandler torrents.GetSearchTorrentsStatusHandler
 	// MoviesSearchMoviesHandler sets the operation handler for the search movies operation
 	MoviesSearchMoviesHandler movies.SearchMoviesHandler
 	// MusicSearchMusicHandler sets the operation handler for the search music operation
@@ -157,6 +153,10 @@ type ServerAPI struct {
 	TorrentsSearchTorrentsHandler torrents.SearchTorrentsHandler
 	// TorrentsSearchTorrentsAsyncHandler sets the operation handler for the search torrents async operation
 	TorrentsSearchTorrentsAsyncHandler torrents.SearchTorrentsAsyncHandler
+	// TorrentsSearchTorrentsAsyncCancelHandler sets the operation handler for the search torrents async cancel operation
+	TorrentsSearchTorrentsAsyncCancelHandler torrents.SearchTorrentsAsyncCancelHandler
+	// TorrentsSearchTorrentsAsyncStatusHandler sets the operation handler for the search torrents async status operation
+	TorrentsSearchTorrentsAsyncStatusHandler torrents.SearchTorrentsAsyncStatusHandler
 
 	// ServeError is called when an error is received, there is a default handler
 	// but you can set your own with this
@@ -241,9 +241,6 @@ func (o *ServerAPI) Validate() error {
 		unregistered = append(unregistered, "XTokenAuth")
 	}
 
-	if o.TorrentsPostTorrentSearchIDCancelHandler == nil {
-		unregistered = append(unregistered, "torrents.PostTorrentSearchIDCancelHandler")
-	}
 	if o.AccountsCreateAccountHandler == nil {
 		unregistered = append(unregistered, "accounts.CreateAccountHandler")
 	}
@@ -259,9 +256,6 @@ func (o *ServerAPI) Validate() error {
 	if o.MoviesGetMovieInfoHandler == nil {
 		unregistered = append(unregistered, "movies.GetMovieInfoHandler")
 	}
-	if o.TorrentsGetSearchTorrentsStatusHandler == nil {
-		unregistered = append(unregistered, "torrents.GetSearchTorrentsStatusHandler")
-	}
 	if o.MoviesSearchMoviesHandler == nil {
 		unregistered = append(unregistered, "movies.SearchMoviesHandler")
 	}
@@ -273,6 +267,12 @@ func (o *ServerAPI) Validate() error {
 	}
 	if o.TorrentsSearchTorrentsAsyncHandler == nil {
 		unregistered = append(unregistered, "torrents.SearchTorrentsAsyncHandler")
+	}
+	if o.TorrentsSearchTorrentsAsyncCancelHandler == nil {
+		unregistered = append(unregistered, "torrents.SearchTorrentsAsyncCancelHandler")
+	}
+	if o.TorrentsSearchTorrentsAsyncStatusHandler == nil {
+		unregistered = append(unregistered, "torrents.SearchTorrentsAsyncStatusHandler")
 	}
 
 	if len(unregistered) > 0 {
@@ -378,10 +378,6 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/torrent/search/{id}:cancel"] = torrents.NewPostTorrentSearchIDCancel(o.context, o.TorrentsPostTorrentSearchIDCancelHandler)
-	if o.handlers["POST"] == nil {
-		o.handlers["POST"] = make(map[string]http.Handler)
-	}
 	o.handlers["POST"]["/accounts"] = accounts.NewCreateAccount(o.context, o.AccountsCreateAccountHandler)
 	if o.handlers["DELETE"] == nil {
 		o.handlers["DELETE"] = make(map[string]http.Handler)
@@ -402,10 +398,6 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}
-	o.handlers["GET"]["/torrents/search/{id}:status"] = torrents.NewGetSearchTorrentsStatus(o.context, o.TorrentsGetSearchTorrentsStatusHandler)
-	if o.handlers["GET"] == nil {
-		o.handlers["GET"] = make(map[string]http.Handler)
-	}
 	o.handlers["GET"]["/movies/search"] = movies.NewSearchMovies(o.context, o.MoviesSearchMoviesHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
@@ -419,6 +411,14 @@ func (o *ServerAPI) initHandlerCache() {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
 	o.handlers["POST"]["/torrents/search:run"] = torrents.NewSearchTorrentsAsync(o.context, o.TorrentsSearchTorrentsAsyncHandler)
+	if o.handlers["POST"] == nil {
+		o.handlers["POST"] = make(map[string]http.Handler)
+	}
+	o.handlers["POST"]["/torrent/search/{id}:cancel"] = torrents.NewSearchTorrentsAsyncCancel(o.context, o.TorrentsSearchTorrentsAsyncCancelHandler)
+	if o.handlers["GET"] == nil {
+		o.handlers["GET"] = make(map[string]http.Handler)
+	}
+	o.handlers["GET"]["/torrents/search/{id}:status"] = torrents.NewSearchTorrentsAsyncStatus(o.context, o.TorrentsSearchTorrentsAsyncStatusHandler)
 }
 
 // Serve creates a http handler to serve the API over HTTP

@@ -31,58 +31,17 @@ type ClientOption func(*runtime.ClientOperation)
 
 // ClientService is the interface for Client methods
 type ClientService interface {
-	PostTorrentSearchIDCancel(params *PostTorrentSearchIDCancelParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostTorrentSearchIDCancelOK, error)
-
 	DownloadTorrent(params *DownloadTorrentParams, authInfo runtime.ClientAuthInfoWriter, writer io.Writer, opts ...ClientOption) (*DownloadTorrentOK, error)
-
-	GetSearchTorrentsStatus(params *GetSearchTorrentsStatusParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetSearchTorrentsStatusOK, error)
 
 	SearchTorrents(params *SearchTorrentsParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsOK, error)
 
 	SearchTorrentsAsync(params *SearchTorrentsAsyncParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsAsyncOK, error)
 
+	SearchTorrentsAsyncCancel(params *SearchTorrentsAsyncCancelParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsAsyncCancelOK, error)
+
+	SearchTorrentsAsyncStatus(params *SearchTorrentsAsyncStatusParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsAsyncStatusOK, error)
+
 	SetTransport(transport runtime.ClientTransport)
-}
-
-/*
-PostTorrentSearchIDCancel отменитьs задачу
-
-Отмена и удаление задачи поиска
-*/
-func (a *Client) PostTorrentSearchIDCancel(params *PostTorrentSearchIDCancelParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*PostTorrentSearchIDCancelOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewPostTorrentSearchIDCancelParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "PostTorrentSearchIDCancel",
-		Method:             "POST",
-		PathPattern:        "/torrent/search/{id}:cancel",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &PostTorrentSearchIDCancelReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*PostTorrentSearchIDCancelOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for PostTorrentSearchIDCancel: API contract not enforced by server. Client expected to get an error, but got: %T", result)
-	panic(msg)
 }
 
 /*
@@ -123,47 +82,6 @@ func (a *Client) DownloadTorrent(params *DownloadTorrentParams, authInfo runtime
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for downloadTorrent: API contract not enforced by server. Client expected to get an error, but got: %T", result)
-	panic(msg)
-}
-
-/*
-GetSearchTorrentsStatus узнатьs статус задачи поиска
-
-Запросить статус и результаты задачи поиска
-*/
-func (a *Client) GetSearchTorrentsStatus(params *GetSearchTorrentsStatusParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*GetSearchTorrentsStatusOK, error) {
-	// TODO: Validate the params before sending
-	if params == nil {
-		params = NewGetSearchTorrentsStatusParams()
-	}
-	op := &runtime.ClientOperation{
-		ID:                 "getSearchTorrentsStatus",
-		Method:             "GET",
-		PathPattern:        "/torrents/search/{id}:status",
-		ProducesMediaTypes: []string{"application/json"},
-		ConsumesMediaTypes: []string{"application/json"},
-		Schemes:            []string{"http"},
-		Params:             params,
-		Reader:             &GetSearchTorrentsStatusReader{formats: a.formats},
-		AuthInfo:           authInfo,
-		Context:            params.Context,
-		Client:             params.HTTPClient,
-	}
-	for _, opt := range opts {
-		opt(op)
-	}
-
-	result, err := a.transport.Submit(op)
-	if err != nil {
-		return nil, err
-	}
-	success, ok := result.(*GetSearchTorrentsStatusOK)
-	if ok {
-		return success, nil
-	}
-	// unexpected success response
-	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
-	msg := fmt.Sprintf("unexpected success response for getSearchTorrentsStatus: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 
@@ -246,6 +164,88 @@ func (a *Client) SearchTorrentsAsync(params *SearchTorrentsAsyncParams, authInfo
 	// unexpected success response
 	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
 	msg := fmt.Sprintf("unexpected success response for searchTorrentsAsync: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+SearchTorrentsAsyncCancel отменитьs задачу
+
+Отмена и удаление задачи поиска
+*/
+func (a *Client) SearchTorrentsAsyncCancel(params *SearchTorrentsAsyncCancelParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsAsyncCancelOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewSearchTorrentsAsyncCancelParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "searchTorrentsAsyncCancel",
+		Method:             "POST",
+		PathPattern:        "/torrent/search/{id}:cancel",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &SearchTorrentsAsyncCancelReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*SearchTorrentsAsyncCancelOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for searchTorrentsAsyncCancel: API contract not enforced by server. Client expected to get an error, but got: %T", result)
+	panic(msg)
+}
+
+/*
+SearchTorrentsAsyncStatus узнатьs статус задачи поиска
+
+Запросить статус и результаты задачи поиска
+*/
+func (a *Client) SearchTorrentsAsyncStatus(params *SearchTorrentsAsyncStatusParams, authInfo runtime.ClientAuthInfoWriter, opts ...ClientOption) (*SearchTorrentsAsyncStatusOK, error) {
+	// TODO: Validate the params before sending
+	if params == nil {
+		params = NewSearchTorrentsAsyncStatusParams()
+	}
+	op := &runtime.ClientOperation{
+		ID:                 "searchTorrentsAsyncStatus",
+		Method:             "GET",
+		PathPattern:        "/torrents/search/{id}:status",
+		ProducesMediaTypes: []string{"application/json"},
+		ConsumesMediaTypes: []string{"application/json"},
+		Schemes:            []string{"http"},
+		Params:             params,
+		Reader:             &SearchTorrentsAsyncStatusReader{formats: a.formats},
+		AuthInfo:           authInfo,
+		Context:            params.Context,
+		Client:             params.HTTPClient,
+	}
+	for _, opt := range opts {
+		opt(op)
+	}
+
+	result, err := a.transport.Submit(op)
+	if err != nil {
+		return nil, err
+	}
+	success, ok := result.(*SearchTorrentsAsyncStatusOK)
+	if ok {
+		return success, nil
+	}
+	// unexpected success response
+	// safeguard: normally, absent a default response, unknown success responses return an error above: so this is a codegen issue
+	msg := fmt.Sprintf("unexpected success response for searchTorrentsAsyncStatus: API contract not enforced by server. Client expected to get an error, but got: %T", result)
 	panic(msg)
 }
 

@@ -312,7 +312,7 @@ paths:
         - torrents
       summary: Узнать статус задачи поиска
       description: Запросить статус и результаты задачи поиска
-      operationId: getSearchTorrentsStatus
+      operationId: searchTorrentsAsyncStatus
       parameters:
         - name: id
           in: path
@@ -351,6 +351,7 @@ paths:
         - torrents
       summary: Отменить задачу
       description: Отмена и удаление задачи поиска
+      operationId: searchTorrentsAsyncCancel
       parameters:
         - name: id
           in: path
