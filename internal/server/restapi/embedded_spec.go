@@ -28,7 +28,7 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.3.0"
+    "version": "1.3.1"
   },
   "host": "136.244.108.126",
   "paths": {
@@ -302,6 +302,39 @@ func init() {
         }
       }
     },
+    "/torrent/search/{id}:cancel": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Отмена и удаление задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Отменить задачу",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -429,6 +462,156 @@ func init() {
                   "items": {
                     "$ref": "#/definitions/SearchTorrentsResult"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search/{id}:status": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Запросить статус и результаты задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Узнать статус задачи поиска",
+        "operationId": "getSearchTorrentsStatus",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SearchTorrentsResult"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "working",
+                    "ready",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search:run": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "LRO поиск раздач на торрент-трекерах",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Старт задачи поиска раздач",
+        "operationId": "searchTorrentsAsync",
+        "parameters": [
+          {
+            "name": "searchParameters",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "q"
+              ],
+              "properties": {
+                "discography": {
+                  "description": "Скачать всю дискогорафию исполнителя (для музыки)",
+                  "type": "boolean",
+                  "default": false
+                },
+                "limit": {
+                  "description": "Ограничение на кол-во результатов",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "q": {
+                  "description": "Искомый запрос",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 2
+                },
+                "season": {
+                  "description": "Номер сезона (для сериалов)",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "strong": {
+                  "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
+                  "type": "boolean",
+                  "default": false
+                },
+                "type": {
+                  "description": "Подсказка, какого типа торренты искать",
+                  "type": "string",
+                  "enum": [
+                    "movies",
+                    "music",
+                    "books",
+                    "others"
+                  ]
+                },
+                "year": {
+                  "description": "Год выхода (для фильмов и сериалов)",
+                  "type": "integer",
+                  "minimum": 1900
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "ID задачи поиска",
+                  "type": "string"
+                },
+                "pollIntervalMs": {
+                  "description": "Рекомендуемый интервал поллинга",
+                  "type": "integer"
                 }
               }
             }
@@ -669,7 +852,7 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.3.0"
+    "version": "1.3.1"
   },
   "host": "136.244.108.126",
   "paths": {
@@ -943,6 +1126,39 @@ func init() {
         }
       }
     },
+    "/torrent/search/{id}:cancel": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Отмена и удаление задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Отменить задачу",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -1070,6 +1286,156 @@ func init() {
                   "items": {
                     "$ref": "#/definitions/SearchTorrentsResult"
                   }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search/{id}:status": {
+      "get": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Запросить статус и результаты задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Узнать статус задачи поиска",
+        "operationId": "getSearchTorrentsStatus",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "error": {
+                  "type": "string"
+                },
+                "results": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/SearchTorrentsResult"
+                  }
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "working",
+                    "ready",
+                    "error"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search:run": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "LRO поиск раздач на торрент-трекерах",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Старт задачи поиска раздач",
+        "operationId": "searchTorrentsAsync",
+        "parameters": [
+          {
+            "name": "searchParameters",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "required": [
+                "q"
+              ],
+              "properties": {
+                "discography": {
+                  "description": "Скачать всю дискогорафию исполнителя (для музыки)",
+                  "type": "boolean",
+                  "default": false
+                },
+                "limit": {
+                  "description": "Ограничение на кол-во результатов",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "q": {
+                  "description": "Искомый запрос",
+                  "type": "string",
+                  "maxLength": 128,
+                  "minLength": 2
+                },
+                "season": {
+                  "description": "Номер сезона (для сериалов)",
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "strong": {
+                  "description": "Строго отсеивать раздачи, эвристически определенное имя которых не соответствует строчке запроса",
+                  "type": "boolean",
+                  "default": false
+                },
+                "type": {
+                  "description": "Подсказка, какого типа торренты искать",
+                  "type": "string",
+                  "enum": [
+                    "movies",
+                    "music",
+                    "books",
+                    "others"
+                  ]
+                },
+                "year": {
+                  "description": "Год выхода (для фильмов и сериалов)",
+                  "type": "integer",
+                  "minimum": 1900
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "description": "ID задачи поиска",
+                  "type": "string"
+                },
+                "pollIntervalMs": {
+                  "description": "Рекомендуемый интервал поллинга",
+                  "type": "integer"
                 }
               }
             }
