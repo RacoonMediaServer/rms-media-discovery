@@ -6,7 +6,6 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"sync"
 
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
 	"github.com/apex/log"
 )
 
@@ -23,14 +22,14 @@ type Service interface {
 }
 
 type service struct {
-	db  db.AccountDatabase
+	db  AccountDatabase
 	log *log.Entry
 
 	mu    sync.Mutex
 	repos map[string]*repository
 }
 
-func New(db db.AccountDatabase) Service {
+func New(db AccountDatabase) Service {
 	return &service{
 		db:  db,
 		log: log.WithField("from", "accounts"),

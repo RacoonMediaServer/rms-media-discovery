@@ -7,15 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type Database interface {
-	AccountDatabase
-}
-
-type database struct {
+type Database struct {
 	conn *gorm.DB
 }
 
-func Connect(config configuration.Database) (Database, error) {
+func Connect(config configuration.Database) (*Database, error) {
 	db, err := gorm.Open(postgres.Open(config.GetConnectionString()))
 	if err != nil {
 		return nil, err
@@ -25,5 +21,5 @@ func Connect(config configuration.Database) (Database, error) {
 		return nil, err
 	}
 
-	return &database{conn: db}, nil
+	return &Database{conn: db}, nil
 }
