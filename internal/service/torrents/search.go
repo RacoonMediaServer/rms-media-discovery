@@ -10,7 +10,7 @@ import (
 
 const maxResultsLimit uint = 40
 
-func (s *service) Search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
+func (s *Service) Search(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error) {
 	if q.Limit == 0 || q.Limit > maxResultsLimit {
 		q.Limit = maxResultsLimit
 	}
@@ -37,7 +37,7 @@ func (s *service) Search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 	return found, nil
 }
 
-func (s *service) SearchAsync(query model.SearchQuery) (taskID string, err error) {
+func (s *Service) SearchAsync(query model.SearchQuery) (taskID string, err error) {
 	taskID, err = s.gen.Generate()
 	if err != nil {
 		return
@@ -61,7 +61,7 @@ func (s *service) SearchAsync(query model.SearchQuery) (taskID string, err error
 	return
 }
 
-func (s *service) findTask(id string) (*searchTask, error) {
+func (s *Service) findTask(id string) (*searchTask, error) {
 	t, ok := s.tasks.Load(id)
 	if !ok {
 		return &searchTask{}, ErrTaskNotFound
@@ -72,7 +72,7 @@ func (s *service) findTask(id string) (*searchTask, error) {
 	}
 	return task, nil
 }
-func (s *service) Cancel(taskID string) error {
+func (s *Service) Cancel(taskID string) error {
 	task, err := s.findTask(taskID)
 	if err != nil {
 		return err
@@ -83,7 +83,7 @@ func (s *service) Cancel(taskID string) error {
 	return nil
 }
 
-func (s *service) Status(taskID string) (TaskStatus, error) {
+func (s *Service) Status(taskID string) (TaskStatus, error) {
 	task, err := s.findTask(taskID)
 	if err != nil {
 		return TaskStatus{}, err
@@ -95,7 +95,7 @@ func (s *service) Status(taskID string) (TaskStatus, error) {
 	return st, nil
 }
 
-func (s *service) cleanExpiredTask() {
+func (s *Service) cleanExpiredTask() {
 	now := time.Now()
 
 	tmp := map[any]struct{}{}

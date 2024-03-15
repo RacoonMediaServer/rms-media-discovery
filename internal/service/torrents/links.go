@@ -12,7 +12,7 @@ type downloadLink struct {
 
 const linkExpiredTime = 10 * time.Minute
 
-func (s *service) processTorrentLink(t *model.Torrent) {
+func (s *Service) processTorrentLink(t *model.Torrent) {
 	id, err := s.gen.Generate()
 	if err != nil {
 		s.log.Errorf("Generate unique id failed: %s", err)
@@ -28,7 +28,7 @@ func (s *service) processTorrentLink(t *model.Torrent) {
 	linksRegisteredLinksGauge.Inc()
 }
 
-func (s *service) cleanExpiredLinks() {
+func (s *Service) cleanExpiredLinks() {
 	now := time.Now()
 
 	tmp := map[any]struct{}{}

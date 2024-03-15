@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
@@ -18,4 +19,12 @@ type MoviesService interface {
 
 type MusicService interface {
 	Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error)
+}
+
+type TorrentService interface {
+	Search(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
+	SearchAsync(query model.SearchQuery) (taskID string, err error)
+	Status(taskID string) (torrents.TaskStatus, error)
+	Cancel(taskID string) error
+	Download(ctx context.Context, link string) ([]byte, error)
 }

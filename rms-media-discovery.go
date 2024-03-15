@@ -79,11 +79,12 @@ func main() {
 	if cfg.DisableAccessControl {
 		usersService = mocks.NewMockUsersAllAllowed()
 	}
+	torrentService := torrents.New(accountsService)
 
 	srv := server.Server{
 		Movies:   movies.New(accountsService),
 		Music:    music.New(),
-		Torrents: torrents.New(accountsService),
+		Torrents: torrentService,
 		Users:    usersService,
 		Accounts: accountsService,
 	}
@@ -102,5 +103,5 @@ func main() {
 	}
 
 	pipeline.Stop()
-	srv.Torrents.Stop()
+	torrentService.Stop()
 }

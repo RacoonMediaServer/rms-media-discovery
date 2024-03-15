@@ -4,7 +4,7 @@ import "time"
 
 const gcInterval = 10 * time.Second
 
-func (s *service) gcResourcesProcess() {
+func (s *Service) gcResourcesProcess() {
 	for {
 		select {
 		case <-time.After(gcInterval):

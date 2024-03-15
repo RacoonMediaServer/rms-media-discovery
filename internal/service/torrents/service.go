@@ -26,16 +26,7 @@ type TaskStatus struct {
 	Err         error
 }
 
-type Service interface {
-	Search(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error)
-	SearchAsync(query model.SearchQuery) (taskID string, err error)
-	Status(taskID string) (TaskStatus, error)
-	Cancel(taskID string) error
-	Download(ctx context.Context, link string) ([]byte, error)
-	Stop()
-}
-
-type service struct {
+type Service struct {
 	provider provider.TorrentsProvider
 	log      *log.Entry
 	gen      *shortid.Shortid
@@ -47,8 +38,8 @@ type service struct {
 	wg     sync.WaitGroup
 }
 
-func New(access model.AccessProvider) Service {
-	s := service{
+func New(access model.AccessProvider) *Service {
+	s := Service{
 		provider: aggregator.NewTorrentProvider(aggregator.PriorityPolicy, []provider.TorrentsProvider{
 			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
 			rutor.NewProvider(),
@@ -69,7 +60,7 @@ func New(access model.AccessProvider) Service {
 	return &s
 }
 
-func (s *service) Stop() {
+func (s *Service) Stop() {
 	s.cancel()
 	s.wg.Wait()
 }

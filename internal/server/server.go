@@ -7,7 +7,6 @@ import (
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"github.com/apex/log"
 	"github.com/go-openapi/loads"
 )
@@ -18,7 +17,7 @@ type Server struct {
 
 	Movies   MoviesService
 	Music    MusicService
-	Torrents torrents.Service
+	Torrents TorrentService
 	Users    rms_users.RmsUsersService
 	Accounts AccountsService
 }

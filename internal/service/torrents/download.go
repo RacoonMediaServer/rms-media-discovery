@@ -5,7 +5,7 @@ import (
 	"errors"
 )
 
-func (s *service) Download(ctx context.Context, link string) ([]byte, error) {
+func (s *Service) Download(ctx context.Context, link string) ([]byte, error) {
 	val, ok := s.links.Load(link)
 	if !ok {
 		return nil, ErrExpiredDownloadLink
