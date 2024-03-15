@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  version: 1.3.1
+  version: 1.3.2
   title: Media Discovery API
   description: API for Racoon Media Server Project
 host: 136.244.108.126
