@@ -15,3 +15,7 @@ type MoviesService interface {
 	Search(ctx context.Context, query string, limit uint) ([]model.Movie, error)
 	Get(ctx context.Context, id string) (*model.Movie, error)
 }
+
+type MusicService interface {
+	Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error)
+}

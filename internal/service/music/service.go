@@ -8,13 +8,13 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/deezer"
 )
 
-type service struct {
+type Service struct {
 	mainProvider provider.MusicInfoProvider
 }
 
 const maxResults = 10
 
-func (s service) Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error) {
+func (s Service) Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error) {
 	if limit > maxResults || limit == 0 {
 		limit = maxResults
 	}
@@ -25,12 +25,8 @@ func (s service) Search(ctx context.Context, query string, limit uint, searchTyp
 	return result, err
 }
 
-type Service interface {
-	Search(ctx context.Context, query string, limit uint, searchType model.MusicSearchType) ([]model.Music, error)
-}
-
-func New() Service {
-	return &service{
+func New() *Service {
+	return &Service{
 		mainProvider: deezer.NewProvider(),
 	}
 }
