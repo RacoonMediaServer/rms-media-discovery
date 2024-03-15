@@ -8,7 +8,7 @@ import (
 
 const maxResults uint = 10
 
-func (s *service) Search(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
+func (s *Service) Search(ctx context.Context, query string, limit uint) ([]model.Movie, error) {
 	if limit == 0 || limit > maxResults {
 		limit = maxResults
 	}
