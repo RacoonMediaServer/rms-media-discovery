@@ -6,8 +6,6 @@ import (
 )
 
 func (s *service) Download(ctx context.Context, link string) ([]byte, error) {
-	s.cleanExpiredLinks()
-
 	val, ok := s.links.Load(link)
 	if !ok {
 		return nil, ErrExpiredDownloadLink

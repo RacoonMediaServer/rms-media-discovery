@@ -99,4 +99,5 @@ func main() {
 	}
 
 	pipeline.Stop()
+	srv.Torrents.Stop()
 }

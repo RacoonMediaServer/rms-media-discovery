@@ -32,6 +32,7 @@ type Service interface {
 	Status(taskID string) (TaskStatus, error)
 	Cancel(taskID string) error
 	Download(ctx context.Context, link string) ([]byte, error)
+	Stop()
 }
 
 type service struct {
@@ -59,5 +60,16 @@ func New(access model.AccessProvider) Service {
 
 	s.ctx, s.cancel = context.WithCancel(context.Background())
 
+	s.wg.Add(1)
+	go func() {
+		defer s.wg.Done()
+		s.gcResourcesProcess()
+	}()
+
 	return &s
+}
+
+func (s *service) Stop() {
+	s.cancel()
+	s.wg.Wait()
 }

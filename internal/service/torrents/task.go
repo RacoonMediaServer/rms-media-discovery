@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"sync"
+	"time"
 )
+
+const searchTaskTTL = 5 * time.Minute
 
 type searchFunc func(ctx context.Context, q model.SearchQuery) ([]model.Torrent, error)
 
@@ -13,10 +16,11 @@ type searchTask struct {
 	q model.SearchQuery
 	f searchFunc
 
-	ctx    context.Context
-	cancel context.CancelFunc
-	mu     sync.Mutex
-	state  TaskStatus
+	startTime time.Time
+	ctx       context.Context
+	cancel    context.CancelFunc
+	mu        sync.Mutex
+	state     TaskStatus
 }
 
 func (t *searchTask) run() {
@@ -50,4 +54,8 @@ func (t *searchTask) status() TaskStatus {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	return t.state
+}
+
+func (t *searchTask) isExpired(now time.Time) bool {
+	return now.Sub(t.startTime) >= searchTaskTTL
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/heuristic"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"time"
 )
 
 const maxResultsLimit uint = 40
@@ -13,9 +14,6 @@ func (s *service) Search(ctx context.Context, q model.SearchQuery) ([]model.Torr
 	if q.Limit == 0 || q.Limit > maxResultsLimit {
 		q.Limit = maxResultsLimit
 	}
-
-	// чистим протухшие ссылки
-	s.cleanExpiredLinks()
 
 	found, err := s.provider.SearchTorrents(ctx, q)
 	if err != nil {
@@ -46,8 +44,9 @@ func (s *service) SearchAsync(query model.SearchQuery) (taskID string, err error
 	}
 
 	task := &searchTask{
-		q: query,
-		f: s.Search,
+		q:         query,
+		f:         s.Search,
+		startTime: time.Now(),
 	}
 	task.ctx, task.cancel = context.WithCancel(s.ctx)
 	task.state.ContentType = query.Type
@@ -89,5 +88,26 @@ func (s *service) Status(taskID string) (TaskStatus, error) {
 	if err != nil {
 		return TaskStatus{}, err
 	}
-	return task.status(), nil
+	st := task.status()
+	if st.Status != model.Working {
+		s.tasks.Delete(taskID)
+	}
+	return st, nil
+}
+
+func (s *service) cleanExpiredTask() {
+	now := time.Now()
+
+	tmp := map[any]struct{}{}
+	s.tasks.Range(func(key, value any) bool {
+		task, ok := value.(*searchTask)
+		if ok && task.isExpired(now) {
+			tmp[key] = struct{}{}
+		}
+		return true
+	})
+	for k, _ := range tmp {
+		s.log.Debugf("Task '%s' is expired", k.(string))
+		s.tasks.Delete(k)
+	}
 }
