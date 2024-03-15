@@ -208,9 +208,11 @@ func (s *Server) searchTorrentsAsyncStatus(params torrents.SearchTorrentsAsyncSt
 		Results: make([]*models.SearchTorrentsResult, 0, len(status.Results)),
 		Status:  &statusString,
 	}
-	if status.Err == nil && status.Status == model.Ready {
-		for i := range status.Results {
-			payload.Results = append(payload.Results, convertTorrent(&status.Results[i], status.ContentType))
+	if status.Err == nil {
+		if status.Status == model.Ready {
+			for i := range status.Results {
+				payload.Results = append(payload.Results, convertTorrent(&status.Results[i], status.ContentType))
+			}
 		}
 	} else {
 		payload.Error = status.Err.Error()
