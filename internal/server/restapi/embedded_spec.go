@@ -302,40 +302,6 @@ func init() {
         }
       }
     },
-    "/torrent/search/{id}:cancel": {
-      "post": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "description": "Отмена и удаление задачи поиска",
-        "tags": [
-          "torrents"
-        ],
-        "summary": "Отменить задачу",
-        "operationId": "searchTorrentsAsyncCancel",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Задача поиска не найдена"
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -466,6 +432,40 @@ func init() {
                 }
               }
             }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search/{id}:cancel": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Отмена и удаление задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Отменить задачу",
+        "operationId": "searchTorrentsAsyncCancel",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
           },
           "500": {
             "description": "Ошибка на стороне сервера"
@@ -1127,40 +1127,6 @@ func init() {
         }
       }
     },
-    "/torrent/search/{id}:cancel": {
-      "post": {
-        "security": [
-          {
-            "key": []
-          }
-        ],
-        "description": "Отмена и удаление задачи поиска",
-        "tags": [
-          "torrents"
-        ],
-        "summary": "Отменить задачу",
-        "operationId": "searchTorrentsAsyncCancel",
-        "parameters": [
-          {
-            "type": "string",
-            "name": "id",
-            "in": "path",
-            "required": true
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Задача поиска не найдена"
-          },
-          "500": {
-            "description": "Ошибка на стороне сервера"
-          }
-        }
-      }
-    },
     "/torrents/download": {
       "get": {
         "security": [
@@ -1291,6 +1257,40 @@ func init() {
                 }
               }
             }
+          },
+          "500": {
+            "description": "Ошибка на стороне сервера"
+          }
+        }
+      }
+    },
+    "/torrents/search/{id}:cancel": {
+      "post": {
+        "security": [
+          {
+            "key": []
+          }
+        ],
+        "description": "Отмена и удаление задачи поиска",
+        "tags": [
+          "torrents"
+        ],
+        "summary": "Отменить задачу",
+        "operationId": "searchTorrentsAsyncCancel",
+        "parameters": [
+          {
+            "type": "string",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Задача поиска не найдена"
           },
           "500": {
             "description": "Ошибка на стороне сервера"

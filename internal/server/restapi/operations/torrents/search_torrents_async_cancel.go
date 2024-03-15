@@ -32,7 +32,7 @@ func NewSearchTorrentsAsyncCancel(ctx *middleware.Context, handler SearchTorrent
 }
 
 /*
-	SearchTorrentsAsyncCancel swagger:route POST /torrent/search/{id}:cancel torrents searchTorrentsAsyncCancel
+	SearchTorrentsAsyncCancel swagger:route POST /torrents/search/{id}:cancel torrents searchTorrentsAsyncCancel
 
 # Отменить задачу
 

@@ -345,7 +345,7 @@ paths:
       security:
         - key: [ ]
 
-  /torrent/search/{id}:cancel:
+  /torrents/search/{id}:cancel:
     post:
       tags:
         - torrents

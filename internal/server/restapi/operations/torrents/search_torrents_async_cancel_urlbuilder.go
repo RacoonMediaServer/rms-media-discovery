@@ -40,7 +40,7 @@ func (o *SearchTorrentsAsyncCancelURL) SetBasePath(bp string) {
 func (o *SearchTorrentsAsyncCancelURL) Build() (*url.URL, error) {
 	var _result url.URL
 
-	var _path = "/torrent/search/{id}:cancel"
+	var _path = "/torrents/search/{id}:cancel"
 
 	id := o.ID
 	if id != "" {

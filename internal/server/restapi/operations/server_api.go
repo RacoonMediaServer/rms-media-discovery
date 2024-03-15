@@ -414,7 +414,7 @@ func (o *ServerAPI) initHandlerCache() {
 	if o.handlers["POST"] == nil {
 		o.handlers["POST"] = make(map[string]http.Handler)
 	}
-	o.handlers["POST"]["/torrent/search/{id}:cancel"] = torrents.NewSearchTorrentsAsyncCancel(o.context, o.TorrentsSearchTorrentsAsyncCancelHandler)
+	o.handlers["POST"]["/torrents/search/{id}:cancel"] = torrents.NewSearchTorrentsAsyncCancel(o.context, o.TorrentsSearchTorrentsAsyncCancelHandler)
 	if o.handlers["GET"] == nil {
 		o.handlers["GET"] = make(map[string]http.Handler)
 	}

@@ -39,7 +39,7 @@ func (o *SearchTorrentsAsyncCancelReader) ReadResponse(response runtime.ClientRe
 		}
 		return nil, result
 	default:
-		return nil, runtime.NewAPIError("[POST /torrent/search/{id}:cancel] searchTorrentsAsyncCancel", response, response.Code())
+		return nil, runtime.NewAPIError("[POST /torrents/search/{id}:cancel] searchTorrentsAsyncCancel", response, response.Code())
 	}
 }
 
@@ -87,11 +87,11 @@ func (o *SearchTorrentsAsyncCancelOK) Code() int {
 }
 
 func (o *SearchTorrentsAsyncCancelOK) Error() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelOK ", 200)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelOK ", 200)
 }
 
 func (o *SearchTorrentsAsyncCancelOK) String() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelOK ", 200)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelOK ", 200)
 }
 
 func (o *SearchTorrentsAsyncCancelOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -143,11 +143,11 @@ func (o *SearchTorrentsAsyncCancelNotFound) Code() int {
 }
 
 func (o *SearchTorrentsAsyncCancelNotFound) Error() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelNotFound ", 404)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelNotFound ", 404)
 }
 
 func (o *SearchTorrentsAsyncCancelNotFound) String() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelNotFound ", 404)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelNotFound ", 404)
 }
 
 func (o *SearchTorrentsAsyncCancelNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -199,11 +199,11 @@ func (o *SearchTorrentsAsyncCancelInternalServerError) Code() int {
 }
 
 func (o *SearchTorrentsAsyncCancelInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelInternalServerError ", 500)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelInternalServerError ", 500)
 }
 
 func (o *SearchTorrentsAsyncCancelInternalServerError) String() string {
-	return fmt.Sprintf("[POST /torrent/search/{id}:cancel][%d] searchTorrentsAsyncCancelInternalServerError ", 500)
+	return fmt.Sprintf("[POST /torrents/search/{id}:cancel][%d] searchTorrentsAsyncCancelInternalServerError ", 500)
 }
 
 func (o *SearchTorrentsAsyncCancelInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

@@ -180,7 +180,7 @@ func (a *Client) SearchTorrentsAsyncCancel(params *SearchTorrentsAsyncCancelPara
 	op := &runtime.ClientOperation{
 		ID:                 "searchTorrentsAsyncCancel",
 		Method:             "POST",
-		PathPattern:        "/torrent/search/{id}:cancel",
+		PathPattern:        "/torrents/search/{id}:cancel",
 		ProducesMediaTypes: []string{"application/json"},
 		ConsumesMediaTypes: []string{"application/json"},
 		Schemes:            []string{"http"},
