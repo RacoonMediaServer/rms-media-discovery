@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/mocks"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/music"
 	"net/http"
 
@@ -72,6 +73,9 @@ func main() {
 
 	srv := server.Server{}
 	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
+	if cfg.DisableAccessControl {
+		srv.Users = mocks.NewMockUsersAllAllowed()
+	}
 	srv.Accounts = accounts.New(database)
 	srv.Movies = movies.New(srv.Accounts)
 	srv.Music = music.New()

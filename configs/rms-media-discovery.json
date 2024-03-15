@@ -17,5 +17,6 @@
       "host": "localhost",
       "port": 2112
     }
-  }
+  },
+  "disableAccessControl": false
 }

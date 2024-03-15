@@ -4,9 +4,10 @@ import "github.com/RacoonMediaServer/rms-packages/pkg/configuration"
 
 // Configuration represents entire service configuration
 type Configuration struct {
-	Database configuration.Database
-	Http     configuration.Http
-	Debug    configuration.Debug
+	Database             configuration.Database
+	Http                 configuration.Http
+	Debug                configuration.Debug
+	DisableAccessControl bool
 }
 
 var config Configuration
