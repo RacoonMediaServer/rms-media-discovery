@@ -3,7 +3,6 @@ package accounts
 import (
 	"errors"
 	"fmt"
-	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"sync"
 
 	"github.com/apex/log"
@@ -11,17 +10,7 @@ import (
 
 var ErrNotFound = errors.New("account not found")
 
-type Service interface {
-	model.AccessProvider
-
-	Initialize() error
-
-	GetAccounts() ([]model.Account, error)
-	CreateAccount(account model.Account) error
-	DeleteAccount(id string) error
-}
-
-type service struct {
+type Service struct {
 	db  AccountDatabase
 	log *log.Entry
 
@@ -29,14 +18,14 @@ type service struct {
 	repos map[string]*repository
 }
 
-func New(db AccountDatabase) Service {
-	return &service{
+func New(db AccountDatabase) *Service {
+	return &Service{
 		db:  db,
 		log: log.WithField("from", "accounts"),
 	}
 }
 
-func (s *service) Initialize() error {
+func (s *Service) Initialize() error {
 	registered, err := s.db.LoadAccounts()
 	if err != nil {
 		return fmt.Errorf("load accounts from database failed: %w", err)
@@ -55,7 +44,7 @@ func (s *service) Initialize() error {
 	return nil
 }
 
-func (s *service) getOrCreateRepo(serviceId string) *repository {
+func (s *Service) getOrCreateRepo(serviceId string) *repository {
 	repo, ok := s.repos[serviceId]
 	if !ok {
 		repo = newRepository(s.log.WithField("service", serviceId))

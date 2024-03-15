@@ -25,7 +25,7 @@ var myapi1 = model.Account{
 	Password: "pwd",
 }
 
-func checkInitialAccounts(t *testing.T, s Service) {
+func checkInitialAccounts(t *testing.T, s *Service) {
 	cred, err := s.GetCredentials("myapi")
 	assert.NoError(t, err)
 	assert.Equal(t, model.Credentials{
@@ -49,7 +49,7 @@ func checkInitialAccounts(t *testing.T, s Service) {
 	}, key)
 }
 
-func newTestService(t *testing.T, m *mocks.MockAccountDatabase) Service {
+func newTestService(t *testing.T, m *mocks.MockAccountDatabase) *Service {
 	s := New(m)
 
 	accounts := []model.Account{

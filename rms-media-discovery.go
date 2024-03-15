@@ -71,18 +71,21 @@ func main() {
 	}
 	log.Info("Connected to database")
 
-	srv := server.Server{}
-	srv.Users = servicemgr.NewServiceFactory(service).NewUsers()
-	if cfg.DisableAccessControl {
-		srv.Users = mocks.NewMockUsersAllAllowed()
+	accountsService := accounts.New(database)
+	if err = accountsService.Initialize(); err != nil {
+		log.Fatalf("Initialize accounts service failed: %s", err)
 	}
-	srv.Accounts = accounts.New(database)
-	srv.Movies = movies.New(srv.Accounts)
-	srv.Music = music.New()
-	srv.Torrents = torrents.New(srv.Accounts)
+	usersService := servicemgr.NewServiceFactory(service).NewUsers()
+	if cfg.DisableAccessControl {
+		usersService = mocks.NewMockUsersAllAllowed()
+	}
 
-	if err := srv.Accounts.Initialize(); err != nil {
-		log.Fatalf("Initialize accounts service failed: %+s", err)
+	srv := server.Server{
+		Movies:   movies.New(accountsService),
+		Music:    music.New(),
+		Torrents: torrents.New(accountsService),
+		Users:    usersService,
+		Accounts: accountsService,
 	}
 
 	if cfg.Debug.Monitor.Enabled {

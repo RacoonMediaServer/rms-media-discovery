@@ -4,7 +4,7 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
-func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {
+func (s *Service) GetCredentials(serviceId string) (model.Credentials, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -33,7 +33,7 @@ func (s *service) GetCredentials(serviceId string) (model.Credentials, error) {
 	}, nil
 }
 
-func (s *service) GetApiKey(serviceId string) (model.ApiKey, error) {
+func (s *Service) GetApiKey(serviceId string) (model.ApiKey, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -57,7 +57,7 @@ func (s *service) GetApiKey(serviceId string) (model.ApiKey, error) {
 	}, nil
 }
 
-func (s *service) MarkUnaccesible(accountId string) {
+func (s *Service) MarkUnaccesible(accountId string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

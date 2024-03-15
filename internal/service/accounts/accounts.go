@@ -6,7 +6,7 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
-func (s *service) GetAccounts() (result []model.Account, err error) {
+func (s *Service) GetAccounts() (result []model.Account, err error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -21,7 +21,7 @@ func (s *service) GetAccounts() (result []model.Account, err error) {
 	return
 }
 
-func (s *service) CreateAccount(account model.Account) error {
+func (s *Service) CreateAccount(account model.Account) error {
 	if !account.IsValid() {
 		return errors.New("invalid account ID")
 	}
@@ -39,7 +39,7 @@ func (s *service) CreateAccount(account model.Account) error {
 	return nil
 }
 
-func (s *service) DeleteAccount(id string) error {
+func (s *Service) DeleteAccount(id string) error {
 	if err := s.db.DeleteAccount(id); err != nil {
 		return fmt.Errorf("delete account from database failed: %+w", err)
 	}

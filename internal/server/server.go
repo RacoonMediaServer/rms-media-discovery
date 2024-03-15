@@ -8,7 +8,6 @@ import (
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
 	"github.com/apex/log"
@@ -23,7 +22,7 @@ type Server struct {
 	Music    music.Service
 	Torrents torrents.Service
 	Users    rms_users.RmsUsersService
-	Accounts accounts.Service
+	Accounts AccountsService
 }
 
 type monitor struct {
