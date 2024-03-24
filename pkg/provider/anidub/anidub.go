@@ -41,6 +41,16 @@ func composeSearchParams(query model.SearchQuery) url.Values {
 	}
 }
 
+func isMustSkip(q model.SearchQuery, info *animeInfo) bool {
+	if q.Year != nil && *q.Year != info.Year {
+		return true
+	}
+	if q.Season != nil && *q.Season != 1 {
+		return true
+	}
+	return false
+}
+
 func (a *anidubProvider) SearchTorrents(ctx context.Context, query model.SearchQuery) ([]model.Torrent, error) {
 	if query.Type != media.Movies && query.Type != media.Other {
 		return []model.Torrent{}, nil
@@ -56,19 +66,21 @@ func (a *anidubProvider) SearchTorrents(ctx context.Context, query model.SearchQ
 
 	var results []model.Torrent
 	for _, link := range links {
-		t := &model.Torrent{}
+		t := model.Torrent{}
+		info := animeInfo{}
 		err = s.
-			Select(`#news-title`, titleParser(t)).
-			Select(`.torrent_h > a:nth-child(1)`, linkParser(t)).
-			Select(`div.list:nth-child(2)`, metricsParser(t)).
+			Select(`#news-title`, titleParser(&t)).
+			Select(`.torrent_h > a:nth-child(1)`, linkParser(&t)).
+			Select(`div.list:nth-child(2)`, metricsParser(&t)).
+			Select(`.xfinfodata`, infoParser(&info)).
 			Get(link)
 		if err != nil {
 			a.l.Errorf("Extract torrent info failed (%s): %s", link, err)
 			continue
 		}
-		if t.IsValid() {
+		if t.IsValid() && !isMustSkip(query, &info) {
 			t.Downloader = a.newDownloadLink("https://tr.anidub.com" + t.Link)
-			results = append(results, *t)
+			results = append(results, t)
 		}
 	}
 	return results, err

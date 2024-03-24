@@ -9,6 +9,11 @@ import (
 )
 
 var extractSizeExpr = regexp.MustCompile(`(\d+(.\d+)?).(MB|GB)`)
+var yearRegex = regexp.MustCompile(`Год: (\d\d\d\d)`)
+
+type animeInfo struct {
+	Year uint
+}
 
 func parseTorrentSize(text string) uint64 {
 	matches := extractSizeExpr.FindStringSubmatch(text)
@@ -54,5 +59,16 @@ func metricsParser(t *model.Torrent) scraper.HTMLCallback {
 		if err == nil {
 			t.Seeders = (uint(seeders) + 1) * seedFactor
 		}
+	}
+}
+
+func infoParser(info *animeInfo) scraper.HTMLCallback {
+	return func(e *colly.HTMLElement, userData interface{}) {
+		matches := yearRegex.FindStringSubmatch(e.Text)
+		if len(matches) == 0 {
+			return
+		}
+		year, _ := strconv.ParseUint(matches[1], 10, 32)
+		info.Year = uint(year)
 	}
 }
