@@ -40,51 +40,57 @@ func ParseTitle(title string) Info {
 	}
 
 	// парсим случаи, когда в тексте есть 'S01' или 'S01' 'S02' или 'S01-12'
-	parseSeasonCode(&ctx)
+	ctx.parseSeasonCode()
 
 	// парсим случай перечисления сезонов (сезоны 1-3)
-	if !parseSeasons(&ctx) {
+	if !ctx.parseSeasons() {
 		// парсим случаи, когда сезон указан отдельно (сезон 1, 1 сезон, season 1, 1-5 сезон etc)
-		parseSeason(&ctx)
+		ctx.parseSeason()
 
 		// случай, когда пишут 2 сезона, 5 сезонов
-		parseShortSeason(&ctx)
+		ctx.parseShortSeason()
+
+		// случай, когда просто указано количество серий вида [12 из 12]
+		ctx.parseEpisodeRange()
+
+		// случай, когда из названия можно угадать, что это сериал
+		ctx.parseSeriesHint()
 	}
 
 	// вытаскиваем год (если диапазон, то только первую часть)
-	parseYear(&ctx)
+	ctx.parseYear()
 
 	// 480p, 720p, FullHD...
-	parseQuality(&ctx)
+	ctx.parseQuality()
 
 	// для случая, если несколько фильмов в одной раздач
-	parseTrilogy(&ctx)
+	ctx.parseTrilogy()
 
 	// hdtvrip, dvdrip, webrip, ...
-	parseRip(&ctx)
+	ctx.parseRip()
 
 	// mkv, avi, mp4...
-	parseFormat(&ctx)
+	ctx.parseFormat()
 
 	// h264, aac...
-	parseCodec(&ctx)
+	ctx.parseCodec()
 
 	// пробуем распознать языки субтитров
-	parseSubtitles(&ctx)
+	ctx.parseSubtitles()
 
 	// озвучку пробуем вытащить
-	parseVoice(&ctx)
+	ctx.parseVoice()
 
 	// исходя из распарсенного - пытаемся определить тип контента
-	guessType(&ctx)
+	ctx.guessType()
 
 	// удаляем лишние слова, чтобы определить вероятное название
-	removeExtraWords(&ctx)
+	ctx.removeExtraWords()
 
 	// пытаемся угадать название
-	parseTitles(&ctx)
+	ctx.parseTitles()
 
-	makeResult(&ctx)
+	ctx.makeResult()
 
 	return ctx.info
 }
@@ -97,7 +103,7 @@ func mustParseUint(text string) uint {
 	return uint(result)
 }
 
-func parseSeasonCode(ctx *parseContext) {
+func (ctx *parseContext) parseSeasonCode() {
 	m := regexMatch{Exp: seasonCodeRegex}
 	pos := ctx.tokens.Find(m)
 	if pos > -1 {
@@ -124,7 +130,7 @@ func parseSeasonCode(ctx *parseContext) {
 	}
 }
 
-func parseSeasons(ctx *parseContext) bool {
+func (ctx *parseContext) parseSeasons() bool {
 	splitSeasonMatch := &orMatch{
 		Matches: []match{
 			&wordMatch{Word: "сезоны"},
@@ -175,7 +181,7 @@ func guessRangeEnd(ctx *parseContext, pos int, begin uint) (uint, bool) {
 	return end, true
 }
 
-func parseSeason(ctx *parseContext) {
+func (ctx *parseContext) parseSeason() {
 	splitSeasonMatch := &orMatch{
 		Matches: []match{
 			&wordMatch{Word: "сезон"},
@@ -223,7 +229,7 @@ func parseSeason(ctx *parseContext) {
 	}
 }
 
-func parseShortSeason(ctx *parseContext) {
+func (ctx *parseContext) parseShortSeason() {
 	var m match
 	m = &orMatch{
 		Matches: []match{
@@ -249,7 +255,43 @@ func parseShortSeason(ctx *parseContext) {
 	ctx.remove[pos-1] = true
 }
 
-func parseYear(ctx *parseContext) {
+func (ctx *parseContext) parseEpisodeRange() {
+	if len(ctx.seasons) != 0 {
+		return
+	}
+
+	separators := ctx.tokens.FindAll(&wordMatch{Word: "из"})
+	for _, i := range separators {
+		if i > 0 && i < len(ctx.tokens)-1 {
+			prev := ctx.tokens[i-1]
+			next := ctx.tokens[i+1]
+			if prev.IsDigital() && next.IsDigital() {
+				ctx.seasons[1] = struct{}{}
+				ctx.remove[i-1] = true
+				ctx.remove[i] = true
+				ctx.remove[i+1] = true
+				return
+			}
+		}
+	}
+}
+
+func (ctx *parseContext) parseSeriesHint() {
+	if len(ctx.seasons) != 0 {
+		return
+	}
+
+	hints := orMatch{Matches: []match{
+		wordMatch{Word: "ova"},
+		wordMatch{Word: "тв"},
+	}}
+
+	if ctx.tokens.Find(&hints) >= 0 {
+		ctx.seasons[1] = struct{}{}
+	}
+}
+
+func (ctx *parseContext) parseYear() {
 	years := ctx.tokens.FindAll(&regexMatch{Exp: yearRegex})
 	for _, pos := range years {
 		ctx.remove[pos] = true
@@ -259,7 +301,7 @@ func parseYear(ctx *parseContext) {
 	}
 }
 
-func makeResult(ctx *parseContext) {
+func (ctx *parseContext) makeResult() {
 	for k, _ := range ctx.seasons {
 		ctx.info.Seasons = append(ctx.info.Seasons, k)
 	}
@@ -275,7 +317,7 @@ func makeResult(ctx *parseContext) {
 	ctx.info.Voice = strings.TrimSpace(ctx.info.Voice)
 }
 
-func parseQuality(ctx *parseContext) {
+func (ctx *parseContext) parseQuality() {
 	qmap := map[string]media.Quality{
 		"480p":   media.Quality480p,
 		"720p":   media.Quality720p,
@@ -302,7 +344,7 @@ func parseQuality(ctx *parseContext) {
 	ctx.remove[pos] = true
 }
 
-func parseTrilogy(ctx *parseContext) {
+func (ctx *parseContext) parseTrilogy() {
 	m := orMatch{
 		Matches: []match{
 			&wordMatch{"трилогия"},
@@ -317,7 +359,7 @@ func parseTrilogy(ctx *parseContext) {
 	ctx.info.Trilogy = true
 }
 
-func parseRip(ctx *parseContext) {
+func (ctx *parseContext) parseRip() {
 	m := &orMatch{
 		Matches: []match{
 			&regexMatch{Exp: ripRegex},
@@ -342,7 +384,7 @@ func parseRip(ctx *parseContext) {
 	}
 }
 
-func parseFormat(ctx *parseContext) {
+func (ctx *parseContext) parseFormat() {
 	formats := map[string]media.ContentType{
 		"mkv":  media.Movies,
 		"mp4":  media.Movies,
@@ -382,7 +424,7 @@ func parseFormat(ctx *parseContext) {
 	ctx.formatType = formats[ctx.info.Format]
 }
 
-func parseCodec(ctx *parseContext) {
+func (ctx *parseContext) parseCodec() {
 	codecs := map[string]media.ContentType{
 		"x264":   media.Movies,
 		"h264":   media.Movies,
@@ -426,19 +468,20 @@ func parseCodec(ctx *parseContext) {
 	ctx.codecType = codecs[ctx.info.Format]
 }
 
-func guessType(ctx *parseContext) {
+func (ctx *parseContext) guessType() {
 	if len(ctx.seasons) != 0 || ctx.info.Rip != "" || ctx.info.Quality != media.QualityUnd || ctx.formatType == media.Movies || ctx.codecType == media.Movies {
 		ctx.info.Type = media.Movies
 		return
 	}
 
-	discography := &orMatch{
+	musicHints := &orMatch{
 		Matches: []match{
 			&wordMatch{"дискография"},
 			&wordMatch{"discography"},
+			&wordMatch{"ost"},
 		},
 	}
-	if ctx.tokens.Find(discography) >= 0 {
+	if ctx.tokens.Find(musicHints) >= 0 {
 		ctx.info.Type = media.Music
 		return
 	}
@@ -449,7 +492,7 @@ func guessType(ctx *parseContext) {
 	}
 }
 
-func removeExtraWords(ctx *parseContext) {
+func (ctx *parseContext) removeExtraWords() {
 	matched := ctx.tokens.FindAll(
 		&orMatch{
 			Matches: []match{
@@ -464,7 +507,7 @@ func removeExtraWords(ctx *parseContext) {
 	}
 }
 
-func guessTitleLength(ctx *parseContext) int {
+func (ctx *parseContext) guessTitleLength() int {
 	for i, r := range ctx.remove {
 		if r && i != 0 {
 			if i == 1 && ctx.tokens[i-1].IsDigital() {
@@ -491,8 +534,8 @@ func crop(ctx *parseContext, maxLength int) tokenList {
 	return result
 }
 
-func parseTitles(ctx *parseContext) {
-	l := guessTitleLength(ctx)
+func (ctx *parseContext) parseTitles() {
+	l := ctx.guessTitleLength()
 	tokens := crop(ctx, l)
 
 	var result tokenList
@@ -501,7 +544,7 @@ func parseTitles(ctx *parseContext) {
 			ctx.info.Titles = append(ctx.info.Titles, result.String())
 			result = nil
 		}
-		if t.Text == "трилогия" || t.Text == "trilogy" {
+		if t.Text == "трилогия" || t.Text == "trilogy" || t.Text == "ova" || t.Text == "тв" {
 			continue
 		}
 		result.Push(t)
@@ -511,7 +554,7 @@ func parseTitles(ctx *parseContext) {
 	}
 }
 
-func parseSubtitles(ctx *parseContext) {
+func (ctx *parseContext) parseSubtitles() {
 	m := wordMatch{Word: "sub"}
 	pos := ctx.tokens.Find(m)
 	if pos < 0 {
@@ -539,7 +582,7 @@ func parseSubtitles(ctx *parseContext) {
 	}
 }
 
-func parseVoice(ctx *parseContext) {
+func (ctx *parseContext) parseVoice() {
 	m := &orMatch{
 		Matches: []match{
 			&wordMatch{"dub"},

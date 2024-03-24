@@ -196,6 +196,29 @@ func TestParseTitle(t *testing.T) {
 				Subtitles: nil,
 			},
 		},
+		{
+			Title: "Onimusha / Онимуша [08 из 08]",
+			Expected: Info{
+				Titles:  []string{"Onimusha", "Онимуша"},
+				Type:    media.Movies,
+				Seasons: []uint{1},
+			},
+		},
+		{
+			Title: "Голубая рыба-бабочка OVA / B.B. Fish / Blue Butterfly Fish",
+			Expected: Info{
+				Titles:  []string{"Голубая Рыба Бабочка", "b b Fish", "Blue Butterfly Fish"},
+				Type:    media.Movies,
+				Seasons: []uint{1},
+			},
+		},
+		{
+			Title: "Кровавый парень / Blood Lad [OST]",
+			Expected: Info{
+				Titles: []string{"Кровавый Парень", "Blood Lad"},
+				Type:   media.Music,
+			},
+		},
 	}
 
 	for i, c := range testCases {
