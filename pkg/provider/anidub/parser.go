@@ -47,11 +47,12 @@ func linkParser(t *model.Torrent) scraper.HTMLCallback {
 }
 
 func metricsParser(t *model.Torrent) scraper.HTMLCallback {
+	const seedFactor = 5 // сайт неверно отражает количество скачавших
 	return func(e *colly.HTMLElement, userData interface{}) {
 		t.SizeMB = parseTorrentSize(e.ChildText(`span.red`))
-		seeders, err := strconv.ParseUint(e.ChildText(`.li_download_m`), 10, 32)
+		seeders, err := strconv.ParseUint(e.ChildText(`.li_distribute_m`), 10, 32)
 		if err == nil {
-			t.Seeders = uint(seeders)
+			t.Seeders = (uint(seeders) + 1) * seedFactor
 		}
 	}
 }
