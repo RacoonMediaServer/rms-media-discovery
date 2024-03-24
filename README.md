@@ -6,7 +6,7 @@ information. `rms-media-discovery` could be described as web-crawler application
 
 ## Capabilities
 
-* searching information about movies and TV series;
+* searching information about movies/TV series/music;
 * searching torrent files for downloading media on different torrent trackers;
 * external systems accounts management;
 * Prometheus monitoring.
@@ -24,14 +24,20 @@ Some packages of source code are importable. Some useful of this:
 
 ### Search information about movies
 
-* [IMDB](https://www.imdb.com/)
+* [IMDB](https://www.imdb.com/) **DEPRECATED**
 * [Кинопоиск](https://www.kinopoisk.ru/)
+* [TMDB](https://www.themoviedb.org/)
+
+### Search information about music
+
+* [Deezer](https://www.deezer.com/)
 
 ### Torrent trackers
 
 * [RuTracker.org](https://rutracker.org/)
 * [Rutor](http://www.rutor.info/)
 * [The Pirate Bay](https://thepiratebay.org/)
+* [AniDUB](https://tr.anidub.com/)
 
 ## API
 
