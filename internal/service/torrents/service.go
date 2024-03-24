@@ -6,7 +6,12 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	_captcha "github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/2captcha"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/aggregator"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/anidub"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/rutor"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/rutracker"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider/thepiratebay"
 	"github.com/apex/log"
 	"github.com/teris-io/shortid"
 	"sync"
@@ -36,14 +41,14 @@ type Service struct {
 
 func New(access model.AccessProvider) *Service {
 	s := Service{
-		//provider: aggregator.NewTorrentProvider(aggregator.PriorityPolicy, []provider.TorrentsProvider{
-		//	rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
-		//	rutor.NewProvider(),
-		//	thepiratebay.New(),
-		//}),
-		provider: anidub.New(),
-		log:      log.WithField("from", "torrents"),
-		gen:      shortid.MustNew(1, shortid.DefaultABC, uint64(time.Now().Nanosecond())),
+		provider: aggregator.NewTorrentProvider(aggregator.PriorityPolicy, []provider.TorrentsProvider{
+			rutracker.NewProvider(access, provider.NewCaptchaSolverMonitor(_captcha.NewSolver(access))),
+			rutor.NewProvider(),
+			thepiratebay.New(),
+			anidub.New(),
+		}),
+		log: log.WithField("from", "torrents"),
+		gen: shortid.MustNew(1, shortid.DefaultABC, uint64(time.Now().Nanosecond())),
 	}
 
 	s.ctx, s.cancel = context.WithCancel(context.Background())

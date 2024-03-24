@@ -37,7 +37,7 @@ func composeSearchParams(query model.SearchQuery) url.Values {
 		"sortby":       []string{""},
 		"resorder":     []string{"desc"},
 		"showposts":    []string{"1"},
-		"catlist[]":    []string{"2", "13", "3", "4", "9"},
+		"catlist[]":    []string{"2", "19", "14", "10", "11", "13", "3", "4", "5", "9"},
 	}
 }
 
@@ -83,6 +83,7 @@ func (a *anidubProvider) SearchTorrents(ctx context.Context, query model.SearchQ
 			results = append(results, t)
 		}
 	}
+	a.l.Debugf("Got %d results", len(results))
 	return results, err
 }
 
