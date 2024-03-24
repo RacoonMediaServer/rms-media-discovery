@@ -10,6 +10,7 @@ import (
 
 var extractSizeExpr = regexp.MustCompile(`(\d+(.\d+)?).(MB|GB)`)
 var yearRegex = regexp.MustCompile(`Год: (\d\d\d\d)`)
+var qualityRegex = regexp.MustCompile(`\d+p`)
 
 type animeInfo struct {
 	Year uint
@@ -70,5 +71,14 @@ func infoParser(info *animeInfo) scraper.HTMLCallback {
 		}
 		year, _ := strconv.ParseUint(matches[1], 10, 32)
 		info.Year = uint(year)
+	}
+}
+
+func qualityParser(quality *string) scraper.HTMLCallback {
+	return func(e *colly.HTMLElement, userData interface{}) {
+		match := qualityRegex.FindString(e.Text)
+		if match != "" {
+			*quality = match
+		}
 	}
 }

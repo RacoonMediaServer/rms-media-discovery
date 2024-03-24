@@ -68,17 +68,22 @@ func (a *anidubProvider) SearchTorrents(ctx context.Context, query model.SearchQ
 	for _, link := range links {
 		t := model.Torrent{}
 		info := animeInfo{}
+		quality := ""
 		err = s.
 			Select(`#news-title`, titleParser(&t)).
 			Select(`.torrent_h > a:nth-child(1)`, linkParser(&t)).
 			Select(`div.list:nth-child(2)`, metricsParser(&t)).
 			Select(`.xfinfodata`, infoParser(&info)).
+			Select(`div.static_h:nth-child(1)`, qualityParser(&quality)).
 			Get(link)
 		if err != nil {
 			a.l.Errorf("Extract torrent info failed (%s): %s", link, err)
 			continue
 		}
 		if t.IsValid() && !isMustSkip(query, &info) {
+			if quality != "" {
+				t.Title += " " + quality
+			}
 			t.Downloader = a.newDownloadLink("https://tr.anidub.com" + t.Link)
 			results = append(results, t)
 		}
