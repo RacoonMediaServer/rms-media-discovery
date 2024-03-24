@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gocolly/colly/v2"
 	"net/http"
+	"net/url"
 )
 
 type HTMLCallback func(e *colly.HTMLElement, userData interface{})
@@ -12,7 +13,7 @@ type ResponseCallback func(e *colly.Response, userData interface{})
 type Selector interface {
 	Get(url string) error
 	GetAsync(url string, userData interface{})
-	Post(url string, data map[string]string) error
+	Post(url string, form url.Values) error
 	Select(selector string, f HTMLCallback) Selector
 	SelectResponse(f ResponseCallback) Selector
 }
@@ -71,8 +72,8 @@ func (s *scraper) Get(url string) error {
 	return nil
 }
 
-func (s *scraper) Post(url string, data map[string]string) error {
-	err := s.c.Post(url, data)
+func (s *scraper) Post(url string, form url.Values) error {
+	err := s.c.PostRaw(url, []byte(form.Encode()))
 	if err != nil {
 		return err
 	}

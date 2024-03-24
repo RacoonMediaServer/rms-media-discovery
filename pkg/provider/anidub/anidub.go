@@ -9,6 +9,7 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/scraper"
 	"github.com/apex/log"
+	"net/url"
 )
 
 type anidubProvider struct {
@@ -19,24 +20,24 @@ func (a *anidubProvider) ID() string {
 	return "anidub"
 }
 
-func composeSearchParams(query model.SearchQuery) map[string]string {
-	return map[string]string{
-		"do":           "search",
-		"subaction":    "search",
-		"search_start": "1",
-		"search_full":  "1",
-		"result_from":  "1",
-		"story":        query.Query,
-		"titleonly":    "3",
-		"searchuser":   "",
-		"replyless":    "0",
-		"replylimit":   "0",
-		"searchdate":   "0",
-		"beforeafter":  "after",
-		"sortby":       "",
-		"resorder":     "desc",
-		"showposts":    "1",
-		"catlist[]":    "0",
+func composeSearchParams(query model.SearchQuery) url.Values {
+	return url.Values{
+		"do":           []string{"search"},
+		"subaction":    []string{"search"},
+		"search_start": []string{"1"},
+		"search_full":  []string{"1"},
+		"result_from":  []string{"1"},
+		"story":        []string{query.Query},
+		"titleonly":    []string{"3"},
+		"searchuser":   []string{""},
+		"replyless":    []string{"0"},
+		"replylimit":   []string{"0"},
+		"searchdate":   []string{"0"},
+		"beforeafter":  []string{"after"},
+		"sortby":       []string{""},
+		"resorder":     []string{"desc"},
+		"showposts":    []string{"1"},
+		"catlist[]":    []string{"2", "13", "3", "4", "9"},
 	}
 }
 
