@@ -98,8 +98,8 @@ func main() {
 		}()
 	}
 
-	if err := srv.ListenAndServer(cfg.Http.Host, cfg.Http.Port); err != nil {
-		log.Fatalf("Cannot start web server: %+s", err)
+	if err = srv.ListenAndServer(cfg.Http.Host, cfg.Http.Port); err != nil {
+		log.Fatalf("Cannot start web server: %s", err)
 	}
 
 	pipeline.Stop()
