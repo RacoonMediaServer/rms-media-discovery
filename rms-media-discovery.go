@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/mocks"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/music"
-	"net/http"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
@@ -19,6 +20,9 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/urfave/cli/v2"
 	"go-micro.dev/v4"
+
+	// Plugins
+	_ "github.com/go-micro/plugins/v4/registry/etcd"
 )
 
 var Version = "0.0.0"
