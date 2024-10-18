@@ -2,8 +2,10 @@ package server
 
 import (
 	"fmt"
-	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 	"net/http"
+	"time"
+
+	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
@@ -25,6 +27,8 @@ type Server struct {
 type monitor struct {
 	handler http.Handler
 }
+
+const serverTimeout = 240 * time.Second
 
 func (s *Server) ListenAndServer(host string, port int) error {
 	s.log = log.WithField("from", "rest")
@@ -51,6 +55,10 @@ func (s *Server) ListenAndServer(host string, port int) error {
 
 		// создаем и настраиваем сервер
 		s.srv = restapi.NewServer(api)
+
+		// ставим увеличенные таймауты
+		s.srv.ReadTimeout = serverTimeout
+		s.srv.WriteTimeout = s.srv.ReadTimeout
 
 		// устанавливаем middleware
 		s.srv.SetHandler(setupGlobalMiddleware(api.Serve(nil)))
