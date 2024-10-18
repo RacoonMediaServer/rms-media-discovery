@@ -2,14 +2,15 @@ package navigator
 
 import (
 	"context"
-	"github.com/apex/log"
-	"github.com/playwright-community/playwright-go"
 	"net/http"
 	"path"
 	"time"
+
+	"github.com/apex/log"
+	"github.com/playwright-community/playwright-go"
 )
 
-const defaultTimeout float64 = 6000.0 * 10
+const defaultTimeout float64 = 120000.0 * 10
 
 var (
 	initialized bool
@@ -59,6 +60,9 @@ func New(id string) (Navigator, error) {
 		return nil, err
 	}
 
+	ctx.SetDefaultTimeout(defaultTimeout)
+	ctx.SetDefaultNavigationTimeout(defaultTimeout)
+
 	return &navigator{ctx: ctx, dumpPath: dp, id: id}, nil
 }
 
@@ -78,6 +82,7 @@ func (n *navigator) NewPage(log *log.Entry, ctx context.Context) (Page, error) {
 	}
 
 	p.SetDefaultTimeout(defaultTimeout)
+	p.SetDefaultNavigationTimeout(defaultTimeout)
 
 	return result, nil
 }
