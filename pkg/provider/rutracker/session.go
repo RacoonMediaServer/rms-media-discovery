@@ -4,14 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/apex/log"
-	"net/url"
-	"time"
 )
 
 type session struct {
@@ -21,8 +21,6 @@ type session struct {
 	authorized  bool
 	l           *log.Entry
 }
-
-const parseDetailsTimeout = 10 * time.Second
 
 func newSession(cred model.Credentials, solver provider.CaptchaSolver) (*session, error) {
 	n, err := navigator.New("rutracker")

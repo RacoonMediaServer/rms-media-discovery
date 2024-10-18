@@ -110,5 +110,6 @@ func (n *navigator) GetCookies(urls ...string) (result []*http.Cookie, err error
 }
 
 func (n *navigator) Close() {
+	log.WithField("id", n.id).Debugf("Close navigator")
 	_ = n.ctx.Close()
 }

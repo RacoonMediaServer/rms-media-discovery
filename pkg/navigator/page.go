@@ -5,15 +5,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"path"
+	"time"
+
 	"github.com/PuerkitoBio/goquery"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/apex/log"
 	"github.com/playwright-community/playwright-go"
 	"github.com/prometheus/client_golang/prometheus"
 	uuid "github.com/satori/go.uuid"
-	"os"
-	"path"
-	"time"
 )
 
 type page struct {
@@ -223,5 +224,6 @@ func (p *page) checkError(method string) {
 }
 
 func (p *page) Close() {
+	p.log.Debugf("Close page, batch = '%s'", p.batch)
 	_ = p.page.Close()
 }

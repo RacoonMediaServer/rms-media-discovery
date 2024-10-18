@@ -4,15 +4,16 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
-	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
-	"github.com/prometheus/client_golang/prometheus"
 	"io"
 	"net/http"
 	"time"
+
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
-const Timeout = 30 * time.Second
+const Timeout = 120 * time.Second
 
 var httpClient = http.Client{Timeout: Timeout}
 
