@@ -2,9 +2,11 @@ package scraper
 
 import (
 	"context"
-	"github.com/gocolly/colly/v2"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
+
+	"github.com/gocolly/colly/v2"
 )
 
 type HTMLCallback func(e *colly.HTMLElement, userData interface{})
@@ -111,6 +113,9 @@ func (s *scraper) Wait() {
 }
 
 func (s *scraper) SetCookies(url string, cookies []*http.Cookie) error {
+	j, _ := cookiejar.New(nil)
+	s.c.SetCookieJar(j)
+
 	return s.c.SetCookies(url, cookies)
 }
 

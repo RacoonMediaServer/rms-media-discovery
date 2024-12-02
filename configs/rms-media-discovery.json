@@ -11,12 +11,12 @@
     "port": 8080
   },
   "debug": {
-    "verbose": false,
+    "verbose": true,
     "monitor": {
-      "enabled": true,
+      "enabled": false,
       "host": "localhost",
       "port": 2112
     }
   },
-  "disableAccessControl": false
+  "disableAccessControl": true
 }

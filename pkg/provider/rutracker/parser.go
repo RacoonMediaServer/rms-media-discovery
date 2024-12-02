@@ -1,10 +1,11 @@
 package rutracker
 
 import (
-	"github.com/PuerkitoBio/goquery"
-	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"regexp"
 	"strconv"
+
+	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
+	"github.com/gocolly/colly/v2"
 )
 
 var (
@@ -27,24 +28,22 @@ func parseTorrentSize(text string) uint64 {
 	return 0
 }
 
-func parseTorrent(e *goquery.Selection) model.Torrent {
+func parseTorrent(e *colly.HTMLElement) model.Torrent {
 	torrent := model.Torrent{}
-	torrent.Title = e.Find(`a.tLink`).Text()
+	torrent.Title = e.ChildText(`a.tLink`)
 
-	dl := e.Find(`a.tr-dl`)
-	link, _ := dl.Attr("href")
-	torrent.Link = link
-	torrent.SizeMB = parseTorrentSize(dl.Text())
+	torrent.Link = e.ChildAttr(`a.tr-dl`, "href")
+	torrent.SizeMB = parseTorrentSize(e.ChildText(`a.tr-dl`))
 
-	seeds := e.Find(`b.seedmed`).Text()
+	seeds := e.ChildText(`b.seedmed`)
 	seedersCount, _ := strconv.ParseUint(seeds, 10, 32)
 	torrent.Seeders = uint(seedersCount)
 
-	leechs := e.Find(`td.leechmed`).Text()
+	leechs := e.ChildText(`td.leechmed`)
 	peers, _ := strconv.Atoi(leechs)
 	torrent.Seeders += uint(peers)
 
-	torrent.DetailLink, _ = e.Find(`a.tLink`).Attr("href")
+	torrent.DetailLink = e.ChildAttr(`a.tr-dl`, "href")
 
 	return torrent
 }

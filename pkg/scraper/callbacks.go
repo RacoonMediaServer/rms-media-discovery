@@ -2,6 +2,8 @@ package scraper
 
 import (
 	"fmt"
+	"net/http/cookiejar"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/apex/log"
@@ -56,4 +58,7 @@ func (s *scraper) setCallbacks() {
 		l.Debugf("Got response: %d", response.StatusCode)
 		requester.OutgoingRequestsCounter.WithLabelValues(fmt.Sprintf("%d", response.StatusCode), s.service).Inc()
 	})
+
+	j, _ := cookiejar.New(nil)
+	s.c.SetCookieJar(j)
 }
