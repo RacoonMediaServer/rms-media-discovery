@@ -3,9 +3,11 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/mocks"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/music"
+	"github.com/RacoonMediaServer/rms-mirror/pkg/proxyurl"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/config"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/db"
@@ -69,6 +71,11 @@ func main() {
 		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
 	}
 
+	mirrorURL, err := url.Parse(cfg.MirrorBaseURL)
+	if err != nil {
+		log.Fatalf("Parse mirror URL failed: %s", mirrorURL)
+	}
+
 	database, err := db.Connect(cfg.Database)
 	if err != nil {
 		log.Fatalf("Connect to database failed: %s", err)
@@ -86,7 +93,7 @@ func main() {
 	torrentService := torrents.New(accountsService)
 
 	srv := server.Server{
-		Movies:   movies.New(accountsService),
+		Movies:   movies.New(accountsService, &proxyurl.Maker{BaseURL: mirrorURL}),
 		Music:    music.New(),
 		Torrents: torrentService,
 		Users:    usersService,

@@ -4,6 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
+	"time"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
@@ -11,9 +15,6 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/requester"
 	"github.com/ryanbradynd05/go-tmdb"
 	"golang.org/x/time/rate"
-	"strconv"
-	"strings"
-	"time"
 )
 
 const requestsPerSecond = 40
@@ -23,6 +24,7 @@ type tmdbProvider struct {
 	p      pipeline.Pipeline
 	r      requester.Requester
 	g      genreList
+	mirror provider.MirrorService
 }
 
 var (
@@ -71,8 +73,8 @@ func (p *tmdbProvider) getImdbMovieInfo(ctx context.Context, id string) (*model.
 			ID:          id,
 			Description: r.Overview,
 			Genres:      p.g.get(castGenreList(r.GenreIDs)),
-			Poster:      composePosterURL(r.PosterPath),
-			Preview:     composePosterURL(r.PosterPath),
+			Poster:      p.composePosterURL(r.PosterPath),
+			Preview:     p.composePosterURL(r.PosterPath),
 			Rating:      r.VoteAverage,
 			Seasons:     seasons,
 			Title:       r.Name,
@@ -86,8 +88,8 @@ func (p *tmdbProvider) getImdbMovieInfo(ctx context.Context, id string) (*model.
 			ID:          id,
 			Description: r.Overview,
 			Genres:      p.g.get(castGenreList(r.GenreIDs)),
-			Poster:      composePosterURL(r.PosterPath),
-			Preview:     composePosterURL(r.PosterPath),
+			Poster:      p.composePosterURL(r.PosterPath),
+			Preview:     p.composePosterURL(r.PosterPath),
 			Rating:      r.VoteAverage,
 			Title:       r.Title,
 			Type:        model.MovieType_Movie,
@@ -110,8 +112,8 @@ func (p *tmdbProvider) getTmdbMovieInfo(ctx context.Context, id int) (*model.Mov
 	m := &model.Movie{
 		ID:          fmt.Sprintf("tmdb_m_%d", info.ID),
 		Description: info.Overview,
-		Poster:      composePosterURL(info.PosterPath),
-		Preview:     composePosterURL(info.PosterPath),
+		Poster:      p.composePosterURL(info.PosterPath),
+		Preview:     p.composePosterURL(info.PosterPath),
 		Rating:      info.VoteAverage,
 		Title:       info.Title,
 		Type:        model.MovieType_Movie,
@@ -134,8 +136,8 @@ func (p *tmdbProvider) getTmdbTvSeriesInfo(ctx context.Context, id int) (*model.
 	m := &model.Movie{
 		ID:          fmt.Sprintf("tmdb_s_%d", info.ID),
 		Description: info.Overview,
-		Poster:      composePosterURL(info.PosterPath),
-		Preview:     composePosterURL(info.PosterPath),
+		Poster:      p.composePosterURL(info.PosterPath),
+		Preview:     p.composePosterURL(info.PosterPath),
 		Rating:      info.VoteAverage,
 		Title:       info.Name,
 		Seasons:     uint(info.NumberOfSeasons),
@@ -148,8 +150,10 @@ func (p *tmdbProvider) getTmdbTvSeriesInfo(ctx context.Context, id int) (*model.
 	return m, nil
 }
 
-func composePosterURL(path string) string {
-	return fmt.Sprintf("https://image.tmdb.org/t/p/w780%s", path)
+func (p *tmdbProvider) composePosterURL(path string) string {
+	originURL := fmt.Sprintf("https://image.tmdb.org/t/p/w780%s", path)
+	return p.mirror.MakeURL(originURL)
+
 }
 
 func parseYear(text string) uint {
@@ -160,7 +164,7 @@ func parseYear(text string) uint {
 	return uint(t.Year())
 }
 
-func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
+func NewProvider(access model.AccessProvider, mirror provider.MirrorService) provider.MovieInfoProvider {
 	settings := pipeline.Settings{
 		Id:    "tmdb",
 		Limit: rate.NewLimiter(1, requestsPerSecond),
@@ -168,6 +172,7 @@ func NewProvider(access model.AccessProvider) provider.MovieInfoProvider {
 	p := &tmdbProvider{
 		access: access,
 		p:      pipeline.Open(settings),
+		mirror: mirror,
 	}
 	p.r = requester.New(p)
 	return p
@@ -204,8 +209,8 @@ func (p *tmdbProvider) search(ctx context.Context, query string, limit uint) ([]
 				ID:          fmt.Sprintf("tmdb_s_%d", info.ID),
 				Description: info.Overview,
 				Genres:      p.g.get(castGenreList(info.GenreIDs)),
-				Poster:      composePosterURL(info.PosterPath),
-				Preview:     composePosterURL(info.PosterPath),
+				Poster:      p.composePosterURL(info.PosterPath),
+				Preview:     p.composePosterURL(info.PosterPath),
 				Rating:      info.VoteAverage,
 				Title:       info.Name,
 				Type:        model.MovieType_TvSeries,
@@ -222,8 +227,8 @@ func (p *tmdbProvider) search(ctx context.Context, query string, limit uint) ([]
 				ID:          fmt.Sprintf("tmdb_m_%d", info.ID),
 				Description: info.Overview,
 				Genres:      p.g.get(castGenreList(info.GenreIDs)),
-				Poster:      composePosterURL(info.PosterPath),
-				Preview:     composePosterURL(info.PosterPath),
+				Poster:      p.composePosterURL(info.PosterPath),
+				Preview:     p.composePosterURL(info.PosterPath),
 				Rating:      info.VoteAverage,
 				Title:       info.Title,
 				Type:        model.MovieType_Movie,

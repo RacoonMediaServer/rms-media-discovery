@@ -12,10 +12,10 @@ type Service struct {
 	mainProvider provider.MovieInfoProvider
 }
 
-func New(access model.AccessProvider) *Service {
+func New(access model.AccessProvider, mirror provider.MirrorService) *Service {
 	return &Service{
 		mainProvider: provider.NewFallbackProvider([]provider.MovieInfoProvider{
-			tmdb.NewProvider(access),
+			tmdb.NewProvider(access, mirror),
 			kinopoisk.NewProvider(access),
 			imdb.NewProvider(access),
 		}),

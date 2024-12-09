@@ -18,5 +18,6 @@
       "port": 2112
     }
   },
-  "disableAccessControl": false
+  "disableAccessControl": false,
+  "mirrorBaseURL": "https://api.racoondev.top/mirror/"
 }

@@ -8,6 +8,7 @@ type Configuration struct {
 	Http                 configuration.Http
 	Debug                configuration.Debug
 	DisableAccessControl bool
+	MirrorBaseURL        string
 }
 
 var config Configuration

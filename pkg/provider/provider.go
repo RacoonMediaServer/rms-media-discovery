@@ -2,6 +2,7 @@ package provider
 
 import (
 	"context"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 )
 
@@ -40,4 +41,9 @@ type Captcha struct {
 type CaptchaSolver interface {
 	Provider
 	Solve(ctx context.Context, captcha Captcha) (string, error)
+}
+
+// MirrorService интерфейс сервиса для зеркалирования контента
+type MirrorService interface {
+	MakeURL(contentURL string) string
 }
