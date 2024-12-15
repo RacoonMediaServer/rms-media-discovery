@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/music"
 	rms_users "github.com/RacoonMediaServer/rms-packages/pkg/service/rms-users"
-	"net/http"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations"
@@ -31,24 +32,27 @@ func (s *Server) configureAPI(api *operations.ServerAPI) {
 	api.AccountsDeleteAccountHandler = accounts.DeleteAccountHandlerFunc(s.deleteAccount)
 
 	api.KeyAuth = func(token string) (*models.Principal, error) {
-		resp, err := s.Users.GetPermissions(context.Background(), &rms_users.GetPermissionsRequest{Token: token})
+		req := rms_users.CheckPermissionsRequest{
+			Token: token,
+			Perms: []rms_users.Permissions{rms_users.Permissions_Search},
+		}
+		resp, err := s.Users.CheckPermissions(context.Background(), &req)
 		if err != nil {
 			s.log.Errorf("Cannot retrieve permissions: %s", err)
 			return nil, errors.New(http.StatusForbidden, "Forbidden")
 		}
-		searchAllowed := false
-		manageAllowed := false
-		for _, p := range resp.Perms {
-			switch p {
-			case rms_users.Permissions_Search:
-				searchAllowed = true
-			case rms_users.Permissions_AccountManagement:
-				manageAllowed = true
-			}
-		}
-		if !searchAllowed {
+		if !resp.Allowed {
 			return nil, errors.New(http.StatusForbidden, "Forbidden")
 		}
-		return &models.Principal{Token: token, CanManageAccounts: manageAllowed}, nil
+
+		userID := resp.UserId
+		req.Perms = []rms_users.Permissions{rms_users.Permissions_AccountManagement}
+		resp, err = s.Users.CheckPermissions(context.Background(), &req)
+		if err != nil {
+			s.log.Errorf("Cannot retrieve permissions: %s", err)
+			return nil, errors.New(http.StatusForbidden, "Forbidden")
+		}
+
+		return &models.Principal{Token: userID, CanManageAccounts: resp.Allowed}, nil
 	}
 }

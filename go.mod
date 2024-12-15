@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/2captcha/2captcha-go v1.0.1
 	github.com/PuerkitoBio/goquery v1.5.1
-	github.com/RacoonMediaServer/rms-packages v1.11.9
+	github.com/RacoonMediaServer/rms-packages v1.14.7
 	github.com/antzucaro/matchr v0.0.0-20221106193745-7bed6ef61ef9
 	github.com/apex/log v1.9.0
 	github.com/didip/tollbooth v4.0.2+incompatible
