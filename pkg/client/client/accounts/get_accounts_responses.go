@@ -7,6 +7,7 @@ package accounts
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -90,11 +91,13 @@ func (o *GetAccountsOK) Code() int {
 }
 
 func (o *GetAccountsOK) Error() string {
-	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK %s", 200, payload)
 }
 
 func (o *GetAccountsOK) String() string {
-	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsOK %s", 200, payload)
 }
 
 func (o *GetAccountsOK) GetPayload() *GetAccountsOKBody {
@@ -157,11 +160,11 @@ func (o *GetAccountsInternalServerError) Code() int {
 }
 
 func (o *GetAccountsInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError", 500)
 }
 
 func (o *GetAccountsInternalServerError) String() string {
-	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /accounts][%d] getAccountsInternalServerError", 500)
 }
 
 func (o *GetAccountsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

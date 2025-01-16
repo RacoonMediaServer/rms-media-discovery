@@ -47,7 +47,7 @@ type SearchMusicResult struct {
 
 	// type
 	// Required: true
-	// Enum: [artist album track]
+	// Enum: ["artist","album","track"]
 	Type *string `json:"type"`
 }
 

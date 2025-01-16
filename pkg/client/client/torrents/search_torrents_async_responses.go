@@ -88,11 +88,13 @@ func (o *SearchTorrentsAsyncOK) Code() int {
 }
 
 func (o *SearchTorrentsAsyncOK) Error() string {
-	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsAsyncOK) String() string {
-	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsAsyncOK) GetPayload() *SearchTorrentsAsyncOKBody {
@@ -155,11 +157,11 @@ func (o *SearchTorrentsAsyncInternalServerError) Code() int {
 }
 
 func (o *SearchTorrentsAsyncInternalServerError) Error() string {
-	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncInternalServerError ", 500)
+	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncInternalServerError", 500)
 }
 
 func (o *SearchTorrentsAsyncInternalServerError) String() string {
-	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncInternalServerError ", 500)
+	return fmt.Sprintf("[POST /torrents/search:run][%d] searchTorrentsAsyncInternalServerError", 500)
 }
 
 func (o *SearchTorrentsAsyncInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -194,7 +196,7 @@ type SearchTorrentsAsyncBody struct {
 	Strong *bool `json:"strong,omitempty"`
 
 	// Подсказка, какого типа торренты искать
-	// Enum: [movies music books others]
+	// Enum: ["movies","music","books","others"]
 	Type string `json:"type,omitempty"`
 
 	// Год выхода (для фильмов и сериалов)

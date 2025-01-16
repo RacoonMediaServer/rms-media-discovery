@@ -104,7 +104,7 @@ type SearchTorrentsAsyncBody struct {
 	Strong *bool `json:"strong,omitempty"`
 
 	// Подсказка, какого типа торренты искать
-	// Enum: [movies music books others]
+	// Enum: ["movies","music","books","others"]
 	Type string `json:"type,omitempty"`
 
 	// Год выхода (для фильмов и сериалов)

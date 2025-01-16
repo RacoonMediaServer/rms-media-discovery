@@ -93,11 +93,11 @@ func (o *DownloadTorrentOK) Code() int {
 }
 
 func (o *DownloadTorrentOK) Error() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK", 200)
 }
 
 func (o *DownloadTorrentOK) String() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK  %+v", 200, o.Payload)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentOK", 200)
 }
 
 func (o *DownloadTorrentOK) GetPayload() io.Writer {
@@ -158,11 +158,11 @@ func (o *DownloadTorrentNotFound) Code() int {
 }
 
 func (o *DownloadTorrentNotFound) Error() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentNotFound ", 404)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentNotFound", 404)
 }
 
 func (o *DownloadTorrentNotFound) String() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentNotFound ", 404)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentNotFound", 404)
 }
 
 func (o *DownloadTorrentNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -214,11 +214,11 @@ func (o *DownloadTorrentInternalServerError) Code() int {
 }
 
 func (o *DownloadTorrentInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError", 500)
 }
 
 func (o *DownloadTorrentInternalServerError) String() string {
-	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/download][%d] downloadTorrentInternalServerError", 500)
 }
 
 func (o *DownloadTorrentInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

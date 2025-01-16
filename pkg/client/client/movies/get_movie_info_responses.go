@@ -6,6 +6,7 @@ package movies
 // Editing this file might prove futile when you re-run the swagger generate command
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 
@@ -91,11 +92,13 @@ func (o *GetMovieInfoOK) Code() int {
 }
 
 func (o *GetMovieInfoOK) Error() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoOK %s", 200, payload)
 }
 
 func (o *GetMovieInfoOK) String() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoOK %s", 200, payload)
 }
 
 func (o *GetMovieInfoOK) GetPayload() *models.SearchMoviesResult {
@@ -158,11 +161,11 @@ func (o *GetMovieInfoNotFound) Code() int {
 }
 
 func (o *GetMovieInfoNotFound) Error() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoNotFound ", 404)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoNotFound", 404)
 }
 
 func (o *GetMovieInfoNotFound) String() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoNotFound ", 404)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoNotFound", 404)
 }
 
 func (o *GetMovieInfoNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -214,11 +217,11 @@ func (o *GetMovieInfoInternalServerError) Code() int {
 }
 
 func (o *GetMovieInfoInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoInternalServerError ", 500)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoInternalServerError", 500)
 }
 
 func (o *GetMovieInfoInternalServerError) String() string {
-	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoInternalServerError ", 500)
+	return fmt.Sprintf("[GET /movies/{id}][%d] getMovieInfoInternalServerError", 500)
 }
 
 func (o *GetMovieInfoInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

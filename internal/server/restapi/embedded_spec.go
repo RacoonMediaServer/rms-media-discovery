@@ -28,7 +28,7 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.3.1"
+    "version": "1.3.2"
   },
   "host": "136.244.108.126",
   "paths": {
@@ -670,6 +670,9 @@ func init() {
           }
         },
         "id": {
+          "type": "string"
+        },
+        "originalTitle": {
           "type": "string"
         },
         "poster": {
@@ -853,7 +856,7 @@ func init() {
   "info": {
     "description": "API for Racoon Media Server Project",
     "title": "Media Discovery API",
-    "version": "1.3.1"
+    "version": "1.3.2"
   },
   "host": "136.244.108.126",
   "paths": {
@@ -1495,6 +1498,9 @@ func init() {
           }
         },
         "id": {
+          "type": "string"
+        },
+        "originalTitle": {
           "type": "string"
         },
         "poster": {

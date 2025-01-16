@@ -97,11 +97,13 @@ func (o *SearchTorrentsAsyncStatusOK) Code() int {
 }
 
 func (o *SearchTorrentsAsyncStatusOK) Error() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsAsyncStatusOK) String() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsAsyncStatusOK) GetPayload() *SearchTorrentsAsyncStatusOKBody {
@@ -164,11 +166,11 @@ func (o *SearchTorrentsAsyncStatusNotFound) Code() int {
 }
 
 func (o *SearchTorrentsAsyncStatusNotFound) Error() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusNotFound ", 404)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusNotFound", 404)
 }
 
 func (o *SearchTorrentsAsyncStatusNotFound) String() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusNotFound ", 404)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusNotFound", 404)
 }
 
 func (o *SearchTorrentsAsyncStatusNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -220,11 +222,11 @@ func (o *SearchTorrentsAsyncStatusInternalServerError) Code() int {
 }
 
 func (o *SearchTorrentsAsyncStatusInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusInternalServerError", 500)
 }
 
 func (o *SearchTorrentsAsyncStatusInternalServerError) String() string {
-	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/search/{id}:status][%d] searchTorrentsAsyncStatusInternalServerError", 500)
 }
 
 func (o *SearchTorrentsAsyncStatusInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -246,7 +248,7 @@ type SearchTorrentsAsyncStatusOKBody struct {
 
 	// status
 	// Required: true
-	// Enum: [working ready error]
+	// Enum: ["working","ready","error"]
 	Status *string `json:"status"`
 }
 

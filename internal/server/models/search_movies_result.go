@@ -30,6 +30,9 @@ type SearchMoviesResult struct {
 	// Required: true
 	ID *string `json:"id"`
 
+	// original title
+	OriginalTitle string `json:"originalTitle,omitempty"`
+
 	// poster
 	Poster string `json:"poster,omitempty"`
 
@@ -47,7 +50,7 @@ type SearchMoviesResult struct {
 	Title *string `json:"title"`
 
 	// type
-	// Enum: [tv-series film]
+	// Enum: ["tv-series","film"]
 	Type string `json:"type,omitempty"`
 
 	// year

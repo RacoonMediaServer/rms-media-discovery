@@ -7,6 +7,7 @@ package torrents
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -90,11 +91,13 @@ func (o *SearchTorrentsOK) Code() int {
 }
 
 func (o *SearchTorrentsOK) Error() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsOK) String() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsOK %s", 200, payload)
 }
 
 func (o *SearchTorrentsOK) GetPayload() *SearchTorrentsOKBody {
@@ -157,11 +160,11 @@ func (o *SearchTorrentsInternalServerError) Code() int {
 }
 
 func (o *SearchTorrentsInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError", 500)
 }
 
 func (o *SearchTorrentsInternalServerError) String() string {
-	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError ", 500)
+	return fmt.Sprintf("[GET /torrents/search][%d] searchTorrentsInternalServerError", 500)
 }
 
 func (o *SearchTorrentsInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

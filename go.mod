@@ -5,6 +5,7 @@ go 1.19
 require (
 	github.com/2captcha/2captcha-go v1.0.1
 	github.com/PuerkitoBio/goquery v1.5.1
+	github.com/RacoonMediaServer/rms-mirror v1.0.0
 	github.com/RacoonMediaServer/rms-packages v1.14.7
 	github.com/antzucaro/matchr v0.0.0-20221106193745-7bed6ef61ef9
 	github.com/apex/log v1.9.0
@@ -17,7 +18,6 @@ require (
 	github.com/go-openapi/strfmt v0.21.3
 	github.com/go-openapi/swag v0.22.3
 	github.com/go-openapi/validate v0.22.0
-	github.com/gocolly/colly v1.2.0
 	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang/mock v1.6.0
 	github.com/jessevdk/go-flags v1.5.0
@@ -39,7 +39,6 @@ require (
 require (
 	github.com/Microsoft/go-winio v0.5.0 // indirect
 	github.com/ProtonMail/go-crypto v0.0.0-20210428141323-04723f9f07d7 // indirect
-	github.com/RacoonMediaServer/rms-mirror v1.0.0 // indirect
 	github.com/acomagu/bufpipe v1.0.3 // indirect
 	github.com/andybalholm/cascadia v1.2.0 // indirect
 	github.com/antchfx/htmlquery v1.2.3 // indirect

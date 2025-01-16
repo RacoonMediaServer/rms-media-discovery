@@ -29,7 +29,7 @@ type SearchTorrentsResult struct {
 	Link *string `json:"link"`
 
 	// Качество видео
-	// Enum: [ 480p 720p 1080p 2160p]
+	// Enum: ["","480p","720p","1080p","2160p"]
 	Quality string `json:"quality,omitempty"`
 
 	// Rip для видео

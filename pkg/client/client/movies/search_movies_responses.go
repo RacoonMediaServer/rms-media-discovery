@@ -7,6 +7,7 @@ package movies
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -90,11 +91,13 @@ func (o *SearchMoviesOK) Code() int {
 }
 
 func (o *SearchMoviesOK) Error() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesOK %s", 200, payload)
 }
 
 func (o *SearchMoviesOK) String() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesOK %s", 200, payload)
 }
 
 func (o *SearchMoviesOK) GetPayload() *SearchMoviesOKBody {
@@ -157,11 +160,11 @@ func (o *SearchMoviesInternalServerError) Code() int {
 }
 
 func (o *SearchMoviesInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError ", 500)
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError", 500)
 }
 
 func (o *SearchMoviesInternalServerError) String() string {
-	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError ", 500)
+	return fmt.Sprintf("[GET /movies/search][%d] searchMoviesInternalServerError", 500)
 }
 
 func (o *SearchMoviesInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

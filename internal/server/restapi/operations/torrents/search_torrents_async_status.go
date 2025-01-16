@@ -92,7 +92,7 @@ type SearchTorrentsAsyncStatusOKBody struct {
 
 	// status
 	// Required: true
-	// Enum: [working ready error]
+	// Enum: ["working","ready","error"]
 	Status *string `json:"status"`
 }
 

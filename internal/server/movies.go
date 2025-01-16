@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/models"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/server/restapi/operations/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
@@ -10,16 +11,17 @@ import (
 
 func convertSearchMoviesResult(mov *model.Movie) *models.SearchMoviesResult {
 	return &models.SearchMoviesResult{
-		Description: mov.Description,
-		Genres:      mov.Genres,
-		ID:          &mov.ID,
-		Poster:      mov.Poster,
-		Preview:     mov.Preview,
-		Rating:      float64(mov.Rating),
-		Seasons:     int64(mov.Seasons),
-		Title:       &mov.Title,
-		Type:        string(mov.Type),
-		Year:        int64(mov.Year),
+		Description:   mov.Description,
+		Genres:        mov.Genres,
+		ID:            &mov.ID,
+		Poster:        mov.Poster,
+		Preview:       mov.Preview,
+		Rating:        float64(mov.Rating),
+		Seasons:       int64(mov.Seasons),
+		Title:         &mov.Title,
+		OriginalTitle: mov.OriginalTitle,
+		Type:          string(mov.Type),
+		Year:          int64(mov.Year),
 	}
 }
 

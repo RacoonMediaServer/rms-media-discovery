@@ -448,6 +448,8 @@ definitions:
         type: string
       title:
         type: string
+      originalTitle:
+        type: string
       description:
         type: string
       year:

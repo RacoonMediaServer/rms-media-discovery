@@ -7,6 +7,7 @@ package music
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -90,11 +91,13 @@ func (o *SearchMusicOK) Code() int {
 }
 
 func (o *SearchMusicOK) Error() string {
-	return fmt.Sprintf("[GET /music/search][%d] searchMusicOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /music/search][%d] searchMusicOK %s", 200, payload)
 }
 
 func (o *SearchMusicOK) String() string {
-	return fmt.Sprintf("[GET /music/search][%d] searchMusicOK  %+v", 200, o.Payload)
+	payload, _ := json.Marshal(o.Payload)
+	return fmt.Sprintf("[GET /music/search][%d] searchMusicOK %s", 200, payload)
 }
 
 func (o *SearchMusicOK) GetPayload() *SearchMusicOKBody {
@@ -157,11 +160,11 @@ func (o *SearchMusicInternalServerError) Code() int {
 }
 
 func (o *SearchMusicInternalServerError) Error() string {
-	return fmt.Sprintf("[GET /music/search][%d] searchMusicInternalServerError ", 500)
+	return fmt.Sprintf("[GET /music/search][%d] searchMusicInternalServerError", 500)
 }
 
 func (o *SearchMusicInternalServerError) String() string {
-	return fmt.Sprintf("[GET /music/search][%d] searchMusicInternalServerError ", 500)
+	return fmt.Sprintf("[GET /music/search][%d] searchMusicInternalServerError", 500)
 }
 
 func (o *SearchMusicInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {

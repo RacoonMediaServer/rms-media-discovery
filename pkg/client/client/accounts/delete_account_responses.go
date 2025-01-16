@@ -87,11 +87,11 @@ func (o *DeleteAccountOK) Code() int {
 }
 
 func (o *DeleteAccountOK) Error() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountOK ", 200)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountOK", 200)
 }
 
 func (o *DeleteAccountOK) String() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountOK ", 200)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountOK", 200)
 }
 
 func (o *DeleteAccountOK) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -143,11 +143,11 @@ func (o *DeleteAccountNotFound) Code() int {
 }
 
 func (o *DeleteAccountNotFound) Error() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountNotFound ", 404)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountNotFound", 404)
 }
 
 func (o *DeleteAccountNotFound) String() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountNotFound ", 404)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountNotFound", 404)
 }
 
 func (o *DeleteAccountNotFound) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
@@ -199,11 +199,11 @@ func (o *DeleteAccountInternalServerError) Code() int {
 }
 
 func (o *DeleteAccountInternalServerError) Error() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountInternalServerError ", 500)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountInternalServerError", 500)
 }
 
 func (o *DeleteAccountInternalServerError) String() string {
-	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountInternalServerError ", 500)
+	return fmt.Sprintf("[DELETE /accounts/{id}][%d] deleteAccountInternalServerError", 500)
 }
 
 func (o *DeleteAccountInternalServerError) readResponse(response runtime.ClientResponse, consumer runtime.Consumer, formats strfmt.Registry) error {
