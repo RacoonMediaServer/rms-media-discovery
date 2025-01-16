@@ -70,30 +70,32 @@ func (p *tmdbProvider) getImdbMovieInfo(ctx context.Context, id string) (*model.
 			return nil, err
 		}
 		m := &model.Movie{
-			ID:          id,
-			Description: r.Overview,
-			Genres:      p.g.get(castGenreList(r.GenreIDs)),
-			Poster:      p.composePosterURL(r.PosterPath),
-			Preview:     p.composePosterURL(r.PosterPath),
-			Rating:      r.VoteAverage,
-			Seasons:     seasons,
-			Title:       r.Name,
-			Type:        model.MovieType_TvSeries,
-			Year:        parseYear(r.FirstAirDate),
+			ID:            id,
+			Description:   r.Overview,
+			Genres:        p.g.get(castGenreList(r.GenreIDs)),
+			Poster:        p.composePosterURL(r.PosterPath),
+			Preview:       p.composePosterURL(r.PosterPath),
+			Rating:        r.VoteAverage,
+			Seasons:       seasons,
+			Title:         r.Name,
+			OriginalTitle: r.OriginalName,
+			Type:          model.MovieType_TvSeries,
+			Year:          parseYear(r.FirstAirDate),
 		}
 		return m, nil
 	} else if len(result.MovieResults) != 0 {
 		r := &result.MovieResults[0]
 		m := &model.Movie{
-			ID:          id,
-			Description: r.Overview,
-			Genres:      p.g.get(castGenreList(r.GenreIDs)),
-			Poster:      p.composePosterURL(r.PosterPath),
-			Preview:     p.composePosterURL(r.PosterPath),
-			Rating:      r.VoteAverage,
-			Title:       r.Title,
-			Type:        model.MovieType_Movie,
-			Year:        parseYear(r.ReleaseDate),
+			ID:            id,
+			Description:   r.Overview,
+			Genres:        p.g.get(castGenreList(r.GenreIDs)),
+			Poster:        p.composePosterURL(r.PosterPath),
+			Preview:       p.composePosterURL(r.PosterPath),
+			Rating:        r.VoteAverage,
+			Title:         r.Title,
+			OriginalTitle: r.OriginalTitle,
+			Type:          model.MovieType_Movie,
+			Year:          parseYear(r.ReleaseDate),
 		}
 		return m, nil
 	} else {
@@ -110,14 +112,15 @@ func (p *tmdbProvider) getTmdbMovieInfo(ctx context.Context, id int) (*model.Mov
 	}
 	info := resp.(*tmdb.Movie)
 	m := &model.Movie{
-		ID:          fmt.Sprintf("tmdb_m_%d", info.ID),
-		Description: info.Overview,
-		Poster:      p.composePosterURL(info.PosterPath),
-		Preview:     p.composePosterURL(info.PosterPath),
-		Rating:      info.VoteAverage,
-		Title:       info.Title,
-		Type:        model.MovieType_Movie,
-		Year:        parseYear(info.ReleaseDate),
+		ID:            fmt.Sprintf("tmdb_m_%d", info.ID),
+		Description:   info.Overview,
+		Poster:        p.composePosterURL(info.PosterPath),
+		Preview:       p.composePosterURL(info.PosterPath),
+		Rating:        info.VoteAverage,
+		Title:         info.Title,
+		OriginalTitle: info.OriginalTitle,
+		Type:          model.MovieType_Movie,
+		Year:          parseYear(info.ReleaseDate),
 	}
 	for _, g := range info.Genres {
 		m.Genres = append(m.Genres, strings.ToLower(g.Name))
@@ -134,15 +137,16 @@ func (p *tmdbProvider) getTmdbTvSeriesInfo(ctx context.Context, id int) (*model.
 	}
 	info := resp.(*tmdb.TV)
 	m := &model.Movie{
-		ID:          fmt.Sprintf("tmdb_s_%d", info.ID),
-		Description: info.Overview,
-		Poster:      p.composePosterURL(info.PosterPath),
-		Preview:     p.composePosterURL(info.PosterPath),
-		Rating:      info.VoteAverage,
-		Title:       info.Name,
-		Seasons:     uint(info.NumberOfSeasons),
-		Type:        model.MovieType_TvSeries,
-		Year:        parseYear(info.FirstAirDate),
+		ID:            fmt.Sprintf("tmdb_s_%d", info.ID),
+		Description:   info.Overview,
+		Poster:        p.composePosterURL(info.PosterPath),
+		Preview:       p.composePosterURL(info.PosterPath),
+		Rating:        info.VoteAverage,
+		Title:         info.Name,
+		OriginalTitle: info.OriginalName,
+		Seasons:       uint(info.NumberOfSeasons),
+		Type:          model.MovieType_TvSeries,
+		Year:          parseYear(info.FirstAirDate),
 	}
 	for _, g := range info.Genres {
 		m.Genres = append(m.Genres, strings.ToLower(g.Name))
@@ -206,15 +210,16 @@ func (p *tmdbProvider) search(ctx context.Context, query string, limit uint) ([]
 		switch info := r.(type) {
 		case *tmdb.MultiSearchTvInfo:
 			m := model.Movie{
-				ID:          fmt.Sprintf("tmdb_s_%d", info.ID),
-				Description: info.Overview,
-				Genres:      p.g.get(castGenreList(info.GenreIDs)),
-				Poster:      p.composePosterURL(info.PosterPath),
-				Preview:     p.composePosterURL(info.PosterPath),
-				Rating:      info.VoteAverage,
-				Title:       info.Name,
-				Type:        model.MovieType_TvSeries,
-				Year:        parseYear(info.FirstAirDate),
+				ID:            fmt.Sprintf("tmdb_s_%d", info.ID),
+				Description:   info.Overview,
+				Genres:        p.g.get(castGenreList(info.GenreIDs)),
+				Poster:        p.composePosterURL(info.PosterPath),
+				Preview:       p.composePosterURL(info.PosterPath),
+				Rating:        info.VoteAverage,
+				Title:         info.Name,
+				OriginalTitle: info.OriginalName,
+				Type:          model.MovieType_TvSeries,
+				Year:          parseYear(info.FirstAirDate),
 			}
 			seasons, err := p.getSeasons(ctx, info.ID)
 			if err != nil {
@@ -224,15 +229,16 @@ func (p *tmdbProvider) search(ctx context.Context, query string, limit uint) ([]
 			movies = append(movies, m)
 		case *tmdb.MultiSearchMovieInfo:
 			m := model.Movie{
-				ID:          fmt.Sprintf("tmdb_m_%d", info.ID),
-				Description: info.Overview,
-				Genres:      p.g.get(castGenreList(info.GenreIDs)),
-				Poster:      p.composePosterURL(info.PosterPath),
-				Preview:     p.composePosterURL(info.PosterPath),
-				Rating:      info.VoteAverage,
-				Title:       info.Title,
-				Type:        model.MovieType_Movie,
-				Year:        parseYear(info.ReleaseDate),
+				ID:            fmt.Sprintf("tmdb_m_%d", info.ID),
+				Description:   info.Overview,
+				Genres:        p.g.get(castGenreList(info.GenreIDs)),
+				Poster:        p.composePosterURL(info.PosterPath),
+				Preview:       p.composePosterURL(info.PosterPath),
+				Rating:        info.VoteAverage,
+				Title:         info.Title,
+				OriginalTitle: info.OriginalTitle,
+				Type:          model.MovieType_Movie,
+				Year:          parseYear(info.ReleaseDate),
 			}
 			movies = append(movies, m)
 		}

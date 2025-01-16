@@ -8,14 +8,15 @@ const (
 )
 
 type Movie struct {
-	ID          string
-	Description string
-	Genres      []string
-	Poster      string
-	Preview     string
-	Rating      float32
-	Seasons     uint
-	Title       string
-	Type        MovieType
-	Year        uint
+	ID            string
+	Description   string
+	Genres        []string
+	Poster        string
+	Preview       string
+	Rating        float32
+	Seasons       uint
+	Title         string
+	OriginalTitle string
+	Type          MovieType
+	Year          uint
 }
