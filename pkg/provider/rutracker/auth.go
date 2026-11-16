@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
@@ -12,6 +13,15 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/provider"
 	"github.com/apex/log"
 )
+
+// isChallengePage определяет, что вместо запрошенной страницы показана проверка Cloudflare
+func isChallengePage(doc *goquery.Document) bool {
+	if doc.Find(`script[src*="/cdn-cgi/challenge-platform/"], input[name="cf-turnstile-response"], #challenge-form, #challenge-error-text`).Length() > 0 {
+		return true
+	}
+	title := strings.TrimSpace(doc.Find("title").First().Text())
+	return strings.HasPrefix(title, "Just a moment") || strings.HasPrefix(title, "Один момент")
+}
 
 func authorize(ctx context.Context, cred model.Credentials, solver provider.CaptchaSolver) (cookies []*http.Cookie, err error) {
 	var nav navigator.Navigator
@@ -41,13 +51,26 @@ func authorize(ctx context.Context, cred model.Credentials, solver provider.Capt
 		return
 	}
 
+	doc := p.Document()
+
+	// Без этих проверок Type() на отсутствующем селекторе ждет таймаут браузера (20 минут)
+	if isChallengePage(doc) {
+		p.RaiseError(ErrChallenge)
+		err = ErrChallenge
+		return
+	}
+	if doc.Find("#login-form-full").Length() == 0 {
+		err = errors.New("login form not found, page layout has probably changed")
+		p.RaiseError(err)
+		return
+	}
+
 	var captcha struct {
 		required bool
 		url      string
 		code     string
 	}
 
-	doc := p.Document()
 	captcha.url, captcha.required = doc.Find("#login-form-full > table > tbody > tr:nth-child(2) > td > div > table > tbody > tr:nth-child(3) > td:nth-child(2) > div:nth-child(1) > img").
 		First().
 		Attr("src")
@@ -99,6 +122,7 @@ func authorize(ctx context.Context, cred model.Credentials, solver provider.Capt
 	if !authorized {
 		p.RaiseError(errors.New("cannot parse account logged"))
 		err = errBadAccount
+		return
 	}
 
 	cookies, err = nav.GetCookies()

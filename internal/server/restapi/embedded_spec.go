@@ -631,6 +631,10 @@ func init() {
         "service"
       ],
       "properties": {
+        "cookies": {
+          "description": "Готовая сессия в формате заголовка Cookie (\"a=b; c=d\"), полученная в обычном браузере (например, bb_session и cf_clearance для rutracker). Если задана, авторизация логином/паролем не выполняется. Требует userAgent.\n",
+          "type": "string"
+        },
         "id": {
           "type": "string"
         },
@@ -649,6 +653,10 @@ func init() {
           "type": "string"
         },
         "token": {
+          "type": "string"
+        },
+        "userAgent": {
+          "description": "User-Agent браузера, в котором получены cookies (cf_clearance привязан к нему)",
           "type": "string"
         }
       }
@@ -1459,6 +1467,10 @@ func init() {
         "service"
       ],
       "properties": {
+        "cookies": {
+          "description": "Готовая сессия в формате заголовка Cookie (\"a=b; c=d\"), полученная в обычном браузере (например, bb_session и cf_clearance для rutracker). Если задана, авторизация логином/паролем не выполняется. Требует userAgent.\n",
+          "type": "string"
+        },
         "id": {
           "type": "string"
         },
@@ -1477,6 +1489,10 @@ func init() {
           "type": "string"
         },
         "token": {
+          "type": "string"
+        },
+        "userAgent": {
+          "description": "User-Agent браузера, в котором получены cookies (cf_clearance привязан к нему)",
           "type": "string"
         }
       }

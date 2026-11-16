@@ -18,6 +18,20 @@ func (s *Service) GetCredentials(serviceId string) (model.Credentials, error) {
 		return model.Credentials{}, ErrNotFound
 	}
 
+	if acc.HasSession() {
+		// сессия без User-Agent бесполезна: cf_clearance привязан к нему
+		if acc.UserAgent == "" {
+			return model.Credentials{}, ErrNotFound
+		}
+		return model.Credentials{
+			AccountId: acc.Id,
+			Login:     acc.Login,
+			Password:  acc.Password,
+			Cookies:   acc.Cookies,
+			UserAgent: acc.UserAgent,
+		}, nil
+	}
+
 	if acc.Login == "" {
 		return model.Credentials{}, ErrNotFound
 	}

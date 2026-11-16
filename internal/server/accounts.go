@@ -36,6 +36,9 @@ func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Prin
 			Login:    acc.Login,
 			Password: acc.Password,
 			Token:    acc.Token,
+
+			Cookies:   acc.Cookies,
+			UserAgent: acc.UserAgent,
 		})
 	}
 
@@ -45,7 +48,7 @@ func (s *Server) getAccounts(params accounts.GetAccountsParams, key *models.Prin
 }
 
 func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.Principal) middleware.Responder {
-	l := s.log.WithField("req", "createAccount").WithField("key", key.Token).WithField("account", *params.Account)
+	l := s.log.WithField("req", "createAccount").WithField("key", key.Token).WithField("service", *params.Account.Service)
 	l.Debug("Request")
 	if !key.CanManageAccounts {
 		l.Warn("Forbidden. Required admin privileges")
@@ -68,6 +71,15 @@ func (s *Server) createAccount(params accounts.CreateAccountParams, key *models.
 
 	if len(params.Account.Password) != 0 {
 		acc.Password = params.Account.Password
+	}
+
+	if len(params.Account.Cookies) != 0 {
+		if len(params.Account.UserAgent) == 0 {
+			l.Warn("Cookies are set without userAgent")
+			return middleware.Error(http.StatusBadRequest, "userAgent is required when cookies are set")
+		}
+		acc.Cookies = params.Account.Cookies
+		acc.UserAgent = params.Account.UserAgent
 	}
 
 	if err := s.Accounts.CreateAccount(acc); err != nil {

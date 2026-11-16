@@ -85,3 +85,33 @@ they to database manually or via [API](api/discovery.yml). Each account links to
 * `rutracker` - [RuTracker.org](https://rutracker.org/) user account.
 
 Best practice is use a few accounts of each external system (except 2Captcha) for avoiding ban or limits exceeds.
+
+### RuTracker behind Cloudflare
+
+RuTracker is protected by a Cloudflare challenge (Turnstile), which can't be passed by the headless browser, so logging in
+with `login`/`password` fails with `blocked by Cloudflare challenge`. Use a ready browser session instead: sign in to
+the site in a regular browser **from the same IP the service runs on**, then create the account with `cookies` and
+`userAgent` fields (login and password are not needed):
+
+```bash
+curl -X POST http://localhost:8080/accounts -H 'X-Token: <admin key>' -H 'Content-Type: application/json' -d '{
+  "service": "rutracker",
+  "cookies": "bb_session=...; cf_clearance=...",
+  "userAgent": "Mozilla/5.0 (X11; Linux x86_64) ... Chrome/153.0.0.0 Safari/537.36"
+}'
+```
+
+* `cookies` is a `Cookie` request header value (DevTools → Network → any request to rutracker.org). `bb_session` and
+  `cf_clearance` are the required ones.
+* `userAgent` must be exactly the `User-Agent` of the browser the cookies were taken from: `cf_clearance` is bound to it
+  (and to the IP). The service sends this value both when searching and when downloading `.torrent` files.
+* When `cf_clearance` or `bb_session` expires, the service logs `Account '...': cookies rejected by Cloudflare` /
+  `session is not authorized`, marks the account unaccessible and moves on to other accounts. To renew it, delete the
+  account (`DELETE /accounts/{id}`) and create a new one with fresh cookies.
+
+The provider can be checked without the rest of the service (database, config):
+
+```bash
+RUTRACKER_COOKIES='bb_session=...; cf_clearance=...' RUTRACKER_UA='Mozilla/5.0 ...' \
+  go run ./cli/rutracker -query "Матрица" -download
+```

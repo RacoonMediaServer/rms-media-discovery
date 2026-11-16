@@ -13,6 +13,17 @@ type Account struct {
 	Login    string
 	Password string
 	Limit    uint
+
+	// Cookies - готовая сессия в формате заголовка Cookie ("a=b; c=d"), полученная в обычном браузере.
+	// Используется вместо логина и пароля, когда сервис закрыт защитой от ботов (Cloudflare).
+	Cookies string
+	// UserAgent - User-Agent браузера, в котором получены Cookies (cf_clearance привязан к нему)
+	UserAgent string
+}
+
+// HasSession сообщает, что аккаунт использует готовую сессию (cookies), а не логин и пароль
+func (a *Account) HasSession() bool {
+	return a.Cookies != ""
 }
 
 func (a *Account) Service() string {
@@ -35,6 +46,10 @@ type Credentials struct {
 	AccountId string
 	Login     string
 	Password  string
+
+	// Cookies и UserAgent - готовая сессия (см. Account.Cookies). Если Cookies заданы, Login и Password могут быть пустыми.
+	Cookies   string
+	UserAgent string
 }
 
 type ApiKey struct {

@@ -35,6 +35,8 @@ func (s *scraper) setCallbacks() {
 	})
 
 	s.c.OnError(func(response *colly.Response, err error) {
+		s.recordRequestError(response, err)
+
 		l := s.getContextLog(response.Ctx)
 		timer, ok := response.Ctx.GetAny("timer").(*prometheus.Timer)
 		if !ok {

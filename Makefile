@@ -11,6 +11,7 @@ build:
 test:
 	go test -v internal/service/accounts/*.go
 	go test -v pkg/heuristic/*.go
+	go test -v ./pkg/provider/rutracker/ ./pkg/scraper/ ./pkg/requester/
 
 run:
 	go build -ldflags ${LDFLAGS} -o ${BINARY_NAME} ${SOURCE_MAIN}

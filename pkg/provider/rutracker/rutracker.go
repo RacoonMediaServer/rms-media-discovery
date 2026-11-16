@@ -16,8 +16,16 @@ import (
 	"github.com/apex/log"
 )
 
+// baseURL - адрес сайта (переменная для подмены в тестах)
+var baseURL = "https://rutracker.org"
+
 var (
 	errBadAccount = errors.New("account is unaccessible")
+
+	// ErrChallenge - сайт отдал проверку Cloudflare вместо страницы. Автоматически ее пройти нельзя:
+	// нужно зайти на сайт в обычном браузере и передать сервису свежие cookies (bb_session, cf_clearance) и User-Agent
+	// через поля cookies / userAgent аккаунта.
+	ErrChallenge = errors.New("blocked by Cloudflare challenge")
 )
 
 type ruTrackerProvider struct {
@@ -27,6 +35,16 @@ type ruTrackerProvider struct {
 
 	mu      sync.RWMutex
 	cookies map[string][]*http.Cookie
+}
+
+// session - состояние авторизации аккаунта, с которым выполняются запросы к сайту
+type session struct {
+	accountId string
+	cookies   []*http.Cookie
+	userAgent string
+
+	// provided - cookies заданы в аккаунте вручную (а не получены через логин в браузере)
+	provided bool
 }
 
 func NewProvider(access model.AccessProvider, solver provider.CaptchaSolver) provider.TorrentsProvider {
@@ -61,43 +79,87 @@ func (r *ruTrackerProvider) SearchTorrents(ctx context.Context, q model.SearchQu
 	l := utils.LogFromContext(ctx, r.ID())
 	applySearchHints(&q)
 
+	var lastErr error
 	for {
 		cred, err := r.access.GetCredentials("rutracker")
 		if err != nil {
+			if lastErr != nil {
+				// чтобы вместо "account not found" было видно, почему закончились аккаунты
+				return nil, fmt.Errorf("%w: %w", err, lastErr)
+			}
 			return nil, err
 		}
 
-		cookies, err := r.login(ctx, cred)
+		sess, err := r.openSession(ctx, cred)
 		if err != nil {
 			if errors.Is(err, errBadAccount) {
+				l.Warnf("Account '%s' is unusable: %s", cred.AccountId, err)
 				r.access.MarkUnaccesible(cred.AccountId)
+				lastErr = err
 				continue
 			}
 			return nil, err
 		}
 
-		result, err := search(ctx, q, cookies)
+		result, err := search(ctx, q, sess.cookies, sess.userAgent)
 		if err != nil {
 			l.Errorf("search failed: %s", err)
+			if r.handleSessionError(l, sess, err) {
+				lastErr = err
+				continue
+			}
 			return nil, err
 		}
 
 		for i := range result {
 			t := &result[i]
-			t.Downloader = r.newDownloader(t.Link, cookies)
+			t.Downloader = r.newDownloader(t.Link, sess)
 		}
 
 		l.Debugf("Got %d results", len(result))
-		return result, err
+		return result, nil
 	}
 }
 
-func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) model.DownloadFunc {
+// handleSessionError реагирует на ошибки, говорящие о том, что сессия аккаунта непригодна.
+// Возвращает true, если стоит повторить запрос с другим аккаунтом.
+func (r *ruTrackerProvider) handleSessionError(l *log.Entry, sess session, err error) (retry bool) {
+	switch {
+	case errors.Is(err, ErrChallenge):
+		if sess.provided {
+			l.Warnf("Account '%s': cookies rejected by Cloudflare. cf_clearance has expired or the service IP differs from the one used to obtain it. Update 'cookies' and 'userAgent' of the account", sess.accountId)
+			r.access.MarkUnaccesible(sess.accountId)
+			return true
+		}
+		// куки, полученные при логине в браузере, устарели
+		r.dropCookies(sess.accountId)
+		return false
+
+	case errors.Is(err, errBadAccount):
+		if sess.provided {
+			l.Warnf("Account '%s': session is not authorized, bb_session has expired. Update 'cookies' of the account", sess.accountId)
+			r.access.MarkUnaccesible(sess.accountId)
+			return true
+		}
+		// сессия, полученная при логине, протухла - при следующем запросе авторизуемся заново
+		r.dropCookies(sess.accountId)
+		return false
+	}
+
+	return false
+}
+
+func (r *ruTrackerProvider) newDownloader(link string, sess session) model.DownloadFunc {
 	return func(ctx context.Context) ([]byte, error) {
-		r := requester.New(r)
-		r.SetCookies(cookies)
-		data, contentType, err := r.Download(ctx, "https://rutracker.org/forum/"+link)
+		req := requester.NewWithUserAgent(r, sess.userAgent)
+		req.SetCookies(sess.cookies)
+		data, contentType, err := req.Download(ctx, baseURL+"/forum/"+link)
 		if err != nil {
+			var statusErr *requester.StatusError
+			if errors.As(err, &statusErr) && statusErr.IsChallenge() {
+				err = fmt.Errorf("%w: %s", ErrChallenge, err)
+				r.handleSessionError(utils.LogFromContext(ctx, r.ID()), sess, err)
+			}
 			return nil, err
 		}
 		if !strings.HasPrefix(contentType, "application/x-bittorrent") {
@@ -105,6 +167,29 @@ func (r *ruTrackerProvider) newDownloader(link string, cookies []*http.Cookie) m
 		}
 		return data, err
 	}
+}
+
+// openSession возвращает сессию аккаунта: заданные в аккаунте cookies либо результат логина в браузере
+func (r *ruTrackerProvider) openSession(ctx context.Context, cred model.Credentials) (session, error) {
+	if cred.Cookies != "" {
+		cookies := parseCookies(cred.Cookies)
+		if len(cookies) == 0 {
+			return session{}, fmt.Errorf("%w: cookies are empty or malformed", errBadAccount)
+		}
+		return session{accountId: cred.AccountId, cookies: cookies, userAgent: cred.UserAgent, provided: true}, nil
+	}
+
+	cookies, err := r.login(ctx, cred)
+	if err != nil {
+		return session{}, err
+	}
+	return session{accountId: cred.AccountId, cookies: cookies}, nil
+}
+
+// parseCookies разбирает строку в формате заголовка Cookie ("a=b; c=d")
+func parseCookies(s string) []*http.Cookie {
+	req := http.Request{Header: http.Header{"Cookie": []string{s}}}
+	return req.Cookies()
 }
 
 func (r *ruTrackerProvider) login(ctx context.Context, cred model.Credentials) ([]*http.Cookie, error) {
@@ -133,4 +218,10 @@ func (r *ruTrackerProvider) getCookies(accountId string) ([]*http.Cookie, bool) 
 		return nil, ok
 	}
 	return cookies, ok
+}
+
+func (r *ruTrackerProvider) dropCookies(accountId string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	delete(r.cookies, accountId)
 }

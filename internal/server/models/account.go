@@ -19,6 +19,10 @@ import (
 // swagger:model Account
 type Account struct {
 
+	// Готовая сессия в формате заголовка Cookie ("a=b; c=d"), полученная в обычном браузере (например, bb_session и cf_clearance для rutracker). Если задана, авторизация логином/паролем не выполняется. Требует userAgent.
+	//
+	Cookies string `json:"cookies,omitempty"`
+
 	// id
 	ID string `json:"id,omitempty"`
 
@@ -38,6 +42,9 @@ type Account struct {
 
 	// token
 	Token string `json:"token,omitempty"`
+
+	// User-Agent браузера, в котором получены cookies (cf_clearance привязан к нему)
+	UserAgent string `json:"userAgent,omitempty"`
 }
 
 // Validate validates this account

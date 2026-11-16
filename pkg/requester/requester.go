@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
@@ -17,6 +18,23 @@ const Timeout = 120 * time.Second
 
 var httpClient = http.Client{Timeout: Timeout}
 
+// StatusError - ошибка, когда сервер ответил кодом, отличным от 200
+type StatusError struct {
+	URL    string
+	Code   int
+	Header http.Header
+}
+
+func (e *StatusError) Error() string {
+	return fmt.Sprintf("'%s': unexpected status code: %d", e.URL, e.Code)
+}
+
+// IsChallenge сообщает, что запрос отклонен защитой Cloudflare (требуется пройти проверку в браузере)
+func (e *StatusError) IsChallenge() bool {
+	return (e.Code == http.StatusForbidden || e.Code == http.StatusServiceUnavailable) &&
+		strings.EqualFold(e.Header.Get("cf-mitigated"), "challenge")
+}
+
 type Requester interface {
 	Get(ctx context.Context, url string, response interface{}) error
 	Download(ctx context.Context, url string) ([]byte, string, error)
@@ -24,12 +42,18 @@ type Requester interface {
 }
 
 type requester struct {
-	p       provider.Provider
-	cookies []*http.Cookie
+	p         provider.Provider
+	cookies   []*http.Cookie
+	userAgent string
 }
 
 func New(p provider.Provider) Requester {
 	return &requester{p: p}
+}
+
+// NewWithUserAgent создает Requester, который отправляет заданный User-Agent
+func NewWithUserAgent(p provider.Provider, userAgent string) Requester {
+	return &requester{p: p, userAgent: userAgent}
 }
 
 func (r *requester) SetCookies(cookies []*http.Cookie) {
@@ -57,6 +81,9 @@ func (r *requester) Download(ctx context.Context, url string) ([]byte, string, e
 		return nil, "", fmt.Errorf("create request failed: %w", err)
 	}
 	req = req.WithContext(ctx)
+	if r.userAgent != "" {
+		req.Header.Set("User-Agent", r.userAgent)
+	}
 
 	for _, cookie := range r.cookies {
 		req.AddCookie(cookie)
@@ -80,7 +107,7 @@ func (r *requester) Download(ctx context.Context, url string) ([]byte, string, e
 	l.Debugf("Got response: %s", resp.Status)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, "", fmt.Errorf("'%s': unexpected status code: %d", url, resp.StatusCode)
+		return nil, "", &StatusError{URL: url, Code: resp.StatusCode, Header: resp.Header}
 	}
 
 	buf, err := io.ReadAll(resp.Body)
