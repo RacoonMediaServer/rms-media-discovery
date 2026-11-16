@@ -13,13 +13,18 @@ package main
 import (
 	"bufio"
 	"context"
+	"crypto/tls"
 	"errors"
 	"flag"
 	"fmt"
+	"net"
+	"net/http"
+	"net/http/httptrace"
 	"os"
 	"strings"
 	"time"
 
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/media"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/model"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
@@ -72,6 +77,62 @@ func getenv(key, def string) string {
 	return def
 }
 
+// tracingTransport логирует каждый запрос: реальное соединение (адреса, TLS, ALPN), отправленные заголовки и ответ.
+// Нужен, чтобы сравнивать запросы из разных окружений (хост / контейнер), когда сайт отвечает по-разному
+type tracingTransport struct {
+	base http.RoundTripper
+}
+
+func (t tracingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	trace := &httptrace.ClientTrace{
+		GotConn: func(i httptrace.GotConnInfo) {
+			log.Infof("conn: %s -> %s (reused=%v)", i.Conn.LocalAddr(), i.Conn.RemoteAddr(), i.Reused)
+		},
+		TLSHandshakeDone: func(cs tls.ConnectionState, err error) {
+			log.Infof("tls: version=0x%04x alpn=%q server_name=%q err=%v", cs.Version, cs.NegotiatedProtocol, cs.ServerName, err)
+		},
+		WroteHeaderField: func(key string, value []string) {
+			if strings.EqualFold(key, "cookie") {
+				value = []string{"<redacted>"}
+			}
+			log.Infof("> %s: %s", key, strings.Join(value, ", "))
+		},
+	}
+	resp, err := t.base.RoundTrip(req.WithContext(httptrace.WithClientTrace(req.Context(), trace)))
+	if err != nil {
+		log.Warnf("< round trip failed: %s", err)
+		return resp, err
+	}
+	log.Infof("< %s %s server=%q cf-ray=%q cf-mitigated=%q", resp.Proto, resp.Status, resp.Header.Get("server"), resp.Header.Get("cf-ray"), resp.Header.Get("cf-mitigated"))
+	return resp, nil
+}
+
+// reportRoute показывает, каким адресом (IPv4/IPv6) пойдут запросы к сайту: эта проверка использует тот же транспорт,
+// что и провайдер, а cf_clearance может приниматься только для того семейства адресов, для которого он выдан
+func reportRoute() {
+	t, ok := http.DefaultTransport.(*http.Transport)
+	if !ok || t.DialContext == nil {
+		t = &http.Transport{}
+	}
+	dial := t.DialContext
+	if dial == nil {
+		dial = (&net.Dialer{Timeout: 15 * time.Second}).DialContext
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	conn, err := dial(ctx, "tcp", "rutracker.org:443")
+	if err != nil {
+		log.Warnf("Route check failed: %s", err)
+		return
+	}
+	defer conn.Close()
+	family := "IPv4"
+	if addr, ok := conn.RemoteAddr().(*net.TCPAddr); ok && addr.IP.To4() == nil {
+		family = "IPv6"
+	}
+	log.Infof("Route to rutracker.org: %s -> %s (%s)", conn.LocalAddr(), conn.RemoteAddr(), family)
+}
+
 func main() {
 	query := flag.String("query", "", "search query")
 	login := flag.String("login", getenv("RUTRACKER_LOGIN", ""), "rutracker login (or RUTRACKER_LOGIN)")
@@ -82,6 +143,7 @@ func main() {
 	download := flag.Bool("download", false, "also try to download .torrent of the first result")
 	cookies := flag.String("cookies", getenv("RUTRACKER_COOKIES", ""), "cookie header string 'a=b; c=d' (or RUTRACKER_COOKIES); login via browser is skipped")
 	ua := flag.String("ua", getenv("RUTRACKER_UA", ""), "User-Agent used to obtain cf_clearance (or RUTRACKER_UA)")
+	ipv6 := flag.Bool("ipv6", false, "prefer IPv6 for outgoing connections (same as RMS_PREFERIPV6 of the service)")
 	flag.Parse()
 
 	if *query == "" {
@@ -91,6 +153,13 @@ func main() {
 
 	log.SetHandler(text.New(os.Stderr))
 	log.SetLevel(log.DebugLevel)
+
+	if *ipv6 {
+		utils.PreferIPv6()
+		log.Info("Outgoing connections prefer IPv6")
+	}
+	reportRoute()
+	http.DefaultTransport = tracingTransport{base: http.DefaultTransport}
 
 	acc := &accessor{cred: model.Credentials{AccountId: "cli"}}
 	if *cookies != "" {
