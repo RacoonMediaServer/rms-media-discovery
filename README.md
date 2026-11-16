@@ -109,6 +109,12 @@ curl -X POST http://localhost:8080/accounts -H 'X-Token: <admin key>' -H 'Conten
   `session is not authorized`, marks the account unaccessible and moves on to other accounts. To renew it, delete the
   account (`DELETE /accounts/{id}`) and create a new one with fresh cookies.
 
+`cf_clearance` may only be accepted from the IP family it was issued for. If the host reaches rutracker.org over IPv6
+(and the cookies were obtained that way), but the service gets `403` in Docker, enable IPv6 in the compose network and set
+`RMS_PREFERIPV6=true` (`"preferIPv6": true` in the config). Docker gives containers a ULA address (`fd00::/8`), and by
+RFC 6724 the Go resolver then prefers IPv4 even though IPv6 works (`curl` from Alpine will not show this). With the
+option on, outgoing HTTP connections try IPv6 first (5 s) and fall back to the default behaviour.
+
 The provider can be checked without the rest of the service (database, config):
 
 ```bash

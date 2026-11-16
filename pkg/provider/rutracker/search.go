@@ -31,7 +31,7 @@ func search(ctx context.Context, q model.SearchQuery, cookies []*http.Cookie, us
 	if err != nil {
 		var statusErr *requester.StatusError
 		if errors.As(err, &statusErr) && statusErr.IsChallenge() {
-			return []model.Torrent{}, fmt.Errorf("%w: %s", ErrChallenge, err)
+			return []model.Torrent{}, fmt.Errorf("%w: %w", ErrChallenge, err)
 		}
 		return []model.Torrent{}, err
 	}

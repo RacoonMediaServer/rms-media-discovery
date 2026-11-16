@@ -15,6 +15,7 @@ import (
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/accounts"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/movies"
 	"github.com/RacoonMediaServer/rms-media-discovery/internal/service/torrents"
+	"github.com/RacoonMediaServer/rms-media-discovery/internal/utils"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/navigator"
 	"github.com/RacoonMediaServer/rms-media-discovery/pkg/pipeline"
 	"github.com/RacoonMediaServer/rms-packages/pkg/service/servicemgr"
@@ -69,6 +70,11 @@ func main() {
 	if useDebug || cfg.Debug.Verbose {
 		log.SetLevel(log.DebugLevel)
 		navigator.SetSettings(navigator.Settings{StoreDumpOnError: true})
+	}
+
+	if cfg.PreferIPv6 {
+		utils.PreferIPv6()
+		log.Info("Outgoing connections prefer IPv6")
 	}
 
 	mirrorURL, err := url.Parse(cfg.MirrorBaseURL)

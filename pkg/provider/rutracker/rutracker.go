@@ -127,7 +127,21 @@ func (r *ruTrackerProvider) handleSessionError(l *log.Entry, sess session, err e
 	switch {
 	case errors.Is(err, ErrChallenge):
 		if sess.provided {
-			l.Warnf("Account '%s': cookies rejected by Cloudflare. cf_clearance has expired or the service IP differs from the one used to obtain it. Update 'cookies' and 'userAgent' of the account", sess.accountId)
+			// cf_clearance привязан к IP и User-Agent: ниже все, что нужно, чтобы понять, что именно не совпало
+			rayID := ""
+			var statusErr *requester.StatusError
+			if errors.As(err, &statusErr) {
+				rayID = statusErr.Header.Get("cf-ray")
+			}
+			names := make([]string, 0, len(sess.cookies))
+			for _, c := range sess.cookies {
+				names = append(names, c.Name)
+			}
+			l.Warnf("Account '%s': cookies rejected by Cloudflare (userAgent=%q, cookies=[%s], cf-ray=%s). "+
+				"cf_clearance is bound to the User-Agent and the IP it was issued for: check that userAgent is exactly the browser's one "+
+				"and that the service reaches rutracker.org from the same IP as the browser (VPN/proxy/container network), "+
+				"otherwise it has expired. Update 'cookies' and 'userAgent' of the account",
+				sess.accountId, sess.userAgent, strings.Join(names, ","), rayID)
 			r.access.MarkUnaccesible(sess.accountId)
 			return true
 		}
@@ -157,7 +171,7 @@ func (r *ruTrackerProvider) newDownloader(link string, sess session) model.Downl
 		if err != nil {
 			var statusErr *requester.StatusError
 			if errors.As(err, &statusErr) && statusErr.IsChallenge() {
-				err = fmt.Errorf("%w: %s", ErrChallenge, err)
+				err = fmt.Errorf("%w: %w", ErrChallenge, err)
 				r.handleSessionError(utils.LogFromContext(ctx, r.ID()), sess, err)
 			}
 			return nil, err

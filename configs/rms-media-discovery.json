@@ -19,5 +19,6 @@
     }
   },
   "disableAccessControl": false,
+  "preferIPv6": false,
   "mirrorBaseURL": "https://api.racoondev.top/mirror/"
 }
