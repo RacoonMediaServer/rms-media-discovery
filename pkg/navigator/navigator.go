@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/apex/log"
-	"github.com/playwright-community/playwright-go"
+	"github.com/mxschmitt/playwright-go"
 )
 
 const defaultTimeout float64 = 120000.0 * 10
